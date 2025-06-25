@@ -1,4 +1,5 @@
 from mfes_extractor import MfeExtractor
+from clustering_metric import ClustringMetric
 from sklearn.metrics.pairwise import euclidean_distances
 import numpy as np
 import pandas as pd
@@ -15,45 +16,11 @@ KMEANS_PARAMS = {
     "random_state": 42,
 }
 
-class KmeansMfesExtractor(MfeExtractor):
+class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
     def fit(self):
         return self
     
-
-    def _get_size_dist_metrics(self,labels:np.ndarray):
-        unique, counts = np.unique(labels, return_counts=True)
-        counts = counts.astype(np.float64)
-        num_items = len(labels)
-        counts/=num_items
-        max_size = np.max(counts)
-        min_size = np.min(counts)
-        mean_size = np.mean(counts)
-        
-        return (max_size, min_size,mean_size)
-    
-    def _get_compactness(self,df:pd.DataFrame,kmeans:KMeans)->int:
-        n_clusters = kmeans.n_clusters
-        labels = kmeans.labels_
-        compactness = 0
-
-        for i in range(n_clusters):
-            centroid_coord = kmeans.cluster_centers_[i]
-            distances = np.square(df[labels == i] - centroid_coord)
-            distance_sum = np.sum(np.sqrt(distances.sum(axis=1)))
-            compactness += distance_sum
-        return compactness
-    
-    def _get_connectivity(self,df:pd.DataFrame,kmeans:KMeans)->int:
-        labels = kmeans.labels_
-        dists_matrix = euclidean_distances(df)
-        np.fill_diagonal(dists_matrix, np.inf)
-        nearest_indices = np.argmin(dists_matrix, axis=1)
-        ans=0
-        for i in range(df.shape[0]):
-            ans+=(labels[i]!=labels[nearest_indices[i]])
-        return ans/df.shape[0]
-                
-    def _train_kmeans(self,df:pd.DataFrame)-> (KMeans|int) :
+    def _train(self,df:pd.DataFrame)-> (KMeans|int) :
         inertias = []
         models = []
         max_clusters = min(df.shape[0],MAX_CLUSTERS)
@@ -67,16 +34,19 @@ class KmeansMfesExtractor(MfeExtractor):
 
 
     def evaluate(self,df:pd.DataFrame)->dict:
-        kmeans, knee = self._train_kmeans(df)
-
-        max_size_dist, min_size_dist, mean_size_dist = self._get_size_dist_metrics(kmeans.labels_)
+        kmeans, knee = self._train(df)
+        labels = kmeans.labels_
+        n_clusters = kmeans.n_clusters
+        cluster_centers = kmeans.cluster_centers_
+        max_size_dist, min_size_dist, mean_size_dist = self._get_size_dist_metrics(labels)
+   
         return {
-            'kmenas_compactness': self._get_compactness(df,kmeans),
-            'kmeans_connectivity': self._get_connectivity(df,kmeans),
             'kmeans_n_iter': kmeans.n_iter_,
-            'kmeans_n_clusters': kmeans.n_clusters,
+            'kmeans_n_clusters': n_clusters,
             'kmeans_inertia': kmeans.inertia_,
             'kmeans_knee': knee,    
+            'kmenas_compactness': self._get_compactness(df,labels,n_clusters,cluster_centers),
+            'kmeans_connectivity': self._get_connectivity(df,labels),
             'kmeans_min_size_dist': min_size_dist,    
             'kmeans_max_size_dist': max_size_dist,    
             'kmeans_mean_size_dist':mean_size_dist,
