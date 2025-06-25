@@ -1,4 +1,6 @@
 import numpy
 
-class MetaLearner:
+# Given a dataset, performs the meta-learning task 
+
+# class MetaLearner:
     
