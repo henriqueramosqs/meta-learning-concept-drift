@@ -34,6 +34,7 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
 
 
     def evaluate(self,df:pd.DataFrame)->dict:
+        df = df.select_dtypes(include=np.number)
         kmeans, knee = self._train(df)
         labels = kmeans.labels_
         n_clusters = kmeans.n_clusters

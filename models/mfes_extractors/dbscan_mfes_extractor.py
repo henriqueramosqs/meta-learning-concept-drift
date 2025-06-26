@@ -7,8 +7,8 @@ from sklearn.cluster import DBSCAN
 from kneed import KneeLocator
 
 DBSCAN_PARAMS = {
-    'eps': 2,
-    'min_samples': 3
+    'eps': 0.3,
+    'min_samples': 10,
 }
 
 class DBSCANMfesExtractor(MfeExtractor,ClustringMetric):
