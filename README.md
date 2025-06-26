@@ -19,6 +19,7 @@
    <li>Incorprei novas métricas de cluster (connectivity e sizeDist)</li>
    <li>Implementei variancia</li>
    <li>Implementei o nrCorAttr -> perguntar por que multiplicar por 2</li>
+   <li>Sparsity vs attributes sparsity</li>
 </ul>
 
 
@@ -31,5 +32,7 @@
    </li>
    <li>Algum motivo para kurtosis e skewness não serem utilizados? (exemplo da acurácia)</li>
    <li>Covariância é descartável?</li>
+   <li>prop_pca estava certo?</li>
+   <li>
    
 </ul>
