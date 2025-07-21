@@ -15,16 +15,18 @@ class DataLoader:
         cat_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
 
         print(f"Loading dataset {src}")
+        print(df.info())
+        print(f"Performing Label Encoding on the following columns: {cat_cols}")
+        
+        for col in df.columns:
+            if(df[col].dtypes=='category' or df[col].dtypes=='object'):
+                    print(col,": " ,df[col].unique(),"\n")
+        
         for col in cat_cols:
             df[col] = LabelEncoder().fit_transform(df[col])
-            df[col]=df[col].astype('category')
-
-        print(f"Performing Label Encoding on the following columns: {cat_cols}")
-        for col in df.columns:
-            if(df[col].dtypes=='category'):
-                print(col,": " ,df[col].unique(),"\n")
         
         print(f"Returning dataframe with success\n")
+        print(df.info())
         return df
 
 

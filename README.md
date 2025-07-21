@@ -6,9 +6,12 @@
 
 ## TODO
 <ul>
-   <li>Existe a necessidade de gerar uma metabase nova para cada (modelo base) x (métrica de performance)? Muitos dados são repetidos</li>
    <li>Colocar kfold no nível base</li>
-
+   <li>Talvez eu precise tratar NAN's e numerics</li>
+   <li>Ver se skewness e kurtosis estão consistentes (não estão gerando NaN ou outro erro)</li>
+   ___
+   <li>PCA N Components</li>
+   <li>Desisti de fazer (modelo nível base) x (métrica de performance) por que eu tenho que gerar um meta model para cada combinação e seria meio chato de dar manutenção -> Solução = gerar metabases (_dataset_ _eta_ _step_ _include_drift_) apenas uam vez (economiza tempo de execução), colocar as respostas dos preditores em outro dataset</li>
 </ul>
 
 
@@ -33,6 +36,13 @@
    <li>Algum motivo para kurtosis e skewness não serem utilizados? (exemplo da acurácia)</li>
    <li>Covariância é descartável?</li>
    <li>prop_pca estava certo?</li>
-   <li>
-   
+   __
+   <li>Pensar bem sobre a forma de avaliar o execution time -> problema do cold heat, etc</li>   
+   <li>Há a necessidade do copy?</li>   
 </ul>
+
+## Notas
+<li> Tem avaliação da off e da on -> Cuidar para salvar as infos necessárias para as avaliações</li>
+<li> Analisar se consigo resultados similares que os da Fernanda na parte off</li>
+<li> Entrar na CAPES, verificar se tenho alguma pendência </li>
+<li>24/07 às 9h</li>

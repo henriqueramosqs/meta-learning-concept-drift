@@ -1,5 +1,4 @@
-from mfes_extractor import MfeExtractor
-from clustering_metric import ClustringMetric
+from .mfes_extractor import MfeExtractor
 from scipy.stats import hmean, gmean, entropy
 import numpy as np
 import pandas as pd
@@ -26,9 +25,9 @@ class StatsMFesExtractor(MfeExtractor):
     
     def _get_correlation(self,df:pd.DataFrame)->pd.DataFrame:
         corr = df.corr()
-        mask = np.tril(corr.shape,k=-1).astype(bool)
+        mask = np.tril(corr,k=-1).astype(bool)
         d = corr.shape[0]
-        nrCorAttr =(2/((d)*(d-1)))*((mask) & (abs(corr) > TAU)).values.sum()
+        nrCorAttr =(2/((d)*(d-1)))*corr.where(mask & (corr > TAU)).values.sum()
         ans = { 
             f'corr_{corr.columns[i]}_{corr.columns[j]}': corr.iloc[i, j]
             for i, j in zip(*np.where(mask))
