@@ -44,5 +44,6 @@
 ## Notas
 <li> Tem avaliação da off e da on -> Cuidar para salvar as infos necessárias para as avaliações</li>
 <li> Analisar se consigo resultados similares que os da Fernanda na parte off</li>
-<li> Entrar na CAPES, verificar se tenho alguma pendência </li>
-<li>24/07 às 9h</li>
+__
+<li>Terminei a parte offline</li>
+<li>Terminei a classe de base_data_manager</li>

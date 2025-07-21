@@ -35,11 +35,12 @@ class MetaLearner():
         self.elapsed_time = defaultdict(int) 
         self.evaluator = Evaluator()
         self.target_delay = target_delay
-        self.meta_models = {metric: ltb.LGBMRegressor() for metric in self.performance_metrics}
+        self.meta_models = {metric: ltb.LGBMRegressor(verbosity=-1) for metric in self.performance_metrics}
 
     def _train_base_models(self, df: pd.DataFrame) -> None:
         features = df.drop("class", axis=1)
         target = df["class"]
+        print("Columns que o base model recebeu no train: ",features.columns)
         self.base_model.fit(features,target)
 
     def _fit_mfes(self,df:pd.DataFrame)->pd.DataFrame:
@@ -149,8 +150,28 @@ class MetaLearner():
         self.metabase.set_init_df(pd.DataFrame(meta_base))
 
 
- 
-    # performs offline fit
+    def update(self, new_instance: pd.DataFrame) -> None:
+        new_instance_df = pd.DataFrame(new_instance).T
+
+        pred_proba = self.base_model.predict_proba(new_instance_df)
+        print(pred_proba)
+
+        print("Columns que o base model recebeu no update: ",new_instance_df.columns)
+        new_instance_df["prediction"] = self.base_model.predict(new_instance_df)[0]
+        new_instance_df = new_instance_df.assign(**{f"predict_proba_{idx}": pred for idx, pred in enumerate(pred_proba.T)})
+        
+        self.basedata.update(new_instance)
+
+        # # If there is a new batch for calculating meta fetures
+        if self.basedata.has_new_batch():
+        #     baseline = self._get_baseline()
+        #     batch = self.baselevel_base.get_batch()
+        #     meta_features = self._get_meta_features(batch)
+        #     meta_features[list(baseline.keys())] = list(baseline.values())
+        #     meta_features[self.metabase.prediction_col] = self.meta_model.predict(meta_features)
+        #     self.metabase.update(meta_features)
+
+
     def fit(self,train_df: pd.DataFrame, base_train_size:int)->None:
         base_train = train_df[:base_train_size]
         meta_train = train_df[:base_train_size]
@@ -176,3 +197,4 @@ if __name__ == "__main__":
     meta_learner = MetaLearner(base_model=base_model,performance_metrics=performance_metrics,
                             has_dft_mfes=True,eta=100,step=20,target_delay=500)
     meta_learner.fit(df,300)
+    meta_learner.update(df.drop("class",axis=1).iloc[301])
