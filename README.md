@@ -47,3 +47,10 @@
 __
 <li>Terminei a parte offline</li>
 <li>Terminei a classe de base_data_manager</li>
+<li>Terminei a classe de meta_data_manager</li>
+<li>https://scikit-learn.org/stable/auto_examples/preprocessing/plot_scaling_importance.html#effect-of-rescaling-on-a-pca-dimensional-reduction</li>
+</li>Faz sentido reduzir dimensões do df inteiro ao invés de só o batch?</li>
+<li>learning_window_size faz sentido? Era 94 no caso que tá no  jupyter -> ETA?</li>
+<li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
+<li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
+<li>Faz sentido isso de passar as métricas e o baseline? -> Era só pra ter algo nas colunas...</li>

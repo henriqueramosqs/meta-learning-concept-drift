@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from kneed import KneeLocator
+from data.utils.eda import EDA
 
 # Usado para numero de atributos com alta correlação
 TAU = 0.5
@@ -44,6 +45,7 @@ class StatsMFesExtractor(MfeExtractor):
         
     
     def evaluate(self,df:pd.DataFrame)->dict:
+
         df = df.select_dtypes(include=np.number)
         num_instances,num_features = df.shape
         max_dict =  {f'max_{key}': value for key, value in df.max().to_dict().items()}

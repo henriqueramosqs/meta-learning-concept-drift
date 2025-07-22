@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
+from data.utils.eda import EDA 
 
 class BaseDataManager():
-    def __init__(self,batch_size:int):
+    def __init__(self,batch_size:int, step:int):
         self.batch_size:int=batch_size
-        self.new_target_prt:int=None
+        self.step =step
+        self.new_target_ptr:int=None
         self.df= pd.DataFrame()
         self.cur_batch_size:int =0
         self.cur_targeted_batch_size:int=0
@@ -13,7 +15,7 @@ class BaseDataManager():
         if(not self.df.empty):
             raise Exception("Initial database for Base Data Manager already created")
         self.df = df.copy()
-        self.new_target_prt=df.shape[0]
+        self.new_target_ptr=df.shape[0]
 
     def get_raw(self)->pd.DataFrame:
         return self.df.copy()
@@ -36,12 +38,15 @@ class BaseDataManager():
         return self.df.drop("class", axis=1).tail(self.batch_size)  
 
     def update_target(self,target:float)->None:
-        self.df.at[self.new_target_prt, "class"]=target
-        self.new_target_prt+=1
+        self.df.at[self.new_target_ptr, "class"]=target
+        self.new_target_ptr+=1
         self.cur_targeted_batch_size+=1
     
     def has_new_batch(self):
-        return self.cur_batch_size > self.batch_size
+        return self.cur_batch_size > self.step
     
     def has_new_targeted_batch(self):
-        return self.cur_batch_size > self.batch_size
+        return self.cur_batch_size > self.step
+
+    def exploratory_data_analysis(self):
+        EDA.make(self.df)

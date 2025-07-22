@@ -12,6 +12,7 @@ from .mfes_extractors  import PsiCalculator, Udetector, DomainClassifier, OmvPht
 from .mfes_extractors import StatsMFesExtractor, DBSCANMfesExtractor, SqsiCalculator,KmeansMfesExtractor
 from eval.evaluator import Evaluator
 from data.data_loader import DataLoader
+from data.utils import eda
 from .meta_data_manager import MetaDataManager
 from .base_data_manager import BaseDataManager
 import warnings
@@ -23,15 +24,24 @@ warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
 # Um base model, um meta model para cada performance_metric
 class MetaLearner():
-    def __init__(self,base_model,performance_metrics:list,has_dft_mfes:bool,eta:int,step:int,target_delay:int):
+    def __init__(
+            self,
+            base_model,
+            performance_metrics:list,
+            has_dft_mfes:bool,
+            eta:int,
+            step:int,
+            target_delay:int,
+            pca_n_components:int
+        ):
         self.base_model = base_model
         self.performance_metrics =performance_metrics
         self.has_dft_mfes = has_dft_mfes
         self.eta = eta
         self.step = step
         self.mfes_extractors = []
-        self.metabase = MetaDataManager()
-        self.basedata = BaseDataManager()
+        self.metabase = MetaDataManager(pca_n_components=pca_n_components,target_cols=self.performance_metrics)
+        self.basedata = BaseDataManager(batch_size=eta,step=step)
         self.elapsed_time = defaultdict(int) 
         self.evaluator = Evaluator()
         self.target_delay = target_delay
@@ -40,7 +50,6 @@ class MetaLearner():
     def _train_base_models(self, df: pd.DataFrame) -> None:
         features = df.drop("class", axis=1)
         target = df["class"]
-        print("Columns que o base model recebeu no train: ",features.columns)
         self.base_model.fit(features,target)
 
     def _fit_mfes(self,df:pd.DataFrame)->pd.DataFrame:
@@ -95,7 +104,6 @@ class MetaLearner():
         features = meta_base.drop([col for col in self.performance_metrics if col in meta_base.columns], axis=1)
 
         print(meta_base.info())
-        print(f"Columns na metabase: {meta_base.columns}")
         target= None
         if(target_col!=None):
             target = meta_base[target_col]
@@ -150,26 +158,42 @@ class MetaLearner():
         self.metabase.set_init_df(pd.DataFrame(meta_base))
 
 
-    def update(self, new_instance: pd.DataFrame) -> None:
-        new_instance_df = pd.DataFrame(new_instance).T
+    def update(self, new_instance_df: pd.DataFrame) -> None:
 
         pred_proba = self.base_model.predict_proba(new_instance_df)
-        print(pred_proba)
-
-        print("Columns que o base model recebeu no update: ",new_instance_df.columns)
         new_instance_df["prediction"] = self.base_model.predict(new_instance_df)[0]
         new_instance_df = new_instance_df.assign(**{f"predict_proba_{idx}": pred for idx, pred in enumerate(pred_proba.T)})
         
-        self.basedata.update(new_instance)
+        self.basedata.update(new_instance_df)
 
-        # # If there is a new batch for calculating meta fetures
         if self.basedata.has_new_batch():
-        #     baseline = self._get_baseline()
-        #     batch = self.baselevel_base.get_batch()
-        #     meta_features = self._get_meta_features(batch)
-        #     meta_features[list(baseline.keys())] = list(baseline.values())
-        #     meta_features[self.metabase.prediction_col] = self.meta_model.predict(meta_features)
-        #     self.metabase.update(meta_features)
+
+            batch = self.basedata.get_last_batch()
+            mfes_df = self._get_mfes(batch)
+            last_meta_labels = self.metabase.get_last_tageted_row()[self.performance_metrics]
+
+            
+            mfes_df = mfes_df.assign(**last_meta_labels.to_dict(),)
+
+            predictions = {
+                f"meta_predict_{metric}": model.predict(mfes_df)
+                for metric, model in self.meta_models.items()
+            }
+
+            mfes_df =  mfes_df.assign(**predictions)
+            self.metabase.update(mfes_df)
+
+    def update_target(self, target) -> None:
+    
+        self.basedata.update_target(target)
+
+        if self.basedata.has_new_batch():
+            batch = self.basedata.get_targeted_batch()
+            meta_labels = self._get_meta_labels(batch)
+            self.metabase.update_target(meta_labels)
+
+            if self.metabase.cur_batch_size == self.step:
+                self._train_meta_model()
 
 
     def fit(self,train_df: pd.DataFrame, base_train_size:int)->None:
@@ -180,13 +204,13 @@ class MetaLearner():
         self._init_base_data(meta_train.copy())
         self._init_metabase()   
         self._train_meta_model()
-
+        
         features, _ = self._get_train_metabase()
-        print(features.columns,self.meta_models.items())
         for metric, model in self.meta_models.items():
             y_pred = model.predict(features)
             self.metabase.set_pred(prediction = y_pred, prediction_col=f"meta_predict_{metric}")
         return self
+    
 
     
 
@@ -195,6 +219,6 @@ if __name__ == "__main__":
     performance_metrics =["precision","recall", "f1-score"]
     df =  DataLoader.load_data("real/electricity.arff")
     meta_learner = MetaLearner(base_model=base_model,performance_metrics=performance_metrics,
-                            has_dft_mfes=True,eta=100,step=20,target_delay=500)
+                            has_dft_mfes=True,eta=100,step=20,target_delay=500, pca_n_components=5)
     meta_learner.fit(df,300)
     meta_learner.update(df.drop("class",axis=1).iloc[301])
