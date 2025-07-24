@@ -22,10 +22,10 @@ class BaseDataManager():
     
     def update(self,new_instance: pd.DataFrame)-> None:
         self.cur_batch_size+=1
-        self.df= pd.concat([self.df,new_instance],axis=0)
+        self.df= pd.concat([self.df,new_instance],axis=0,  ignore_index=True)
     
     def get_targeted_batch(self)->pd.DataFrame:
-        res_df = self.df.dropna("class", axis=0)
+        res_df = self.df.dropna(subset=['class'])
         if(res_df.shape[0]<self.batch_size):
             raise Exception("There's no enough targeted data to compose a batch in the base data manager")
         self.cur_targeted_batch_size=0
@@ -37,16 +37,17 @@ class BaseDataManager():
         self.cur_batch_size=0
         return self.df.drop("class", axis=1).tail(self.batch_size)  
 
-    def update_target(self,target:float)->None:
+    def update_target(self,target:dict)->None:
         self.df.at[self.new_target_ptr, "class"]=target
         self.new_target_ptr+=1
         self.cur_targeted_batch_size+=1
+
     
     def has_new_batch(self):
-        return self.cur_batch_size > self.step
+        return self.cur_batch_size >= self.step
     
     def has_new_targeted_batch(self):
-        return self.cur_batch_size > self.step
+        return self.cur_targeted_batch_size >= self.step
 
     def exploratory_data_analysis(self):
         EDA.make(self.df)

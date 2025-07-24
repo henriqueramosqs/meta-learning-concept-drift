@@ -1,5 +1,6 @@
 from .mfes_extractor import MfeExtractor
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.preprocessing import StandardScaler
 from .clustering_metric import ClustringMetric
 import numpy as np
 import pandas as pd

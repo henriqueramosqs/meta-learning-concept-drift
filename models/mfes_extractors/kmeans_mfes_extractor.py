@@ -1,5 +1,6 @@
 from .mfes_extractor import MfeExtractor
 from .clustering_metric import ClustringMetric
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import euclidean_distances
 import numpy as np
 import pandas as pd
@@ -20,6 +21,8 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
     def fit(self):
         return self
     
+
+    
     def _train(self,df:pd.DataFrame)-> (KMeans|int) :
         inertias = []
         models = []
@@ -35,6 +38,7 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
 
     def evaluate(self,df:pd.DataFrame)->dict:
         df = df.select_dtypes(include=np.number)
+        df = StandardScaler().fit_transform(df)  
         kmeans, knee = self._train(df)
         labels = kmeans.labels_
         n_clusters = kmeans.n_clusters

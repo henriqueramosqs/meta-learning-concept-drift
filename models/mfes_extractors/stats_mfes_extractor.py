@@ -25,6 +25,8 @@ class StatsMFesExtractor(MfeExtractor):
         return {**nr_out, **iqr_dict}
     
     def _get_correlation(self,df:pd.DataFrame)->pd.DataFrame:
+        if(EDA.lacking(df)):
+            print("Foi o corr")
         corr = df.corr()
         mask = np.tril(corr,k=-1).astype(bool)
         d = corr.shape[0]

@@ -6,6 +6,22 @@ import seaborn as sns
 
 class EDA():
     @staticmethod
+    def lacking(df:pd.DataFrame,show_if_filled=False)->bool:
+       
+        missing_data = df.isna().sum()
+        if missing_data.sum() == 0 and not show_if_filled:
+            return False
+        
+        print("\n4. DADOS FALTANTES (NaN)")
+        missing_percent = (missing_data / len(df)) * 100
+        missing_df = pd.DataFrame({
+            'Valores Faltantes': missing_data,
+            '% Faltante': missing_percent.round(2)
+        })
+        print(missing_df[missing_df['Valores Faltantes'] > 0].to_string())
+        return True
+        
+    @staticmethod
     def make(df, sample_size=5):
         """
         Realiza análise exploratória em um DataFrame pandas.
@@ -44,15 +60,8 @@ class EDA():
             pass
         
         ## 4. Dados faltantes
-        print("\n4. DADOS FALTANTES (NaN)")
-        missing_data = df.isna().sum()
-        missing_percent = (missing_data / len(df)) * 100
-        missing_df = pd.DataFrame({
-            'Valores Faltantes': missing_data,
-            '% Faltante': missing_percent.round(2)
-        })
-        print(missing_df[missing_df['Valores Faltantes'] > 0].to_string())
-        
+        EDA.lacking(df)
+       
         ## 5. Análise de cardinalidade
         print("\n5. CARDINALIDADE DAS COLUNAS CATEGÓRICAS")
         categorical_cols = df.select_dtypes(include=['object', 'category']).columns

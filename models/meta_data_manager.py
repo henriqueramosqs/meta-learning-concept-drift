@@ -16,11 +16,12 @@ class MetaDataManager:
         pass
 
     def get_train_metabase(self)->pd.DataFrame:
-        return self.metabase.drop([col for col in self.metabase.columns if col.startswith("meta_predict")])
+        ans =self.metabase.drop([col for col in self.metabase.columns if col.startswith("meta_predict")])
+        return 
     
     def set_init_df(self,df:pd.DataFrame)->None:
         self.metabase=df.copy()
-        self.new_target_ptr = df.shape[0]
+        self.new_target_ptr = self.learning_window_size=df.shape[0]
 
     def _reduce_dim(self,df: pd.DataFrame) -> pd.DataFrame:
         if not self.pca_n_components:
@@ -47,7 +48,7 @@ class MetaDataManager:
         return pd.DataFrame(self.pca.transform(df_scaled), self.pca)
           
     def update(self,new_instance:pd.DataFrame)->None:
-        self.metabase= pd.concat([self.metabase,new_instance],axis=0)
+        self.metabase= pd.concat([self.metabase,new_instance],axis=0, ignore_index=True)
 
 
     def update_target(self,target:dict)->None:
@@ -57,8 +58,8 @@ class MetaDataManager:
         self.cur_batch_size+=1
 
     def get_train_batch(self)->pd.DataFrame:
-        lower_bound = self.new_target_id - self.learning_window_size
-        upper_bound = self.new_target_id
+        lower_bound = self.new_target_ptr - self.learning_window_size
+        upper_bound = self.new_target_ptr
         if(lower_bound<0):
             raise Exception("Not enough data to retireve a metabase batch")
         train_df = self.metabase.iloc[lower_bound:upper_bound].filter(regex='^(?!meta_predict_)')
@@ -78,4 +79,4 @@ class MetaDataManager:
         return self.metabase.iloc[self.new_target_ptr - 1]
     
     def exploratory_data_analysis(self):
-        EDA.exploratory_data_analysis(self.df)
+        EDA.make(self.metabase)

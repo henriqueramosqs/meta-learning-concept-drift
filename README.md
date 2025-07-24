@@ -52,5 +52,5 @@ __
 </li>Faz sentido reduzir dimensões do df inteiro ao invés de só o batch?</li>
 <li>learning_window_size faz sentido? Era 94 no caso que tá no  jupyter -> ETA?</li>
 <li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
-<li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
-<li>Faz sentido isso de passar as métricas e o baseline? -> Era só pra ter algo nas colunas...</li>
+<li>Faz sentido isso de passar as métricas e o baseline?</li>
+<li>Kurtosis e skewness não retornam NaN</li>

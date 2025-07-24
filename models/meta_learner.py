@@ -12,7 +12,7 @@ from .mfes_extractors  import PsiCalculator, Udetector, DomainClassifier, OmvPht
 from .mfes_extractors import StatsMFesExtractor, DBSCANMfesExtractor, SqsiCalculator,KmeansMfesExtractor
 from eval.evaluator import Evaluator
 from data.data_loader import DataLoader
-from data.utils import eda
+from data.utils.eda import EDA
 from .meta_data_manager import MetaDataManager
 from .base_data_manager import BaseDataManager
 import warnings
@@ -54,7 +54,6 @@ class MetaLearner():
 
     def _fit_mfes(self,df:pd.DataFrame)->pd.DataFrame:
         features = df.rename(columns={"class":"prediction"})
-        # print("cols: ",features.columns)
         pred_proba = self.base_model.predict_proba(features.drop("prediction",axis=1))
         score_cols = []
         for idx, pred in enumerate(pred_proba.T):
@@ -64,6 +63,7 @@ class MetaLearner():
         self.mfes_extractors = [
             StatsMFesExtractor().fit(),
             DBSCANMfesExtractor().fit(),
+            KmeansMfesExtractor().fit()
         ]
 
         if self.has_dft_mfes:
@@ -75,6 +75,10 @@ class MetaLearner():
                 Udetector(prediction_col="prediction").fit(features),
             ]
         
+
+    def _get_baseline(self) -> dict:
+        batch = self.metabase.get_last_tageted_row()[self.performance_metrics]
+        return {f"last_{metric}": value for metric, value in batch.to_dict().items()}
 
     def _get_mfes(self,df:pd.DataFrame)->pd.DataFrame:
         mf_dict= {}
@@ -94,16 +98,19 @@ class MetaLearner():
     def _get_meta_labels(self,df:pd.DataFrame)->pd.DataFrame:
         y_true = df["class"]
         y_pred = df["prediction"]
+
         metrics = {
             metric: self.evaluator.evaluate(metric, y_true,y_pred) for metric in self.performance_metrics
         }
+
+        # print("metrics",metrics)
         return metrics
 
     def _get_train_metabase(self, target_col:str=None) -> tuple[pd.DataFrame, pd.Series]:
-        meta_base = self.metabase.get_train_metabase()
+        meta_base = self.metabase.get_train_batch()
+
         features = meta_base.drop([col for col in self.performance_metrics if col in meta_base.columns], axis=1)
 
-        print(meta_base.info())
         target= None
         if(target_col!=None):
             target = meta_base[target_col]
@@ -117,7 +124,7 @@ class MetaLearner():
         
     def _get_last_performances(self, meta_base: pd.DataFrame) -> pd.DataFrame:
         for metric in self.performance_metrics:
-            col_name = f"baseline_{metric}"
+            col_name = f"last_{metric}"
             meta_base.loc[:, col_name] = meta_base[metric].shift(self.target_delay)
         return meta_base
     
@@ -128,6 +135,7 @@ class MetaLearner():
         df = df.assign(**{f"predict_proba_{idx}": pred for idx, pred in enumerate(pred_proba.T)})
         
         df["prediction"] = self.base_model.predict(features)
+
         self.basedata.set_init_df(df)
 
     
@@ -167,13 +175,13 @@ class MetaLearner():
         self.basedata.update(new_instance_df)
 
         if self.basedata.has_new_batch():
-
+            baseline = self._get_baseline()
             batch = self.basedata.get_last_batch()
-            mfes_df = self._get_mfes(batch)
-            last_meta_labels = self.metabase.get_last_tageted_row()[self.performance_metrics]
 
-            
-            mfes_df = mfes_df.assign(**last_meta_labels.to_dict(),)
+
+            mfes_df = self._get_mfes(batch)
+
+            mfes_df = mfes_df.assign(**baseline)
 
             predictions = {
                 f"meta_predict_{metric}": model.predict(mfes_df)
@@ -184,21 +192,20 @@ class MetaLearner():
             self.metabase.update(mfes_df)
 
     def update_target(self, target) -> None:
-    
         self.basedata.update_target(target)
 
-        if self.basedata.has_new_batch():
+        if self.basedata.has_new_targeted_batch():
             batch = self.basedata.get_targeted_batch()
+
             meta_labels = self._get_meta_labels(batch)
             self.metabase.update_target(meta_labels)
-
             if self.metabase.cur_batch_size == self.step:
                 self._train_meta_model()
 
 
     def fit(self,train_df: pd.DataFrame, base_train_size:int)->None:
         base_train = train_df[:base_train_size]
-        meta_train = train_df[:base_train_size]
+        meta_train = train_df[base_train_size:]
         self._train_base_models(base_train)
         self._fit_mfes(base_train.copy())
         self._init_base_data(meta_train.copy())
