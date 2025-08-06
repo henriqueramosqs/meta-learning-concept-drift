@@ -30,6 +30,7 @@ class DBSCANMfesExtractor(MfeExtractor,ClustringMetric):
         return np.array(centroids)
 
     def evaluate(self,df:pd.DataFrame)->dict:
+        
         dbscan = self._train(df)
         labels = dbscan.labels_
         n_clusters = len(set(labels) - {1})

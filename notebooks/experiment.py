@@ -17,12 +17,18 @@ import pickle
              
 performance_metric = ["recall","precision","kappa","f1-score"]
 base_models = [
-        RandomForestClassifier(),
-        DecisionTreeClassifier(),
-        LogisticRegression(),
-        SVC()
+        RandomForestClassifier,
+        DecisionTreeClassifier,
+        LogisticRegression,
+        SVC
     ]
 
+hyperparams ={
+    "RandomForestClassifier": {"max_depth": 6} ,
+    "DecisionTreeClassifier": {"max_depth": 6} ,
+    "LogisticRegression" :{},
+    "SVC": {"probability": True}
+}
 datasets = [
     "electricity",
     "Rialto",
@@ -37,19 +43,21 @@ ETA = 200
 STEP = 30 
 TARGET_DELAY = 500
 
-for dataset in datasets: 
-   
-    for base_model in base_models:  
+for base_model in base_models:
+    base_model_name = base_model.__name__
+    for dataset in datasets: 
         for has_dft in include_dft:
-            if(has_dft and base_model.__class__.__name__=="RandomForestClassifier" and dataset=="electricity"):
-                continue
-            df =  DataLoader.load_data(f"real/{dataset}.arff")
-            FILE_NAME = f"basemodel: {base_model.__class__.__name__}  - dataset: {dataset}"
+
+            FILE_NAME = f"basemodel: {base_model_name}  - dataset: {dataset}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"
-            print(f"Resolvendo para: {FILE_NAME}")
-            meta_learner = MetaLearner(
-                base_model=base_model,
+            FILE_NAME
+
+            print("name\n",base_model_name)
+            base_model_params = {"verbose": True, "basis_model": base_model, "hyperparameters": hyperparams[base_model_name]}
+            meta_learner = MetaLearner( 
+                base_model_params=base_model_params,
+                meta_model_params={},
                 performance_metrics=performance_metric,
                 has_dft_mfes=has_dft,
                 eta=ETA,

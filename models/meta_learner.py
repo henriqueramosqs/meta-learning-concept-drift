@@ -15,6 +15,9 @@ from data.data_loader import DataLoader
 from data.utils.eda import EDA
 from .meta_data_manager import MetaDataManager
 from .base_data_manager import BaseDataManager
+from .meta_model import MetaModel
+from .base_model import BaseModel
+
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
@@ -26,7 +29,8 @@ warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 class MetaLearner():
     def __init__(
             self,
-            base_model,
+            base_model_params,
+            meta_model_params,
             performance_metrics:list,
             has_dft_mfes:bool,
             eta:int,
@@ -34,7 +38,7 @@ class MetaLearner():
             target_delay:int,
             pca_n_components:int
         ):
-        self.base_model = base_model
+        self.base_model = BaseModel(**base_model_params)
         self.performance_metrics =performance_metrics
         self.has_dft_mfes = has_dft_mfes
         self.eta = eta
@@ -45,7 +49,7 @@ class MetaLearner():
         self.elapsed_time = defaultdict(int) 
         self.evaluator = Evaluator()
         self.target_delay = target_delay
-        self.meta_models = {metric: ltb.LGBMRegressor(verbosity=-1) for metric in self.performance_metrics}
+        self.meta_models = {metric: MetaModel() for metric in self.performance_metrics}
 
     def _train_base_models(self, df: pd.DataFrame) -> None:
         features = df.drop("class", axis=1)

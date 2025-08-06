@@ -4,17 +4,6 @@
     <li> Por default, o tratamento para colunas categóricas é a aplicação de label encondig.</li>
  </ul> 
 
-## TODO
-<ul>
-   <li>Colocar kfold no nível base</li>
-   <li>Talvez eu precise tratar NAN's e numerics</li>
-   <li>Ver se skewness e kurtosis estão consistentes (não estão gerando NaN ou outro erro)</li>
-   ___
-   <li>PCA N Components</li>
-   <li>Desisti de fazer (modelo nível base) x (métrica de performance) por que eu tenho que gerar um meta model para cada combinação e seria meio chato de dar manutenção -> Solução = gerar metabases (_dataset_ _eta_ _step_ _include_drift_) apenas uam vez (economiza tempo de execução), colocar as respostas dos preditores em outro dataset</li>
-</ul>
-
-
 ## Feitos
 <ul>
    <li>Simplifiquei bastante o data loader</li>
@@ -49,8 +38,10 @@ __
 <li>Terminei a classe de base_data_manager</li>
 <li>Terminei a classe de meta_data_manager</li>
 <li>https://scikit-learn.org/stable/auto_examples/preprocessing/plot_scaling_importance.html#effect-of-rescaling-on-a-pca-dimensional-reduction</li>
-</li>Faz sentido reduzir dimensões do df inteiro ao invés de só o batch?</li>
+<li>Faz sentido reduzir dimensões do df inteiro ao invés de só o batch?</li>
 <li>learning_window_size faz sentido? Era 94 no caso que tá no  jupyter -> ETA?</li>
 <li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
-<li>Faz sentido isso de passar as métricas e o baseline?</li>
 <li>Kurtosis e skewness não retornam NaN</li>
+<li>Terminei o experimento</li>
+<li>Comparei os resultados com o que a Fernanda fez</li>
+
