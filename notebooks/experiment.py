@@ -14,15 +14,27 @@ from sklearn.svm import SVC
 import lightgbm as ltb
 from data.utils.eda import EDA
 
+data = {
+    "Nome": ["João", "Maria", "Carlos"],
+    "Idade": [25, 30, 35],
+    "Cidade": ["São Paulo", "Rio de Janeiro", "Belo Horizonte"]
+}
+
 
 performance_metric = ["recall","precision","kappa","f1-score"]
 base_models = [
-        RandomForestClassifier(),
-        DecisionTreeClassifier(),
-        LogisticRegression(),
-        SVC()
+        RandomForestClassifier,
+        DecisionTreeClassifier,
+        LogisticRegression,
+        SVC
     ]
 
+hyperparams ={
+    "RandomForestClassifier": {"max_depth": 6} ,
+    "DecisionTreeClassifier": {"max_depth": 6} ,
+    "LogisticRegression" :{},
+    "SVC": {"probability": True}
+}
 datasets = [
     "electricity",
     "Rialto",
@@ -37,16 +49,21 @@ ETA = 200
 STEP = 30 
 TARGET_DELAY = 500
 
-
 for base_model in base_models:
+    base_model_name = base_model.__name__
     for dataset in datasets: 
         for has_dft in include_dft:
-            FILE_NAME = f"basemodel: {base_model.__name__}  - dataset: {dataset}"
+
+            FILE_NAME = f"basemodel: {base_model_name}  - dataset: {dataset}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"
             FILE_NAME
-            meta_learner = MetaLearner(
-                base_model=base_model,
+
+            print("name\n",base_model_name)
+            base_model_params = {"verbose": True, "basis_model": base_model, "hyperparameters": hyperparams[base_model_name]}
+            meta_learner = MetaLearner( 
+                base_model_params=base_model_params,
+                meta_model_params={},
                 performance_metrics=performance_metric,
                 has_dft_mfes=True,
                 eta=ETA,
@@ -97,4 +114,4 @@ for base_model in base_models:
 
             meta_learner.elapsed_time
 
-            mb.to_csv(f"metabase/{FILE_NAME}.csv", index=False)
+            mb.to_csv(f".metabase/{FILE_NAME}.csv", index=False)
