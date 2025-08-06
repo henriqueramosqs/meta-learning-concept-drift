@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 import lightgbm as ltb
 from data.utils.eda import EDA
-
-
+import pickle
+             
 performance_metric = ["recall","precision","kappa","f1-score"]
 base_models = [
         RandomForestClassifier(),
@@ -30,25 +30,28 @@ datasets = [
     "airlines"
     ]
 include_dft = [True, False]
-df =  DataLoader.load_data("real/electricity.arff")
+
 OFFLINE_PHASE_SIZE = 5000
 BASE_TRAIN_SIZE = 2000
 ETA = 200  
 STEP = 30 
 TARGET_DELAY = 500
 
-
-for base_model in base_models:
-    for dataset in datasets: 
+for dataset in datasets: 
+   
+    for base_model in base_models:  
         for has_dft in include_dft:
-            FILE_NAME = f"basemodel: {base_model.__name__}  - dataset: {dataset}"
+            if(has_dft and base_model.__class__.__name__=="RandomForestClassifier" and dataset=="electricity"):
+                continue
+            df =  DataLoader.load_data(f"real/{dataset}.arff")
+            FILE_NAME = f"basemodel: {base_model.__class__.__name__}  - dataset: {dataset}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"
-            FILE_NAME
+            print(f"Resolvendo para: {FILE_NAME}")
             meta_learner = MetaLearner(
                 base_model=base_model,
                 performance_metrics=performance_metric,
-                has_dft_mfes=True,
+                has_dft_mfes=has_dft,
                 eta=ETA,
                 step=STEP,
                 target_delay=TARGET_DELAY,
@@ -95,6 +98,7 @@ for base_model in base_models:
                 plt.plot(x, y_pred, label="baseline")
                 plt.legend(loc="upper left")
 
-            meta_learner.elapsed_time
-
             mb.to_csv(f"metabase/{FILE_NAME}.csv", index=False)
+        
+            with open(f"teste.pickle", "wb") as handle:
+                pickle.dump(meta_learner.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)
