@@ -32,7 +32,8 @@ class DataLoader:
 
 
 if __name__ == "__main__":  
-    DataLoader.load_data("real/rialto.arff")
+    df = DataLoader.load_data("real/Rialto.arff")
+    EDA.lacking(df,True)
     DataLoader.load_data("real/electricity.arff")
     DataLoader.load_data("real/airlines.arff")
     DataLoader.load_data("real/Powersupply.arff")

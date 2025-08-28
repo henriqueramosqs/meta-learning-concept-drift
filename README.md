@@ -45,3 +45,17 @@ __
 <li>Terminei o experimento</li>
 <li>Comparei os resultados com o que a Fernanda fez</li>
 
+
+## Notas
+<li>Implementei otimização de hiperparâmetros no meta model (optuna)</li>
+<li>Implementei validação cruzada no meta modelo e nos modelos base</li>
+<li>Normalização dos dados antes do DBSCAN</li>
+   <li> Reaproveitar o transform </li>
+   <li> Dar uma olhada no HDBSCAN</li>
+<li>Caso dos ruídos no DBSCAN </li>
+<li>Rodei os experimentos para powersupply e para elect com o conjunto de métricas da Fernanda e o meu </li>
+<li>Algo estranho no cálculo do MSE</li>
+   <li> Simplesmente calculei errado</li>
+<li>O que eu poderia ter feito para ter segurança com os cálculos?</li>
+<li>Conversa da SLM</li>
+<li> 15/08, às 8:00h</li>

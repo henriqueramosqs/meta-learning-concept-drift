@@ -8,7 +8,7 @@ class DDMDetector:
         feature_cols (list): Lista de colunas a serem monitoradas.
         hddma_params (dict): Parâmetros do DDM (ex: drift_confidence=0.001).
     """
-    def __init__(self, feature_cols: list, ddm_params: dict = {}):
+    def __init__(self, feature_cols: list=[], ddm_params: dict = {}):
         self.feature_cols = feature_cols
         self.detectors = {
             col: DDM(**ddm_params) for col in feature_cols

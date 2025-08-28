@@ -8,7 +8,7 @@ class ADWINDetector():
         feature_cols (list): Lista de colunas a serem monitoradas.
         adwin_params (dict): Parâmetros do ADWIN (ex: delta=0.002).
     """
-    def __init__(self, feature_cols: list, adwin_params: dict = {}):
+    def __init__(self, feature_cols: list=[], adwin_params: dict = {}):
         self.feature_cols = feature_cols
         self.detectors = {
             col: ADWIN(**adwin_params) for col in feature_cols

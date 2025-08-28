@@ -9,8 +9,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 import lightgbm as ltb
 from .mfes_extractors  import PsiCalculator, Udetector, DomainClassifier, OmvPht
+from .mfes_extractors  import ADWINDetector, KSWINDetector, HDDMADetector, HDDMWDetector,KSWINDetector,DDMDetector
 from .mfes_extractors import StatsMFesExtractor, DBSCANMfesExtractor, SqsiCalculator,KmeansMfesExtractor
-from eval.evaluator import Evaluator
+from eval import Evaluator
 from data.data_loader import DataLoader
 from data.utils.eda import EDA
 from .meta_data_manager import MetaDataManager
@@ -58,6 +59,7 @@ class MetaLearner():
 
     def _fit_mfes(self,df:pd.DataFrame)->pd.DataFrame:
         features = df.rename(columns={"class":"prediction"})
+        feature_cols = features.columns
         pred_proba = self.base_model.predict_proba(features.drop("prediction",axis=1))
         score_cols = []
         for idx, pred in enumerate(pred_proba.T):
@@ -69,7 +71,6 @@ class MetaLearner():
             DBSCANMfesExtractor().fit(),
             KmeansMfesExtractor().fit()
         ]
-
         if self.has_dft_mfes:
             self.mfes_extractors += [
                 PsiCalculator().fit(features),
@@ -77,6 +78,11 @@ class MetaLearner():
                 OmvPht(score_cols=score_cols).fit(features),
                 SqsiCalculator(score_cols=score_cols).fit(features),
                 Udetector(prediction_col="prediction").fit(features),
+                KSWINDetector(feature_cols).fit(features),
+                ADWINDetector(feature_cols).fit(features),
+                DDMDetector(feature_cols).fit(features),
+                HDDMADetector(feature_cols).fit(features),
+                HDDMWDetector(feature_cols).fit(features)
             ]
         
 

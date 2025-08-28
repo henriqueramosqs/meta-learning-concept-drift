@@ -9,15 +9,15 @@ from kneed import KneeLocator
 
 DBSCAN_PARAMS = {
     'eps': 0.3,
-    'min_samples': 10,
+    'min_samples': 5,
 }
 
 class DBSCANMfesExtractor(MfeExtractor,ClustringMetric):
     def fit(self):
+        self.transform = None
         return self
     
     def _train(self,df:pd.DataFrame)-> (DBSCAN|int) :
-        df_size = df.shape[0]
         dbscan = DBSCAN(**DBSCAN_PARAMS).fit(df)
         return dbscan
     
@@ -29,12 +29,29 @@ class DBSCANMfesExtractor(MfeExtractor,ClustringMetric):
             centroids.append(centroid)
         return np.array(centroids)
 
+
+    def _handle_all_noise_case(self, df_shape):
+        return {
+            'dbscan_n_clusters': 0, 
+            'dbscan_noise_proportion': 1.0,
+            'dbscan_compactness': 0.0,
+            'dbscan_connectivity': 0.0,
+            'dbscan_min_size_dist': 0.0,    
+            'dbscan_max_size_dist': 0.0,    
+            'dbscan_mean_size_dist': 0.0,
+        }
+
+
     def evaluate(self,df:pd.DataFrame)->dict:
-        
+        df = df.select_dtypes(include=np.number)
+        df = StandardScaler().fit_transform(df)  
         dbscan = self._train(df)
         labels = dbscan.labels_
-        n_clusters = len(set(labels) - {1})
+        n_clusters = len(set(labels) - {-1})
         noise_prop = list(labels).count(-1) / df.shape[0]
+        if len(np.unique(labels)) == 1 and np.unique(labels)[0] == -1:
+                return self._handle_all_noise_case(df.shape)
+        
         cluster_centers = self._get_centroids(df,dbscan,labels,n_clusters)
         max_size_dist, min_size_dist, mean_size_dist = self._get_size_dist_metrics(labels)
         

@@ -2,7 +2,7 @@ from frouros.detectors.concept_drift import KSWIN, KSWINConfig
 import pandas as pd
 
 class KSWINDetector:
-    def __init__(self, feature_cols: list, window_size: int = 100, alpha: float = 0.05):
+    def __init__(self, feature_cols: list =[], window_size: int = 100, alpha: float = 0.05):
         """Inicializa detectores KSWIN para múltiplas colunas.
         
 A

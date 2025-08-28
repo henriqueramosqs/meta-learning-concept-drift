@@ -31,8 +31,8 @@ hyperparams ={
 }
 datasets = [
     "electricity",
-    "Rialto",
     "powersupply",
+    "Rialto",
     "airlines"
     ]
 include_dft = [True, False]
@@ -43,17 +43,18 @@ ETA = 200
 STEP = 30 
 TARGET_DELAY = 500
 
-for base_model in base_models:
-    base_model_name = base_model.__name__
-    for dataset in datasets: 
+for dataset in datasets:
+    for base_model in base_models:
+        base_model_name = base_model.__name__
         for has_dft in include_dft:
-
+        
+            df =  DataLoader.load_data(f"real/{dataset}.arff")
             FILE_NAME = f"basemodel: {base_model_name}  - dataset: {dataset}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"
             FILE_NAME
 
-            print("name\n",base_model_name)
+            print(f"Rodando para {FILE_NAME}")
             base_model_params = {"verbose": True, "basis_model": base_model, "hyperparameters": hyperparams[base_model_name]}
             meta_learner = MetaLearner( 
                 base_model_params=base_model_params,
@@ -108,5 +109,5 @@ for base_model in base_models:
 
             mb.to_csv(f"metabase/{FILE_NAME}.csv", index=False)
         
-            with open(f"teste.pickle", "wb") as handle:
+            with open(f"{FILE_NAME}.pickle", "wb") as handle:
                 pickle.dump(meta_learner.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)

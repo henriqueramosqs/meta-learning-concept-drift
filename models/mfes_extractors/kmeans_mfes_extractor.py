@@ -33,6 +33,8 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
             inertias.append(kmeans.inertia_)
             models.append(kmeans)
         knee = KneeLocator(range(1, max_clusters+1), inertias, curve="convex", direction="decreasing").knee
+        if(knee is None):
+            knee = max_clusters
         return (models[knee-1],knee)
 
 
