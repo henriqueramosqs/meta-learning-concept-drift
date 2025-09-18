@@ -44,7 +44,11 @@ class DBSCANMfesExtractor(MfeExtractor,ClustringMetric):
 
     def evaluate(self,df:pd.DataFrame)->dict:
         df = df.select_dtypes(include=np.number)
-        df = StandardScaler().fit_transform(df)  
+
+        if not hasattr(self, 'scaler'):
+            self.scaler = StandardScaler().fit(df)
+        
+        df = self.scaler.transform(df)
         dbscan = self._train(df)
         labels = dbscan.labels_
         n_clusters = len(set(labels) - {-1})

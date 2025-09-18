@@ -1,0 +1,1141 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007ca88aef6106, pid=1967127, tid=1976274
+#
+# JRE version: OpenJDK Runtime Environment (21.0.8+9) (build 21.0.8+9-Ubuntu-0ubuntu124.04.1)
+# Java VM: OpenJDK 64-Bit Server VM (21.0.8+9-Ubuntu-0ubuntu124.04.1, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [lib_lightgbm.so+0x2f6106]  json11_internal_lightgbm::Json::type() const+0x6
+#
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/share/apport/apport -p%p -s%s -c%c -d%d -P%P -u%u -g%g -F%F -- %E" (or dumping to /home/henriqueramos_qs/meta-learning-concept-drift/core.1967127)
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-21
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx8g -Xss10M 
+
+Host: Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz, 96 cores, 187G, Ubuntu 24.04.3 LTS
+Time: Wed Sep  3 09:13:19 2025 -03 elapsed time: 48.536082 seconds (0d 0h 0m 48s)
+
+---------------  T H R E A D  ---------------
+
+Current thread is native thread
+
+Stack: [0x00007ca6ad9d7000,0x00007ca6ae1d7000],  sp=0x00007ca6ae1d4368,  free space=8180k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [lib_lightgbm.so+0x2f6106]  json11_internal_lightgbm::Json::type() const+0x6
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 128 (SI_KERNEL), si_addr: 0x0000000000000000
+
+Registers:
+RAX=0x5d31303030303030, RBX=0x00007ca7bc090cc8, RCX=0x0000000000000000, RDX=0x0000000000000000
+RSP=0x00007ca6ae1d4368, RBP=0x00007ca604001ef0, RSI=0x00007ca7bc090cc8, RDI=0x00007ca79c12c930
+R8 =0x0000000000000000, R9 =0x0000000000000000, R10=0x0000000000000342, R11=0x00007ca88b481498
+R12=0x00007ca58401a850, R13=0x00007ca6ae1d4590, R14=0x00007ca6ae1d45a0, R15=0x00007ca6ae1d4800
+RIP=0x00007ca88aef6106, EFLAGS=0x0000000000010202, CSGSFS=0x002b000000000033, ERR=0x0000000000000000
+  TRAPNO=0x000000000000000d
+
+XMM[0]=0x0000000000000000 0x0000000000000000
+XMM[1]=0x0000000000000000 0x0000000000000000
+XMM[2]=0x0000000000000000 0x0000000000000000
+XMM[3]=0x0000000000000000 0x3ff0000000000000
+XMM[4]=0x0000000000000000 0x0000000000000000
+XMM[5]=0x0000000000000000 0x0000000000000000
+XMM[6]=0x0000000000000000 0x00007ca5c4044f38
+XMM[7]=0x0000000000000000 0x0000000000000000
+XMM[8]=0x00007ca88b2267c0 0x00007ca88b222170
+XMM[9]=0x0000000000000000 0x0000000000000000
+XMM[10]=0x0000000000000041 0x0000000000000007
+XMM[11]=0x00000000000000ac 0x0000000000000037
+XMM[12]=0x0000000000000000 0x0000000000000119
+XMM[13]=0x0000000000000000 0x0000000000000000
+XMM[14]=0x0000000000000000 0x0000000000000000
+XMM[15]=0x0000000000000000 0x0000000000000000
+  MXCSR=0x00001fa2
+
+
+Top of Stack: (sp=0x00007ca6ae1d4368)
+0x00007ca6ae1d4368:   00007ca88afd79f9 00007ca6ae1d4590
+0x00007ca6ae1d4378:   00007ca7bc090a60 00007ca88b47e208
+0x00007ca6ae1d4388:   00007ca88adc646b 00007ca6ae1d43d0
+0x00007ca6ae1d4398:   00007ca88ae9542c 00007ca6c8aa0d30
+0x00007ca6ae1d43a8:   000000000000000e 00000000ffffffff
+0x00007ca6ae1d43b8:   00007ca58400e580 00007ca6ae1d4600
+0x00007ca6ae1d43c8:   00007ca6ae1d4490 00007ca6ae1d44d0
+0x00007ca6ae1d43d8:   00007ca88ad715da 00007ca6c8bf9000
+0x00007ca6ae1d43e8:   00007ca6ae1d44a0 00007ca6ae1d44f0
+0x00007ca6ae1d43f8:   00007ca6ae1d4510 00007ca6ae1d44e0
+0x00007ca6ae1d4408:   00007ca6ae1d4510 0000000000000000
+0x00007ca6ae1d4418:   00007ca6ae1d4500 00007ca6ae1d44c0
+0x00007ca6ae1d4428:   00007ca58401f270 00007ca6ae1d44c0
+0x00007ca6ae1d4438:   00007ca9e0aac1d5 0000000000000000
+0x00007ca6ae1d4448:   00000000081c1400 00007ca600002000
+0x00007ca6ae1d4458:   00000007ca584037 0000000000000007
+0x00007ca6ae1d4468:   0000000000000003 00007ca584000090
+0x00007ca6ae1d4478:   0000000000000020 00007ca6ae1d4490
+0x00007ca6ae1d4488:   000000000000000a 6973736572676572
+0x00007ca6ae1d4498:   0000000000006e6f 00007ca6ae1d44b0
+0x00007ca6ae1d44a8:   0000000000000020 0000000000000000
+0x00007ca6ae1d44b8:   00007ca88ad53b67 00007ca6ae1d44e0
+0x00007ca6ae1d44c8:   000000000000000e 00007ca584003bb0
+0x00007ca6ae1d44d8:   00007ca584003bb0 0000000000000000
+0x00007ca6ae1d44e8:   0000000000000068 00007ca6ae1d45e0
+0x00007ca6ae1d44f8:   00007ca88ad7a9c5 0000000000000000
+0x00007ca6ae1d4508:   00007ca584036100 00007ca6ae1d4550
+0x00007ca6ae1d4518:   00007ca6ae1d46d0 00007ca6ae1d4820
+0x00007ca6ae1d4528:   00007ca58401ada8 00007ca6ae1d4820
+0x00007ca6ae1d4538:   00007ca88ad7a9c5 00007ca6ae1d4690
+0x00007ca6ae1d4548:   00007ca88ae7fcbf 0000000000000000
+0x00007ca6ae1d4558:   00007ca6ae1d46d0 00007ca6ae1d4820 
+
+Instructions: (pc=0x00007ca88aef6106)
+0x00007ca88aef6006:   48 10 4c 89 55 00 48 89 45 08 48 83 c4 08 5b 5d
+0x00007ca88aef6016:   c3 90 0f 1f 84 00 00 00 00 00 55 48 89 fd bf 48
+0x00007ca88aef6026:   00 00 00 53 48 89 f3 48 83 ec 08 e8 2a 78 e3 ff
+0x00007ca88aef6036:   48 8b 0d bb d3 58 00 48 8b 35 b4 bc 58 00 48 8b
+0x00007ca88aef6046:   15 75 bc 4e 00 48 8b 7b 10 48 83 c1 10 48 83 c6
+0x00007ca88aef6056:   10 48 89 50 08 48 89 08 48 89 70 10 48 85 ff 74
+0x00007ca88aef6066:   71 4c 8b 53 20 44 8b 4b 08 48 8d 4b 08 4c 8d 58
+0x00007ca88aef6076:   20 48 8b 53 28 66 48 0f 6e c7 0f 16 43 18 44 89
+0x00007ca88aef6086:   48 20 4c 89 50 38 0f 11 40 28 4c 89 5f 08 48 89
+0x00007ca88aef6096:   50 40 48 c7 43 10 00 00 00 00 48 89 4b 18 48 89
+0x00007ca88aef60a6:   4b 20 48 c7 43 28 00 00 00 00 48 8b 1d 69 bf 58
+0x00007ca88aef60b6:   00 48 8d 70 10 48 89 45 08 48 89 75 00 48 83 c3
+0x00007ca88aef60c6:   10 48 89 58 10 48 83 c4 08 5b 5d c3 66 0f 1f 44
+0x00007ca88aef60d6:   00 00 4c 8d 40 20 c7 40 20 00 00 00 00 48 c7 40
+0x00007ca88aef60e6:   28 00 00 00 00 4c 89 40 30 4c 89 40 38 48 c7 40
+0x00007ca88aef60f6:   40 00 00 00 00 eb b3 90 66 90 48 8b 3f 48 8b 07
+0x00007ca88aef6106:   ff 20 0f 1f 84 00 00 00 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6116:   ff 60 20 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6126:   ff 60 28 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6136:   ff 60 30 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6146:   ff 60 38 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6156:   ff 60 40 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6166:   ff 60 50 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6176:   ff 60 48 90 66 0f 1f 44 00 00 48 8b 3f 48 8b 07
+0x00007ca88aef6186:   ff 60 58 90 66 0f 1f 44 00 00 41 54 55 48 89 fd
+0x00007ca88aef6196:   53 48 8b 3f 48 39 3e 74 39 48 8b 07 48 89 f3 ff
+0x00007ca88aef61a6:   10 48 8b 3b 41 89 c4 48 8b 07 ff 10 41 39 c4 74
+0x00007ca88aef61b6:   09 5b 31 c0 5d 41 5c c3 66 90 48 8b 7d 00 48 8b
+0x00007ca88aef61c6:   33 5b 5d 48 8b 17 41 5c 48 8b 42 08 ff e0 0f 1f
+0x00007ca88aef61d6:   40 00 5b b8 01 00 00 00 5d 41 5c c3 66 66 2e 0f
+0x00007ca88aef61e6:   1f 84 00 00 00 00 00 0f 1f 00 41 54 55 48 89 fd
+0x00007ca88aef61f6:   53 48 8b 3f 48 39 3e 74 51 48 8b 07 48 89 f3 ff 
+
+
+
+---------------  P R O C E S S  ---------------
+
+VM state: at safepoint (shutting down)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ca888326e10] Threads_lock - owner thread: 0x000000000814ca00
+[0x00007ca888326d10] Heap_lock - owner thread: 0x00007ca7e4009110
+
+Heap address: 0x0000000600000000, size: 8192 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x00007ca7ff000000-0x00007ca7ffca0000-0x00007ca7ffca0000), size 13238272, SharedBaseAddress: 0x00007ca7ff000000, ArchiveRelocationMode: 1.
+Compressed class space mapped at: 0x00007ca800000000-0x00007ca840000000, reserved size: 1073741824
+Narrow klass base: 0x00007ca7ff000000, Narrow klass shift: 0, Narrow klass range: 0x100000000
+
+GC Precious Log:
+<Skipped>
+
+Heap:
+ garbage-first heap   total 40960K, used 23598K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 2 young (8192K), 0 survivors (0K)
+ Metaspace       used 3911K, committed 4032K, reserved 1114112K
+  class space    used 389K, committed 448K, reserved 1048576K
+
+Heap Regions: E=young(eden), S=young(survivor), O=old, HS=humongous(starts), HC=humongous(continues), CS=collection set, F=free, TAMS=top-at-mark-start, PB=parsable bottom
+|   0|0x0000000600000000, 0x0000000600400000, 0x0000000600400000|100%|HS|  |TAMS 0x0000000600000000| PB 0x0000000600000000| Untracked 
+|   1|0x0000000600400000, 0x0000000600800000, 0x0000000600800000|100%| O|  |TAMS 0x0000000600400000| PB 0x0000000600400000| Untracked 
+|   2|0x0000000600800000, 0x0000000600bffff0, 0x0000000600c00000| 99%| O|  |TAMS 0x0000000600800000| PB 0x0000000600800000| Untracked 
+|   3|0x0000000600c00000, 0x0000000601000000, 0x0000000601000000|100%|HS|  |TAMS 0x0000000600c00000| PB 0x0000000600c00000| Untracked 
+|   4|0x0000000601000000, 0x000000060130b970, 0x0000000601400000| 76%| O|  |TAMS 0x0000000601000000| PB 0x0000000601000000| Untracked 
+|   5|0x0000000601400000, 0x0000000601400000, 0x0000000601800000|  0%| F|  |TAMS 0x0000000601400000| PB 0x0000000601400000| Untracked 
+|   6|0x0000000601800000, 0x0000000601800000, 0x0000000601c00000|  0%| F|  |TAMS 0x0000000601800000| PB 0x0000000601800000| Untracked 
+|   7|0x0000000601c00000, 0x0000000601c00000, 0x0000000602000000|  0%| F|  |TAMS 0x0000000601c00000| PB 0x0000000601c00000| Untracked 
+|   8|0x0000000602000000, 0x00000006020667b8, 0x0000000602400000| 10%| E|  |TAMS 0x0000000602000000| PB 0x0000000602000000| Complete 
+|   9|0x0000000602400000, 0x0000000602800000, 0x0000000602800000|100%| E|CS|TAMS 0x0000000602400000| PB 0x0000000602400000| Complete 
+
+Card table byte_map: [0x00007ca869600000,0x00007ca86a600000] _byte_map_base: 0x00007ca866600000
+
+Marking Bits: (CMBitMap*) 0x0000000007c371d0
+ Bits: [0x00007ca861600000, 0x00007ca869600000)
+
+Polling page: 0x00007ca9df6ae000
+
+Metaspace:
+
+Usage:
+  Non-class:      3.44 MB used.
+      Class:    389.25 KB used.
+       Both:      3.82 MB used.
+
+Virtual space:
+  Non-class space:       64.00 MB reserved,       3.50 MB (  5%) committed,  1 nodes.
+      Class space:        1.00 GB reserved,     448.00 KB ( <1%) committed,  1 nodes.
+             Both:        1.06 GB reserved,       3.94 MB ( <1%) committed. 
+
+Chunk freelists:
+   Non-Class:  10.94 MB
+       Class:  15.56 MB
+        Both:  26.50 MB
+
+MaxMetaspaceSize: unlimited
+CompressedClassSpaceSize: 1.00 GB
+Initial GC threshold: 21.00 MB
+Current GC threshold: 21.00 MB
+CDS: on
+ - commit_granule_bytes: 65536.
+ - commit_granule_words: 8192.
+ - virtual_space_node_default_size: 8388608.
+ - enlarge_chunks_in_place: 1.
+ - use_allocation_guard: 0.
+
+
+Internal statistics:
+
+num_allocs_failed_limit: 0.
+num_arena_births: 74.
+num_arena_deaths: 0.
+num_vsnodes_births: 2.
+num_vsnodes_deaths: 0.
+num_space_committed: 63.
+num_space_uncommitted: 0.
+num_chunks_returned_to_freelist: 0.
+num_chunks_taken_from_freelist: 134.
+num_chunk_merges: 0.
+num_chunk_splits: 94.
+num_chunks_enlarged: 63.
+num_inconsistent_stats: 0.
+
+CodeHeap 'non-profiled nmethods': size=118592Kb used=800Kb max_used=800Kb free=117791Kb
+ bounds [0x00007ca877230000, 0x00007ca8774a0000, 0x00007ca87e600000]
+CodeHeap 'profiled nmethods': size=118588Kb used=1995Kb max_used=1995Kb free=116592Kb
+ bounds [0x00007ca86f600000, 0x00007ca86f870000, 0x00007ca8769cf000]
+CodeHeap 'non-nmethods': size=8580Kb used=1460Kb max_used=4427Kb free=7119Kb
+ bounds [0x00007ca8769cf000, 0x00007ca876e3f000, 0x00007ca877230000]
+CodeCache: size=245760Kb, used=4255Kb, max_used=7222Kb, free=241502Kb
+ total_blobs=1745, nmethods=1279, adapters=371, full_count=0
+Compilation: enabled, stopped_count=0, restarted_count=0
+
+Compilation events (20 events):
+Event: 7.724 Thread 0x00007ca7d4179c50 1436       3       java.lang.Thread::interrupted (7 bytes)
+Event: 7.724 Thread 0x000000000815e000 1437       3       java.lang.Thread::getAndClearInterrupt (19 bytes)
+Event: 7.725 Thread 0x000000000815e000 nmethod 1437 0x00007ca86f7efd10 code [0x00007ca86f7efec0, 0x00007ca86f7f0048]
+Event: 7.725 Thread 0x00007ca7d4179c50 nmethod 1436 0x00007ca86f7f0110 code [0x00007ca86f7f02c0, 0x00007ca86f7f0528]
+Event: 16.490 Thread 0x000000000815e000 1438       3       java.lang.ref.ReferenceQueue::poll0 (65 bytes)
+Event: 16.490 Thread 0x000000000815e000 nmethod 1438 0x00007ca86f7f0610 code [0x00007ca86f7f07e0, 0x00007ca86f7f0cf0]
+Event: 31.016 Thread 0x000000000815e000 1442       3       java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject::canReacquire (38 bytes)
+Event: 31.016 Thread 0x000000000815e000 nmethod 1442 0x00007ca86f7f0e10 code [0x00007ca86f7f0fc0, 0x00007ca86f7f1318]
+Event: 31.016 Thread 0x000000000815e000 1443       3       java.util.concurrent.locks.LockSupport::setBlocker (12 bytes)
+Event: 31.016 Thread 0x000000000815e000 nmethod 1443 0x00007ca86f7f1490 code [0x00007ca86f7f1640, 0x00007ca86f7f1840]
+Event: 31.016 Thread 0x000000000815e000 1444       3       jdk.internal.misc.Unsafe::putReferenceOpaque (9 bytes)
+Event: 31.016 Thread 0x000000000815e000 nmethod 1444 0x00007ca86f7f1910 code [0x00007ca86f7f1aa0, 0x00007ca86f7f1c00]
+Event: 31.270 Thread 0x000000000815e000 1446       3       java.lang.Thread::isVirtual (5 bytes)
+Event: 31.270 Thread 0x000000000815e000 nmethod 1446 0x00007ca86f7f1c90 code [0x00007ca86f7f1e20, 0x00007ca86f7f2020]
+Event: 48.168 Thread 0x000000000815c700 1447       4       jdk.internal.jimage.ImageStringsReader::hashCode (33 bytes)
+Event: 48.183 Thread 0x000000000815c700 nmethod 1447 0x00007ca8772f7810 code [0x00007ca8772f79c0, 0x00007ca8772f7f80]
+Event: 48.193 Thread 0x000000000815e000 1448       3       org.jpype.manager.TypeManager$Destroyer::add (101 bytes)
+Event: 48.193 Thread 0x000000000815e000 nmethod 1448 0x00007ca86f7f2090 code [0x00007ca86f7f2280, 0x00007ca86f7f2700]
+Event: 48.193 Thread 0x000000000815e000 1449       3       org.jpype.manager.TypeManager$Destroyer::add (39 bytes)
+Event: 48.193 Thread 0x000000000815e000 nmethod 1449 0x00007ca86f7f2910 code [0x00007ca86f7f2ac0, 0x00007ca86f7f2cd0]
+
+GC Heap History (18 events):
+Event: 0.135 GC heap before
+{Heap before GC invocations=0 (full 0):
+ garbage-first heap   total 2101248K, used 17458K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 4 young (16384K), 0 survivors (0K)
+ Metaspace       used 1407K, committed 1536K, reserved 1114112K
+  class space    used 125K, committed 192K, reserved 1048576K
+}
+Event: 0.151 GC heap after
+{Heap after GC invocations=1 (full 1):
+ garbage-first heap   total 81920K, used 6159K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 1407K, committed 1536K, reserved 1114112K
+  class space    used 125K, committed 192K, reserved 1048576K
+}
+Event: 0.260 GC heap before
+{Heap before GC invocations=1 (full 1):
+ garbage-first heap   total 81920K, used 10255K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 2 young (8192K), 0 survivors (0K)
+ Metaspace       used 1573K, committed 1664K, reserved 1114112K
+  class space    used 131K, committed 192K, reserved 1048576K
+}
+Event: 0.272 GC heap after
+{Heap after GC invocations=2 (full 2):
+ garbage-first heap   total 40960K, used 6517K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 1573K, committed 1664K, reserved 1114112K
+  class space    used 131K, committed 192K, reserved 1048576K
+}
+Event: 0.444 GC heap before
+{Heap before GC invocations=2 (full 2):
+ garbage-first heap   total 40960K, used 18805K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 3 young (12288K), 0 survivors (0K)
+ Metaspace       used 2134K, committed 2304K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.448 GC heap after
+{Heap after GC invocations=3 (full 2):
+ garbage-first heap   total 40960K, used 8533K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 1 young (4096K), 1 survivors (4096K)
+ Metaspace       used 2134K, committed 2304K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.474 GC heap before
+{Heap before GC invocations=3 (full 2):
+ garbage-first heap   total 40960K, used 20821K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 4 young (16384K), 1 survivors (4096K)
+ Metaspace       used 2156K, committed 2304K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.481 GC heap after
+{Heap after GC invocations=4 (full 2):
+ garbage-first heap   total 40960K, used 8966K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 1 young (4096K), 1 survivors (4096K)
+ Metaspace       used 2156K, committed 2304K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.506 GC heap before
+{Heap before GC invocations=4 (full 2):
+ garbage-first heap   total 40960K, used 21254K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 4 young (16384K), 1 survivors (4096K)
+ Metaspace       used 2206K, committed 2368K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.515 GC heap after
+{Heap after GC invocations=5 (full 2):
+ garbage-first heap   total 40960K, used 9955K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 1 young (4096K), 1 survivors (4096K)
+ Metaspace       used 2206K, committed 2368K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.618 GC heap before
+{Heap before GC invocations=5 (full 2):
+ garbage-first heap   total 40960K, used 9955K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 2 young (8192K), 1 survivors (4096K)
+ Metaspace       used 2218K, committed 2368K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.664 GC heap after
+{Heap after GC invocations=6 (full 3):
+ garbage-first heap   total 40960K, used 10280K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 2218K, committed 2368K, reserved 1114112K
+  class space    used 183K, committed 256K, reserved 1048576K
+}
+Event: 0.897 GC heap before
+{Heap before GC invocations=6 (full 3):
+ garbage-first heap   total 40960K, used 18472K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 2 young (8192K), 0 survivors (0K)
+ Metaspace       used 2844K, committed 3072K, reserved 1114112K
+  class space    used 256K, committed 384K, reserved 1048576K
+}
+Event: 0.964 GC heap after
+{Heap after GC invocations=7 (full 4):
+ garbage-first heap   total 40960K, used 19254K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 2844K, committed 3072K, reserved 1114112K
+  class space    used 256K, committed 384K, reserved 1048576K
+}
+Event: 1.595 GC heap before
+{Heap before GC invocations=7 (full 4):
+ garbage-first heap   total 40960K, used 19254K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 1 young (4096K), 0 survivors (0K)
+ Metaspace       used 3117K, committed 3264K, reserved 1114112K
+  class space    used 291K, committed 384K, reserved 1048576K
+}
+Event: 1.663 GC heap after
+{Heap after GC invocations=8 (full 5):
+ garbage-first heap   total 40960K, used 19501K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 3117K, committed 3264K, reserved 1114112K
+  class space    used 291K, committed 384K, reserved 1048576K
+}
+Event: 2.767 GC heap before
+{Heap before GC invocations=8 (full 5):
+ garbage-first heap   total 40960K, used 19501K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 1 young (4096K), 0 survivors (0K)
+ Metaspace       used 3132K, committed 3264K, reserved 1114112K
+  class space    used 291K, committed 384K, reserved 1048576K
+}
+Event: 2.832 GC heap after
+{Heap after GC invocations=9 (full 6):
+ garbage-first heap   total 40960K, used 19502K [0x0000000600000000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+ Metaspace       used 3132K, committed 3264K, reserved 1114112K
+  class space    used 291K, committed 384K, reserved 1048576K
+}
+
+Dll operation events (7 events):
+Event: 0.014 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+Event: 0.039 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+Event: 0.042 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+Event: 0.056 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libzip.so
+Event: 0.078 Loaded shared library /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+Event: 0.097 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libjimage.so
+Event: 0.688 Loaded shared library /usr/lib/jvm/java-21-openjdk-amd64/lib/libnet.so
+
+Deoptimization events (20 events):
+Event: 1.857 Thread 0x0000000007c0a840 Uncommon trap: trap_request=0xffffffbe fr.pc=0x00007ca87726834c relative=0x000000000000038c
+Event: 1.857 Thread 0x0000000007c0a840 Uncommon trap: reason=profile_predicate action=maybe_recompile pc=0x00007ca87726834c method=jdk.internal.jimage.ImageStringsReader.stringFromByteBufferMatches(Ljava/nio/ByteBuffer;ILjava/lang/String;I)I @ 19 c2
+Event: 1.857 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca87726834c sp=0x00007ffedaeba880
+Event: 1.857 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a26619 sp=0x00007ffedaeba808 mode 2
+Event: 1.857 Thread 0x0000000007c0a840 Uncommon trap: trap_request=0xffffffbe fr.pc=0x00007ca87726834c relative=0x000000000000038c
+Event: 1.857 Thread 0x0000000007c0a840 Uncommon trap: reason=profile_predicate action=maybe_recompile pc=0x00007ca87726834c method=jdk.internal.jimage.ImageStringsReader.stringFromByteBufferMatches(Ljava/nio/ByteBuffer;ILjava/lang/String;I)I @ 19 c2
+Event: 1.857 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca87726834c sp=0x00007ffedaeba880
+Event: 1.857 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a26619 sp=0x00007ffedaeba808 mode 2
+Event: 2.991 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca86f7b31e5 sp=0x00007ffedaec25b0
+Event: 2.991 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a2714f sp=0x00007ffedaec1ab8 mode 0
+Event: 3.050 Thread 0x0000000007c0a840 Uncommon trap: trap_request=0xffffffc6 fr.pc=0x00007ca8772b11dc relative=0x00000000000026dc
+Event: 3.050 Thread 0x0000000007c0a840 Uncommon trap: reason=bimorphic_or_optimized_type_check action=maybe_recompile pc=0x00007ca8772b11dc method=java.util.HashMap.putVal(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object; @ 91 c2
+Event: 3.050 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca8772b11dc sp=0x00007ffedaec12f0
+Event: 3.050 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a26619 sp=0x00007ffedaec1230 mode 2
+Event: 3.054 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca86f674d65 sp=0x00007ffedaec0d50
+Event: 3.054 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a2714f sp=0x00007ffedaec01a8 mode 0
+Event: 3.077 Thread 0x0000000007c0a840 Uncommon trap: trap_request=0xffffff45 fr.pc=0x00007ca87725cf84 relative=0x0000000000000444
+Event: 3.077 Thread 0x0000000007c0a840 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007ca87725cf84 method=jdk.internal.jimage.ImageStringsReader.stringFromByteBufferMatches(Ljava/nio/ByteBuffer;ILjava/lang/String;I)I @ 48 c2
+Event: 3.077 Thread 0x0000000007c0a840 DEOPT PACKING pc=0x00007ca87725cf84 sp=0x00007ffedaec0df0
+Event: 3.077 Thread 0x0000000007c0a840 DEOPT UNPACKING pc=0x00007ca876a26619 sp=0x00007ffedaec0d88 mode 2
+
+Classes loaded (20 events):
+Event: 48.173 Loading class java/lang/System$Logger$Level
+Event: 48.173 Loading class java/lang/System$Logger$Level done
+Event: 48.173 Loading class jdk/internal/logger/SurrogateLogger
+Event: 48.173 Loading class jdk/internal/logger/SimpleConsoleLogger
+Event: 48.174 Loading class sun/util/logging/PlatformLogger$ConfigurableBridge$LoggerConfiguration
+Event: 48.174 Loading class sun/util/logging/PlatformLogger$ConfigurableBridge$LoggerConfiguration done
+Event: 48.174 Loading class jdk/internal/logger/SimpleConsoleLogger done
+Event: 48.174 Loading class jdk/internal/logger/SurrogateLogger done
+Event: 48.180 Loading class sun/util/logging/PlatformLogger
+Event: 48.181 Loading class sun/util/logging/PlatformLogger done
+Event: 48.181 Loading class sun/util/logging/PlatformLogger$Level
+Event: 48.181 Loading class sun/util/logging/PlatformLogger$Level done
+Event: 48.182 Loading class jdk/internal/event/ThreadSleepEvent
+Event: 48.182 Loading class jdk/internal/event/Event
+Event: 48.182 Loading class jdk/internal/event/Event done
+Event: 48.182 Loading class jdk/internal/event/ThreadSleepEvent done
+Event: 48.194 Loading class java/util/WeakHashMap$KeyIterator
+Event: 48.194 Loading class java/util/WeakHashMap$HashIterator
+Event: 48.194 Loading class java/util/WeakHashMap$HashIterator done
+Event: 48.194 Loading class java/util/WeakHashMap$KeyIterator done
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (9 events):
+Event: 0.080 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fd031e0}: 'int java.lang.invoke.DirectMethodHandle$Holder.invokeStaticInit(java.lang.Object, java.lang.Object)'> (0x000000067fd031e0) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.081 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fd09408}: 'java.lang.Object java.lang.invoke.DirectMethodHandle$Holder.invokeStaticInit(java.lang.Object, int)'> (0x000000067fd09408) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.082 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fd13860}: 'int java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial(java.lang.Object, java.lang.Object, java.lang.Object)'> (0x000000067fd13860) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.084 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fd23768}: 'java.lang.Object java.lang.invoke.DirectMethodHandle$Holder.invokeStatic(java.lang.Object, java.lang.Object, int)'> (0x000000067fd23768) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.085 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fd2ee28}: 'void java.lang.invoke.DelegatingMethodHandle$Holder.delegate(java.lang.Object, java.lang.Object, int, java.lang.Object)'> (0x000000067fd2ee28) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.103 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067fdcd330}: 'java.lang.Object java.lang.invoke.DirectMethodHandle$Holder.invokeInterface(java.lang.Object, java.lang.Object)'> (0x000000067fdcd330) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+Event: 0.103 Thread 0x0000000007c0a840 Exception <a 'java/lang/IncompatibleClassChangeError'{0x000000067fdd05c8}: Found class java.lang.Object, but interface was expected> (0x000000067fdd05c8) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 840]
+Event: 0.126 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067f0c8040}: method resolution failed> (0x000000067f0c8040) 
+thrown [./src/hotspot/share/prims/methodHandles.cpp, line 1144]
+Event: 0.127 Thread 0x0000000007c0a840 Exception <a 'java/lang/NoSuchMethodError'{0x000000067f0d1470}: 'java.lang.Object java.lang.invoke.Invokers$Holder.invokeExact_MT(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)'> (0x000000067f0d1470) 
+thrown [./src/hotspot/share/interpreter/linkResolver.cpp, line 772]
+
+ZGC Phase Switch (0 events):
+No events
+
+VM Operations (20 events):
+Event: 0.515 Executing VM operation: G1CollectForAllocation (G1 Evacuation Pause) done
+Event: 0.618 Executing VM operation: G1CollectFull (System.gc())
+Event: 0.664 Executing VM operation: G1CollectFull (System.gc()) done
+Event: 0.769 Executing VM operation: HandshakeAllThreads (Deoptimize)
+Event: 0.769 Executing VM operation: HandshakeAllThreads (Deoptimize) done
+Event: 0.897 Executing VM operation: G1CollectFull (System.gc())
+Event: 0.964 Executing VM operation: G1CollectFull (System.gc()) done
+Event: 1.103 Executing VM operation: HandshakeAllThreads (Deoptimize)
+Event: 1.103 Executing VM operation: HandshakeAllThreads (Deoptimize) done
+Event: 1.118 Executing VM operation: HandshakeAllThreads (Deoptimize)
+Event: 1.119 Executing VM operation: HandshakeAllThreads (Deoptimize) done
+Event: 1.595 Executing VM operation: G1CollectFull (System.gc())
+Event: 1.663 Executing VM operation: G1CollectFull (System.gc()) done
+Event: 2.767 Executing VM operation: G1CollectFull (System.gc())
+Event: 2.832 Executing VM operation: G1CollectFull (System.gc()) done
+Event: 3.832 Executing VM operation: Cleanup
+Event: 3.832 Executing VM operation: Cleanup done
+Event: 48.190 Executing VM operation: ThreadDump
+Event: 48.190 Executing VM operation: ThreadDump done
+Event: 48.197 Executing VM operation: Exit
+
+Memory protections (20 events):
+Event: 0.037 Protecting memory [0x00007ca84eacc000,0x00007ca84ead0000] with protection modes 0
+Event: 0.037 Protecting memory [0x00007ca84c100000,0x00007ca84c104000] with protection modes 0
+Event: 0.040 Protecting memory [0x00007ca7f9c00000,0x00007ca7f9c04000] with protection modes 0
+Event: 0.041 Protecting memory [0x00007ca7f9200000,0x00007ca7f9204000] with protection modes 0
+Event: 0.046 Protecting memory [0x00007ca7f9100000,0x00007ca7f9104000] with protection modes 0
+Event: 0.046 Protecting memory [0x00007ca7f9000000,0x00007ca7f9004000] with protection modes 0
+Event: 0.046 Protecting memory [0x00007ca7f8f00000,0x00007ca7f8f04000] with protection modes 0
+Event: 0.052 Protecting memory [0x00007ca7f8e00000,0x00007ca7f8e04000] with protection modes 0
+Event: 0.052 Protecting memory [0x00007ca7f8d00000,0x00007ca7f8d04000] with protection modes 0
+Event: 0.088 Protecting memory [0x00007ca9e0c12000,0x00007ca9e0c13000] with protection modes 1
+Event: 0.096 Protecting memory [0x00007ca7f8200000,0x00007ca7f8204000] with protection modes 0
+Event: 0.134 Protecting memory [0x00007ca7f8c00000,0x00007ca7f8c04000] with protection modes 0
+Event: 0.403 Protecting memory [0x00007ca7b3afc000,0x00007ca7b3b00000] with protection modes 0
+Event: 0.468 Protecting memory [0x00007ca7b39fc000,0x00007ca7b3a00000] with protection modes 0
+Event: 0.722 Protecting memory [0x00007ca7b3666000,0x00007ca7b366a000] with protection modes 0
+Event: 3.059 Protecting memory [0x00007ca7f9100000,0x00007ca7f9104000] with protection modes 0
+Event: 3.067 Protecting memory [0x00007ca7f9000000,0x00007ca7f9004000] with protection modes 0
+Event: 3.711 Protecting memory [0x00007ca6c5a95000,0x00007ca6c5a99000] with protection modes 0
+Event: 48.163 Protecting memory [0x00007ca641400000,0x00007ca641404000] with protection modes 0
+Event: 48.181 Protecting memory [0x00007ca640a00000,0x00007ca640a04000] with protection modes 0
+
+Nmethod flushes (20 events):
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f654c10
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f657790
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f65b490
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f65d410
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f660d10
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f66e390
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f66fd10
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f670790
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f675a10
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f67f390
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f695b90
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f697b90
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f6a0510
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f6a2610
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f6a8090
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f6c7690
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f6d6e10
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f770010
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f7a4810
+Event: 2.808 Thread 0x000000000814ca00 flushing  nmethod 0x00007ca86f7b0090
+
+Events (20 events):
+Event: 0.722 Thread 0x000000000815c700 Thread added: 0x00007ca7e0296f10
+Event: 0.966 Thread 0x00007ca7e0296f10 Thread exited: 0x00007ca7e0296f10
+Event: 0.966 Thread 0x00007ca7d003a770 Thread exited: 0x00007ca7d003a770
+Event: 1.803 Thread 0x00007ca7c8070a80 Thread exited: 0x00007ca7c8070a80
+Event: 1.803 Thread 0x00007ca7e00a8560 Thread exited: 0x00007ca7e00a8560
+Event: 1.803 Thread 0x00007ca7d001dab0 Thread exited: 0x00007ca7d001dab0
+Event: 1.803 Thread 0x00007ca7e00a9a40 Thread exited: 0x00007ca7e00a9a40
+Event: 1.803 Thread 0x00007ca7d4026e70 Thread exited: 0x00007ca7d4026e70
+Event: 1.857 Thread 0x00007ca7d4025990 Thread exited: 0x00007ca7d4025990
+Event: 1.858 Thread 0x00007ca7d40244a0 Thread exited: 0x00007ca7d40244a0
+Event: 3.059 Thread 0x000000000815e000 Thread added: 0x00007ca7d4179c50
+Event: 3.067 Thread 0x00007ca7d4179c50 Thread added: 0x00007ca7d0038450
+Event: 3.711 Thread 0x00007ca79c0ff750 Thread added: 0x00007ca79c0ff750
+Event: 7.724 Thread 0x00007ca7d0038450 Thread exited: 0x00007ca7d0038450
+Event: 12.726 Thread 0x00007ca7d4179c50 Thread exited: 0x00007ca7d4179c50
+Event: 48.163 Thread 0x0000000008157940 Thread added: 0x00007ca7e4009110
+Event: 48.181 Thread 0x00007ca7e4009110 Thread added: 0x00007ca7d00118c0
+Event: 48.192 Thread 0x00000000081c1870 Thread exited: 0x00000000081c1870
+Event: 48.195 Thread 0x00007ca7d00118c0 Thread exited: 0x00007ca7d00118c0
+Event: 48.195 Thread 0x00007ca7e4009110 Before exit entered
+
+
+Dynamic libraries:
+00400000-00420000 r--p 00000000 08:05 8391893                            /usr/bin/python3.12
+00420000-00703000 r-xp 00020000 08:05 8391893                            /usr/bin/python3.12
+00703000-00a28000 r--p 00303000 08:05 8391893                            /usr/bin/python3.12
+00a28000-00a29000 r--p 00627000 08:05 8391893                            /usr/bin/python3.12
+00a29000-00ba7000 rw-p 00628000 08:05 8391893                            /usr/bin/python3.12
+00ba7000-00bab000 rw-p 00000000 00:00 0 
+0496c000-0e83b000 rw-p 00000000 00:00 0                                  [heap]
+600000000-602800000 rw-p 00000000 00:00 0 
+602800000-800000000 ---p 00000000 00:00 0 
+7ca574000000-7ca57429c000 rw-p 00000000 00:00 0 
+7ca57429c000-7ca578000000 ---p 00000000 00:00 0 
+7ca578000000-7ca57829d000 rw-p 00000000 00:00 0 
+7ca57829d000-7ca57c000000 ---p 00000000 00:00 0 
+7ca57c000000-7ca57c03e000 rw-p 00000000 00:00 0 
+7ca57c03e000-7ca580000000 ---p 00000000 00:00 0 
+7ca584000000-7ca58429c000 rw-p 00000000 00:00 0 
+7ca58429c000-7ca588000000 ---p 00000000 00:00 0 
+7ca58c000000-7ca58c1be000 rw-p 00000000 00:00 0 
+7ca58c1be000-7ca590000000 ---p 00000000 00:00 0 
+7ca594000000-7ca5941ce000 rw-p 00000000 00:00 0 
+7ca5941ce000-7ca598000000 ---p 00000000 00:00 0 
+7ca59c000000-7ca59c1bf000 rw-p 00000000 00:00 0 
+7ca59c1bf000-7ca5a0000000 ---p 00000000 00:00 0 
+7ca5a4000000-7ca5a429f000 rw-p 00000000 00:00 0 
+7ca5a429f000-7ca5a8000000 ---p 00000000 00:00 0 
+7ca5ac000000-7ca5ac036000 rw-p 00000000 00:00 0 
+7ca5ac036000-7ca5b0000000 ---p 00000000 00:00 0 
+7ca5b4000000-7ca5b41bc000 rw-p 00000000 00:00 0 
+7ca5b41bc000-7ca5b8000000 ---p 00000000 00:00 0 
+7ca5bc000000-7ca5bc1bc000 rw-p 00000000 00:00 0 
+7ca5bc1bc000-7ca5c0000000 ---p 00000000 00:00 0 
+7ca5c4000000-7ca5c41d0000 rw-p 00000000 00:00 0 
+7ca5c41d0000-7ca5c8000000 ---p 00000000 00:00 0 
+7ca5cc000000-7ca5cc29d000 rw-p 00000000 00:00 0 
+7ca5cc29d000-7ca5d0000000 ---p 00000000 00:00 0 
+7ca5d4000000-7ca5d41bd000 rw-p 00000000 00:00 0 
+7ca5d41bd000-7ca5d8000000 ---p 00000000 00:00 0 
+7ca5dc000000-7ca5dc29d000 rw-p 00000000 00:00 0 
+7ca5dc29d000-7ca5e0000000 ---p 00000000 00:00 0 
+7ca5e4000000-7ca5e42a0000 rw-p 00000000 00:00 0 
+7ca5e42a0000-7ca5e8000000 ---p 00000000 00:00 0 
+7ca5ec000000-7ca5ec1bf000 rw-p 00000000 00:00 0 
+7ca5ec1bf000-7ca5f0000000 ---p 00000000 00:00 0 
+7ca5f4000000-7ca5f429c000 rw-p 00000000 00:00 0 
+7ca5f429c000-7ca5f8000000 ---p 00000000 00:00 0 
+7ca5fc000000-7ca5fc031000 rw-p 00000000 00:00 0 
+7ca5fc031000-7ca600000000 ---p 00000000 00:00 0 
+7ca604000000-7ca6041d3000 rw-p 00000000 00:00 0 
+7ca6041d3000-7ca608000000 ---p 00000000 00:00 0 
+7ca60c000000-7ca60c1bc000 rw-p 00000000 00:00 0 
+7ca60c1bc000-7ca610000000 ---p 00000000 00:00 0 
+7ca614000000-7ca61429a000 rw-p 00000000 00:00 0 
+7ca61429a000-7ca618000000 ---p 00000000 00:00 0 
+7ca61c000000-7ca61c1bb000 rw-p 00000000 00:00 0 
+7ca61c1bb000-7ca620000000 ---p 00000000 00:00 0 
+7ca624000000-7ca62429d000 rw-p 00000000 00:00 0 
+7ca62429d000-7ca628000000 ---p 00000000 00:00 0 
+7ca62c000000-7ca62c1bd000 rw-p 00000000 00:00 0 
+7ca62c1bd000-7ca630000000 ---p 00000000 00:00 0 
+7ca634000000-7ca63403c000 rw-p 00000000 00:00 0 
+7ca63403c000-7ca638000000 ---p 00000000 00:00 0 
+7ca63c000000-7ca63c29c000 rw-p 00000000 00:00 0 
+7ca63c29c000-7ca640000000 ---p 00000000 00:00 0 
+7ca641400000-7ca641404000 ---p 00000000 00:00 0 
+7ca641404000-7ca641e00000 rw-p 00000000 00:00 0 
+7ca6427fd000-7ca6427fe000 ---p 00000000 00:00 0 
+7ca6427fe000-7ca642ffe000 rw-p 00000000 00:00 0 
+7ca642ffe000-7ca642fff000 ---p 00000000 00:00 0 
+7ca642fff000-7ca6437ff000 rw-p 00000000 00:00 0 
+7ca6437ff000-7ca643800000 ---p 00000000 00:00 0 
+7ca643800000-7ca644000000 rw-p 00000000 00:00 0 
+7ca644000000-7ca64429c000 rw-p 00000000 00:00 0 
+7ca64429c000-7ca648000000 ---p 00000000 00:00 0 
+7ca6487f9000-7ca6487fa000 ---p 00000000 00:00 0 
+7ca6487fa000-7ca648ffa000 rw-p 00000000 00:00 0 
+7ca648ffa000-7ca648ffb000 ---p 00000000 00:00 0 
+7ca648ffb000-7ca6497fb000 rw-p 00000000 00:00 0 
+7ca6497fb000-7ca6497fc000 ---p 00000000 00:00 0 
+7ca6497fc000-7ca649ffc000 rw-p 00000000 00:00 0 
+7ca649ffc000-7ca649ffd000 ---p 00000000 00:00 0 
+7ca649ffd000-7ca64a7fd000 rw-p 00000000 00:00 0 
+7ca64a7fd000-7ca64a7fe000 ---p 00000000 00:00 0 
+7ca64a7fe000-7ca64affe000 rw-p 00000000 00:00 0 
+7ca64affe000-7ca64afff000 ---p 00000000 00:00 0 
+7ca64afff000-7ca64b7ff000 rw-p 00000000 00:00 0 
+7ca64b7ff000-7ca64b800000 ---p 00000000 00:00 0 
+7ca64b800000-7ca64c000000 rw-p 00000000 00:00 0 
+7ca64c000000-7ca64c1bc000 rw-p 00000000 00:00 0 
+7ca64c1bc000-7ca650000000 ---p 00000000 00:00 0 
+7ca6507f9000-7ca6507fa000 ---p 00000000 00:00 0 
+7ca6507fa000-7ca650ffa000 rw-p 00000000 00:00 0 
+7ca650ffa000-7ca650ffb000 ---p 00000000 00:00 0 
+7ca650ffb000-7ca6517fb000 rw-p 00000000 00:00 0 
+7ca6517fb000-7ca6517fc000 ---p 00000000 00:00 0 
+7ca6517fc000-7ca651ffc000 rw-p 00000000 00:00 0 
+7ca651ffc000-7ca651ffd000 ---p 00000000 00:00 0 
+7ca651ffd000-7ca6527fd000 rw-p 00000000 00:00 0 
+7ca6527fd000-7ca6527fe000 ---p 00000000 00:00 0 
+7ca6527fe000-7ca652ffe000 rw-p 00000000 00:00 0 
+7ca652ffe000-7ca652fff000 ---p 00000000 00:00 0 
+7ca652fff000-7ca6537ff000 rw-p 00000000 00:00 0 
+7ca6537ff000-7ca653800000 ---p 00000000 00:00 0 
+7ca653800000-7ca654000000 rw-p 00000000 00:00 0 
+7ca654000000-7ca6541bd000 rw-p 00000000 00:00 0 
+7ca6541bd000-7ca658000000 ---p 00000000 00:00 0 
+7ca6587f9000-7ca6587fa000 ---p 00000000 00:00 0 
+7ca6587fa000-7ca658ffa000 rw-p 00000000 00:00 0 
+7ca658ffa000-7ca658ffb000 ---p 00000000 00:00 0 
+7ca658ffb000-7ca6597fb000 rw-p 00000000 00:00 0 
+7ca6597fb000-7ca6597fc000 ---p 00000000 00:00 0 
+7ca6597fc000-7ca659ffc000 rw-p 00000000 00:00 0 
+7ca659ffc000-7ca659ffd000 ---p 00000000 00:00 0 
+7ca659ffd000-7ca65a7fd000 rw-p 00000000 00:00 0 
+7ca65a7fd000-7ca65a7fe000 ---p 00000000 00:00 0 
+7ca65a7fe000-7ca65affe000 rw-p 00000000 00:00 0 
+7ca65affe000-7ca65afff000 ---p 00000000 00:00 0 
+7ca65afff000-7ca65b7ff000 rw-p 00000000 00:00 0 
+7ca65b7ff000-7ca65b800000 ---p 00000000 00:00 0 
+7ca65b800000-7ca65c000000 rw-p 00000000 00:00 0 
+7ca65c000000-7ca65c028000 rw-p 00000000 00:00 0 
+7ca65c028000-7ca660000000 ---p 00000000 00:00 0 
+7ca6607f9000-7ca6607fa000 ---p 00000000 00:00 0 
+7ca6607fa000-7ca660ffa000 rw-p 00000000 00:00 0 
+7ca660ffa000-7ca660ffb000 ---p 00000000 00:00 0 
+7ca660ffb000-7ca6617fb000 rw-p 00000000 00:00 0 
+7ca6617fb000-7ca6617fc000 ---p 00000000 00:00 0 
+7ca6617fc000-7ca661ffc000 rw-p 00000000 00:00 0 
+7ca661ffc000-7ca661ffd000 ---p 00000000 00:00 0 
+7ca661ffd000-7ca6627fd000 rw-p 00000000 00:00 0 
+7ca6627fd000-7ca6627fe000 ---p 00000000 00:00 0 
+7ca6627fe000-7ca662ffe000 rw-p 00000000 00:00 0 
+7ca662ffe000-7ca662fff000 ---p 00000000 00:00 0 
+7ca662fff000-7ca6637ff000 rw-p 00000000 00:00 0 
+7ca6637ff000-7ca663800000 ---p 00000000 00:00 0 
+7ca663800000-7ca664000000 rw-p 00000000 00:00 0 
+7ca664000000-7ca6641bc000 rw-p 00000000 00:00 0 
+7ca6641bc000-7ca668000000 ---p 00000000 00:00 0 
+7ca6687f9000-7ca6687fa000 ---p 00000000 00:00 0 
+7ca6687fa000-7ca668ffa000 rw-p 00000000 00:00 0 
+7ca668ffa000-7ca668ffb000 ---p 00000000 00:00 0 
+7ca668ffb000-7ca6697fb000 rw-p 00000000 00:00 0 
+7ca6697fb000-7ca6697fc000 ---p 00000000 00:00 0 
+7ca6697fc000-7ca669ffc000 rw-p 00000000 00:00 0 
+7ca669ffc000-7ca669ffd000 ---p 00000000 00:00 0 
+7ca669ffd000-7ca66a7fd000 rw-p 00000000 00:00 0 
+7ca66a7fd000-7ca66a7fe000 ---p 00000000 00:00 0 
+7ca66a7fe000-7ca66affe000 rw-p 00000000 00:00 0 
+7ca66affe000-7ca66afff000 ---p 00000000 00:00 0 
+7ca66afff000-7ca66b7ff000 rw-p 00000000 00:00 0 
+7ca66b7ff000-7ca66b800000 ---p 00000000 00:00 0 
+7ca66b800000-7ca66c000000 rw-p 00000000 00:00 0 
+7ca66c000000-7ca66c1bd000 rw-p 00000000 00:00 0 
+7ca66c1bd000-7ca670000000 ---p 00000000 00:00 0 
+7ca6707f9000-7ca6707fa000 ---p 00000000 00:00 0 
+7ca6707fa000-7ca670ffa000 rw-p 00000000 00:00 0 
+7ca670ffa000-7ca670ffb000 ---p 00000000 00:00 0 
+7ca670ffb000-7ca6717fb000 rw-p 00000000 00:00 0 
+7ca6717fb000-7ca6717fc000 ---p 00000000 00:00 0 
+7ca6717fc000-7ca671ffc000 rw-p 00000000 00:00 0 
+7ca671ffc000-7ca671ffd000 ---p 00000000 00:00 0 
+7ca671ffd000-7ca6727fd000 rw-p 00000000 00:00 0 
+7ca6727fd000-7ca6727fe000 ---p 00000000 00:00 0 
+7ca6727fe000-7ca672ffe000 rw-p 00000000 00:00 0 
+7ca672ffe000-7ca672fff000 ---p 00000000 00:00 0 
+7ca672fff000-7ca6737ff000 rw-p 00000000 00:00 0 
+7ca6737ff000-7ca673800000 ---p 00000000 00:00 0 
+7ca673800000-7ca674000000 rw-p 00000000 00:00 0 
+7ca674000000-7ca67429c000 rw-p 00000000 00:00 0 
+7ca67429c000-7ca678000000 ---p 00000000 00:00 0 
+7ca678000000-7ca6781bf000 rw-p 00000000 00:00 0 
+7ca6781bf000-7ca67c000000 ---p 00000000 00:00 0 
+7ca67c000000-7ca67c29f000 rw-p 00000000 00:00 0 
+7ca67c29f000-7ca680000000 ---p 00000000 00:00 0 
+7ca680000000-7ca68029e000 rw-p 00000000 00:00 0 
+7ca68029e000-7ca684000000 ---p 00000000 00:00 0 
+7ca684000000-7ca6841c0000 rw-p 00000000 00:00 0 
+7ca6841c0000-7ca688000000 ---p 00000000 00:00 0 
+7ca688000000-7ca6881c0000 rw-p 00000000 00:00 0 
+7ca6881c0000-7ca68c000000 ---p 00000000 00:00 0 
+7ca68c000000-7ca68c29f000 rw-p 00000000 00:00 0 
+7ca68c29f000-7ca690000000 ---p 00000000 00:00 0 
+7ca690000000-7ca69003c000 rw-p 00000000 00:00 0 
+7ca69003c000-7ca694000000 ---p 00000000 00:00 0 
+7ca694000000-7ca6941bf000 rw-p 00000000 00:00 0 
+7ca6941bf000-7ca698000000 ---p 00000000 00:00 0 
+7ca698000000-7ca6981d4000 rw-p 00000000 00:00 0 
+7ca6981d4000-7ca69c000000 ---p 00000000 00:00 0 
+7ca69c000000-7ca69c29c000 rw-p 00000000 00:00 0 
+7ca69c29c000-7ca6a0000000 ---p 00000000 00:00 0 
+7ca6a0000000-7ca6a01be000 rw-p 00000000 00:00 0 
+7ca6a01be000-7ca6a4000000 ---p 00000000 00:00 0 
+7ca6a4000000-7ca6a429b000 rw-p 00000000 00:00 0 
+7ca6a429b000-7ca6a8000000 ---p 00000000 00:00 0 
+7ca6a87ff000-7ca6a8800000 ---p 00000000 00:00 0 
+7ca6a8800000-7ca6a9000000 rw-p 00000000 00:00 0 
+7ca6a9000000-7ca6ab000000 rw-p 00000000 00:00 0 
+7ca6ab1d1000-7ca6ab1d2000 ---p 00000000 00:00 0 
+7ca6ab1d2000-7ca6ab9d2000 rw-p 00000000 00:00 0 
+7ca6ab9d2000-7ca6ab9d3000 ---p 00000000 00:00 0 
+7ca6ab9d3000-7ca6ac1d3000 rw-p 00000000 00:00 0 
+7ca6ac1d3000-7ca6ac1d4000 ---p 00000000 00:00 0 
+7ca6ac1d4000-7ca6ac9d4000 rw-p 00000000 00:00 0 
+7ca6ac9d4000-7ca6ac9d5000 ---p 00000000 00:00 0 
+7ca6ac9d5000-7ca6ad1d5000 rw-p 00000000 00:00 0 
+7ca6ad1d5000-7ca6ad1d6000 ---p 00000000 00:00 0 
+7ca6ad1d6000-7ca6ad9d6000 rw-p 00000000 00:00 0 
+7ca6ad9d6000-7ca6ad9d7000 ---p 00000000 00:00 0 
+7ca6ad9d7000-7ca6ae1d7000 rw-p 00000000 00:00 0 
+7ca6ae1d7000-7ca6ae1d8000 ---p 00000000 00:00 0 
+7ca6ae1d8000-7ca6ae9d8000 rw-p 00000000 00:00 0 
+7ca6ae9d8000-7ca6ae9d9000 ---p 00000000 00:00 0 
+7ca6ae9d9000-7ca6af1d9000 rw-p 00000000 00:00 0 
+7ca6af1d9000-7ca6af1da000 ---p 00000000 00:00 0 
+7ca6af1da000-7ca6af9da000 rw-p 00000000 00:00 0 
+7ca6af9da000-7ca6af9db000 ---p 00000000 00:00 0 
+7ca6af9db000-7ca6b01db000 rw-p 00000000 00:00 0 
+7ca6b01db000-7ca6b01dc000 ---p 00000000 00:00 0 
+7ca6b01dc000-7ca6b09dc000 rw-p 00000000 00:00 0 
+7ca6b09dc000-7ca6b09dd000 ---p 00000000 00:00 0 
+7ca6b09dd000-7ca6b11dd000 rw-p 00000000 00:00 0 
+7ca6b11dd000-7ca6b11de000 ---p 00000000 00:00 0 
+7ca6b11de000-7ca6b19de000 rw-p 00000000 00:00 0 
+7ca6b19de000-7ca6b19df000 ---p 00000000 00:00 0 
+7ca6b19df000-7ca6b21df000 rw-p 00000000 00:00 0 
+7ca6b21df000-7ca6b21e0000 ---p 00000000 00:00 0 
+7ca6b21e0000-7ca6b29e0000 rw-p 00000000 00:00 0 
+7ca6b29e0000-7ca6b29e1000 ---p 00000000 00:00 0 
+7ca6b29e1000-7ca6b31e1000 rw-p 00000000 00:00 0 
+7ca6b31e1000-7ca6b31e2000 ---p 00000000 00:00 0 
+7ca6b31e2000-7ca6b39e2000 rw-p 00000000 00:00 0 
+7ca6b39e2000-7ca6b39e3000 ---p 00000000 00:00 0 
+7ca6b39e3000-7ca6b41e3000 rw-p 00000000 00:00 0 
+7ca6b41e3000-7ca6b41e4000 ---p 00000000 00:00 0 
+7ca6b41e4000-7ca6b49e4000 rw-p 00000000 00:00 0 
+7ca6b49e4000-7ca6b49e5000 ---p 00000000 00:00 0 
+7ca6b49e5000-7ca6b51e5000 rw-p 00000000 00:00 0 
+7ca6b51e5000-7ca6b51e6000 ---p 00000000 00:00 0 
+7ca6b51e6000-7ca6b59e6000 rw-p 00000000 00:00 0 
+7ca6b59e6000-7ca6b59e7000 ---p 00000000 00:00 0 
+7ca6b59e7000-7ca6b61e7000 rw-p 00000000 00:00 0 
+7ca6b61e7000-7ca6b61e8000 ---p 00000000 00:00 0 
+7ca6b61e8000-7ca6b69e8000 rw-p 00000000 00:00 0 
+7ca6b69e8000-7ca6b69e9000 ---p 00000000 00:00 0 
+7ca6b69e9000-7ca6b71e9000 rw-p 00000000 00:00 0 
+7ca6b71e9000-7ca6b71ea000 ---p 00000000 00:00 0 
+7ca6b71ea000-7ca6b79ea000 rw-p 00000000 00:00 0 
+7ca6b79ea000-7ca6b79eb000 ---p 00000000 00:00 0 
+7ca6b79eb000-7ca6b81eb000 rw-p 00000000 00:00 0 
+7ca6b81eb000-7ca6b81ec000 ---p 00000000 00:00 0 
+7ca6b81ec000-7ca6b89ec000 rw-p 00000000 00:00 0 
+7ca6b89ec000-7ca6b89ed000 ---p 00000000 00:00 0 
+7ca6b89ed000-7ca6b91ed000 rw-p 00000000 00:00 0 
+7ca6b91ed000-7ca6b91ee000 ---p 00000000 00:00 0 
+7ca6b91ee000-7ca6b99ee000 rw-p 00000000 00:00 0 
+7ca6b99ee000-7ca6b99ef000 ---p 00000000 00:00 0 
+7ca6b99ef000-7ca6ba1ef000 rw-p 00000000 00:00 0 
+7ca6ba1ef000-7ca6ba1f0000 ---p 00000000 00:00 0 
+7ca6ba1f0000-7ca6ba9f0000 rw-p 00000000 00:00 0 
+7ca6ba9f0000-7ca6ba9f1000 ---p 00000000 00:00 0 
+7ca6ba9f1000-7ca6bb1f1000 rw-p 00000000 00:00 0 
+7ca6bb1f1000-7ca6bb1f2000 ---p 00000000 00:00 0 
+7ca6bb1f2000-7ca6bb9f2000 rw-p 00000000 00:00 0 
+7ca6bb9f2000-7ca6bb9f3000 ---p 00000000 00:00 0 
+7ca6bb9f3000-7ca6bc1f3000 rw-p 00000000 00:00 0 
+7ca6bc1f3000-7ca6bc1f4000 ---p 00000000 00:00 0 
+7ca6bc1f4000-7ca6bc9f4000 rw-p 00000000 00:00 0 
+7ca6bc9f4000-7ca6bc9f5000 ---p 00000000 00:00 0 
+7ca6bc9f5000-7ca6bd1f5000 rw-p 00000000 00:00 0 
+7ca6bd1f5000-7ca6bd1f6000 ---p 00000000 00:00 0 
+7ca6bd1f6000-7ca6bd9f6000 rw-p 00000000 00:00 0 
+7ca6bd9f6000-7ca6bd9f7000 ---p 00000000 00:00 0 
+7ca6bd9f7000-7ca6be1f7000 rw-p 00000000 00:00 0 
+7ca6be1f7000-7ca6be1f8000 ---p 00000000 00:00 0 
+7ca6be1f8000-7ca6be9f8000 rw-p 00000000 00:00 0 
+7ca6be9f8000-7ca6be9f9000 ---p 00000000 00:00 0 
+7ca6be9f9000-7ca6bf1f9000 rw-p 00000000 00:00 0 
+7ca6bf1f9000-7ca6bf1fa000 ---p 00000000 00:00 0 
+7ca6bf1fa000-7ca6bf9fa000 rw-p 00000000 00:00 0 
+7ca6bf9fa000-7ca6bf9fb000 ---p 00000000 00:00 0 
+7ca6bf9fb000-7ca6c01fb000 rw-p 00000000 00:00 0 
+7ca6c01fb000-7ca6c01fc000 ---p 00000000 00:00 0 
+7ca6c01fc000-7ca6c09fc000 rw-p 00000000 00:00 0 
+7ca6c09fc000-7ca6c09fd000 ---p 00000000 00:00 0 
+7ca6c09fd000-7ca6c11fd000 rw-p 00000000 00:00 0 
+7ca6c11fd000-7ca6c11fe000 ---p 00000000 00:00 0 
+7ca6c11fe000-7ca6c19fe000 rw-p 00000000 00:00 0 
+7ca6c19fe000-7ca6c19ff000 ---p 00000000 00:00 0 
+7ca6c19ff000-7ca6c21ff000 rw-p 00000000 00:00 0 
+7ca6c21ff000-7ca6c2200000 ---p 00000000 00:00 0 
+7ca6c2200000-7ca6c2a00000 rw-p 00000000 00:00 0 
+7ca6c2a00000-7ca6c4a00000 rw-p 00000000 00:00 0 
+7ca6c4a92000-7ca6c4a93000 ---p 00000000 00:00 0 
+7ca6c4a93000-7ca6c5293000 rw-p 00000000 00:00 0 
+7ca6c5293000-7ca6c5294000 ---p 00000000 00:00 0 
+7ca6c5294000-7ca6c5a94000 rw-p 00000000 00:00 0 
+7ca6c5a94000-7ca6c5a95000 ---p 00000000 00:00 0 
+7ca6c5a95000-7ca6c6295000 rw-p 00000000 00:00 0 
+7ca6c6295000-7ca6c6296000 ---p 00000000 00:00 0 
+7ca6c6296000-7ca6c6a96000 rw-p 00000000 00:00 0 
+7ca6c6a96000-7ca6c6a97000 ---p 00000000 00:00 0 
+7ca6c6a97000-7ca6c7297000 rw-p 00000000 00:00 0 
+7ca6c7297000-7ca6c7298000 ---p 00000000 00:00 0 
+7ca6c7298000-7ca6c7a98000 rw-p 00000000 00:00 0 
+7ca6c7a98000-7ca6c8098000 rw-p 00000000 00:00 0 
+7ca6c8298000-7ca6c8498000 rw-p 00000000 00:00 0 
+7ca6c8598000-7ca6c8998000 rw-p 00000000 00:00 0 
+7ca6c8a98000-7ca6c8c98000 rw-p 00000000 00:00 0 
+7ca6c8c98000-7ca6c8cb8000 r--p 00000000 08:05 8388653                    /usr/lib/x86_64-linux-gnu/libsqlite3.so.0.8.6
+7ca6c8cb8000-7ca6c8dc3000 r-xp 00020000 08:05 8388653                    /usr/lib/x86_64-linux-gnu/libsqlite3.so.0.8.6
+7ca6c8dc3000-7ca6c8df7000 r--p 0012b000 08:05 8388653                    /usr/lib/x86_64-linux-gnu/libsqlite3.so.0.8.6
+7ca6c8df7000-7ca6c8dfb000 r--p 0015e000 08:05 8388653                    /usr/lib/x86_64-linux-gnu/libsqlite3.so.0.8.6
+7ca6c8dfb000-7ca6c8dff000 rw-p 00162000 08:05 8388653                    /usr/lib/x86_64-linux-gnu/libsqlite3.so.0.8.6
+7ca6c8dff000-7ca6c9600000 rw-p 00000000 00:00 0 
+7ca6c9600000-7ca6c96e1000 r--p 00000000 08:05 8390854                    /usr/lib/x86_64-linux-gnu/libcuda.so.535.247.01
+7ca6c96e1000-7ca6c9c01000 r-xp 000e1000 08:05 8390854                    /usr/lib/x86_64-linux-gnu/libcuda.so.535.247.01
+7ca6c9c01000-7ca6cb0e8000 r--p 00601000 08:05 8390854                    /usr/lib/x86_64-linux-gnu/libcuda.so.535.247.01
+7ca6cb0e8000-7ca6cb101000 r--p 01ae7000 08:05 8390854                    /usr/lib/x86_64-linux-gnu/libcuda.so.535.247.01
+7ca6cb101000-7ca6cb207000 rw-p 01b00000 08:05 8390854                    /usr/lib/x86_64-linux-gnu/libcuda.so.535.247.01
+7ca6cb207000-7ca6cb26e000 rw-p 00000000 00:00 0 
+7ca6cb300000-7ca6cb400000 rw-p 00000000 00:00 0 
+7ca6cb400000-7ca6da8e3000 r-xp 00000000 fc:00 35412103                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2
+7ca6da8e3000-7ca6daae3000 ---p 0f4e3000 fc:00 35412103                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2
+7ca6daae3000-7ca6daaed000 r--p 0f4e3000 fc:00 35412103                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2
+7ca6daaed000-7ca6dab00000 rw-p 0f4ed000 fc:00 35412103                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2
+7ca6dab00000-7ca6dab32000 rw-p 00000000 00:00 0 
+7ca6dac00000-7ca6f4469000 r-xp 00000000 fc:00 35412387                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12
+7ca6f4469000-7ca6f4669000 ---p 19869000 fc:00 35412387                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12
+7ca6f4669000-7ca6f48a7000 r--p 19869000 fc:00 35412387                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12
+7ca6f48a7000-7ca6f825b000 rw-p 19aa7000 fc:00 35412387                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12
+7ca6f825b000-7ca6fc42c000 rw-p 00000000 00:00 0 
+7ca6fc500000-7ca6fc600000 rw-p 00000000 00:00 0 
+7ca6fc600000-7ca702d28000 r-xp 00000000 fc:00 35412386                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12
+7ca702d28000-7ca702f28000 ---p 06728000 fc:00 35412386                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12
+7ca702f28000-7ca702f34000 r--p 06728000 fc:00 35412386                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12
+7ca702f34000-7ca702f3b000 rw-p 06734000 fc:00 35412386                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12
+7ca702f3b000-7ca702f47000 rw-p 00000000 00:00 0 
+7ca703000000-7ca7077cf000 r-xp 00000000 fc:00 35412140                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10
+7ca7077cf000-7ca7079cf000 ---p 047cf000 fc:00 35412140                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10
+7ca7079cf000-7ca7079d5000 r--p 047cf000 fc:00 35412140                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10
+7ca7079d5000-7ca708e01000 rw-p 047d5000 fc:00 35412140                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10
+7ca708e01000-7ca709439000 rw-p 00000000 00:00 0 
+7ca709500000-7ca709600000 rw-p 00000000 00:00 0 
+7ca709600000-7ca709b7a000 r-xp 00000000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca709b7a000-7ca709d79000 ---p 0057a000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca709d79000-7ca709d86000 r--p 00579000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca709d86000-7ca71a163000 rw-p 00586000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca71a163000-7ca71a4aa000 rw-p 00000000 00:00 0 
+7ca71a4aa000-7ca71a600000 ---p 10eaa000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca71a600000-7ca71a601000 rw-p 10a00000 fc:00 35414327                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufft/lib/libcufft.so.11
+7ca71a700000-7ca71a800000 rw-p 00000000 00:00 0 
+7ca71a800000-7ca72bfba000 r-xp 00000000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72bfba000-7ca72c1ba000 ---p 117ba000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72c1ba000-7ca72c1c9000 r--p 117ba000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72c1c9000-7ca72c1e5000 rw-p 117c9000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72c1e5000-7ca72c1ea000 rw-p 00000000 00:00 0 
+7ca72c1ea000-7ca72c200000 ---p 119ea000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72c200000-7ca72c205000 rw-p 11800000 fc:00 35414303                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12
+7ca72c300000-7ca72c400000 rw-p 00000000 00:00 0 
+7ca72c400000-7ca739d29000 r-xp 00000000 fc:00 35407401                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/cusparselt/lib/libcusparseLt.so.0
+7ca739d29000-7ca739f29000 ---p 0d929000 fc:00 35407401                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/cusparselt/lib/libcusparseLt.so.0
+7ca739f29000-7ca739f56000 r--p 0d929000 fc:00 35407401                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/cusparselt/lib/libcusparseLt.so.0
+7ca739f56000-7ca739f5f000 rw-p 0d956000 fc:00 35407401                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/cusparselt/lib/libcusparseLt.so.0
+7ca739f5f000-7ca73a14f000 rw-p 00000000 00:00 0 
+7ca73a14f000-7ca73aa54000 rw-p 0d95f000 fc:00 35407401                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/cusparselt/lib/libcusparseLt.so.0
+7ca73ab00000-7ca73ac00000 rw-p 00000000 00:00 0 
+7ca73ac00000-7ca73b9bf000 r--p 00000000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca73b9bf000-7ca73e97b000 r-xp 00dbf000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca73e97b000-7ca773277000 r--p 03d7b000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca773277000-7ca7732ee000 r--p 38676000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca7732ee000-7ca773310000 rw-p 386ed000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca773310000-7ca77405b000 rw-p 00000000 00:00 0 
+7ca77405b000-7ca774b3c000 rw-p 3a024000 fc:00 35521563                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so
+7ca774c00000-7ca775a29000 r--p 00000000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca775a29000-7ca7857d8000 r-xp 00e29000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca7857d8000-7ca788140000 r--p 10bd8000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca788140000-7ca78839c000 r--p 1353f000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca78839c000-7ca788406000 rw-p 1379b000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca788406000-7ca788510000 rw-p 00000000 00:00 0 
+7ca788510000-7ca788a29000 rw-p 18d85000 fc:00 35521562                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so
+7ca788b00000-7ca788c00000 rw-p 00000000 00:00 0 
+7ca788c00000-7ca78b677000 r-xp 00000000 fc:00 35412082                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12
+7ca78b677000-7ca78b877000 ---p 02a77000 fc:00 35412082                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12
+7ca78b877000-7ca78bda2000 r--p 02a77000 fc:00 35412082                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12
+7ca78bda2000-7ca78be15000 rw-p 02fa2000 fc:00 35412082                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12
+7ca78be15000-7ca78be89000 rw-p 00000000 00:00 0 
+7ca78bf00000-7ca78c000000 rw-p 00000000 00:00 0 
+7ca78c000000-7ca78f0ef000 r-xp 00000000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78f0ef000-7ca78f2ee000 ---p 030ef000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78f2ee000-7ca78f877000 r--p 030ee000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78f877000-7ca78f95e000 rw-p 03677000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78f95e000-7ca78fc3a000 rw-p 00000000 00:00 0 
+7ca78fc3a000-7ca78fe00000 ---p 03c3a000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78fe00000-7ca78fe02000 rw-p 03800000 fc:00 35412297                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib/libnvrtc.so.12
+7ca78ff00000-7ca790be5000 rw-p 00000000 00:00 0 
+7ca790be5000-7ca794000000 ---p 00000000 00:00 0 
+7ca794000000-7ca79452b000 rw-p 00000000 00:00 0 
+7ca79452b000-7ca798000000 ---p 00000000 00:00 0 
+7ca798000000-7ca798021000 rw-p 00000000 00:00 0 
+7ca798021000-7ca79c000000 ---p 00000000 00:00 0 
+7ca79c000000-7ca79c3ae000 rw-p 00000000 00:00 0 
+7ca79c3ae000-7ca7a0000000 ---p 00000000 00:00 0 
+7ca7a0000000-7ca7a0021000 rw-p 00000000 00:00 0 
+7ca7a0021000-7ca7a4000000 ---p 00000000 00:00 0 
+7ca7a4000000-7ca7a4021000 rw-p 00000000 00:00 0 
+7ca7a4021000-7ca7a8000000 ---p 00000000 00:00 0 
+7ca7a8000000-7ca7a8021000 rw-p 00000000 00:00 0 
+7ca7a8021000-7ca7ac000000 ---p 00000000 00:00 0 
+7ca7ac000000-7ca7ac021000 rw-p 00000000 00:00 0 
+7ca7ac021000-7ca7b0000000 ---p 00000000 00:00 0 
+7ca7b0000000-7ca7b0e00000 rw-p 00000000 00:00 0 
+7ca7b0e00000-7ca7b0ebb000 r--p 00000000 fc:00 35412357                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib/libcupti.so.12
+7ca7b0ebb000-7ca7b1358000 r-xp 000bb000 fc:00 35412357                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib/libcupti.so.12
+7ca7b1358000-7ca7b14af000 r--p 00558000 fc:00 35412357                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib/libcupti.so.12
+7ca7b14af000-7ca7b14fc000 r--p 006ae000 fc:00 35412357                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib/libcupti.so.12
+7ca7b14fc000-7ca7b15b3000 rw-p 006fb000 fc:00 35412357                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib/libcupti.so.12
+7ca7b15b3000-7ca7b15f4000 rw-p 00000000 00:00 0 
+7ca7b1600000-7ca7b162e000 r--p 00000000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b162e000-7ca7b1811000 r-xp 0002e000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b1811000-7ca7b18b3000 r--p 00211000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b18b3000-7ca7b18b4000 ---p 002b3000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b18b4000-7ca7b18b9000 r--p 002b3000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b18b9000-7ca7b18c1000 rw-p 002b8000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b18c1000-7ca7b18cc000 rw-p 00000000 00:00 0 
+7ca7b18cc000-7ca7b18d8000 rw-p 002db000 fc:00 35412161                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cufile/lib/libcufile.so.0
+7ca7b1900000-7ca7b1a00000 rw-p 00000000 00:00 0 
+7ca7b1a00000-7ca7b1a1e000 r-xp 00000000 fc:00 35414362                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib/libcudnn.so.9
+7ca7b1a1e000-7ca7b1c1d000 ---p 0001e000 fc:00 35414362                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib/libcudnn.so.9
+7ca7b1c1d000-7ca7b1c1e000 r--p 0001d000 fc:00 35414362                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib/libcudnn.so.9
+7ca7b1c1e000-7ca7b1c1f000 rw-p 0001e000 fc:00 35414362                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib/libcudnn.so.9
+7ca7b1d00000-7ca7b1e00000 rw-p 00000000 00:00 0 
+7ca7b1e00000-7ca7b1f7b000 r--p 00000000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b1f7b000-7ca7b2b1e000 r-xp 0017b000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b2b1e000-7ca7b2f02000 r--p 00d1e000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b2f02000-7ca7b2f23000 r--p 01101000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b2f23000-7ca7b2f81000 rw-p 01122000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b2f81000-7ca7b2ff7000 rw-p 00000000 00:00 0 
+7ca7b2ff7000-7ca7b3085000 rw-p 018f0000 fc:00 35521566                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so
+7ca7b30de000-7ca7b3105000 r--p 00000000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b3105000-7ca7b31ad000 r-xp 00027000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b31ad000-7ca7b31e0000 r--p 000cf000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b31e0000-7ca7b31e3000 r--p 00101000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b31e3000-7ca7b31ea000 rw-p 00104000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b31ea000-7ca7b31ec000 rw-p 00000000 00:00 0 
+7ca7b31ec000-7ca7b3200000 rw-p 0014c000 fc:00 35521556                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/torch/lib/libc10.so
+7ca7b3200000-7ca7b32a9000 r-xp 00000000 fc:00 35412275                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12
+7ca7b32a9000-7ca7b34a9000 ---p 000a9000 fc:00 35412275                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12
+7ca7b34a9000-7ca7b34ae000 r--p 000a9000 fc:00 35412275                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12
+7ca7b34ae000-7ca7b34af000 rw-p 000ae000 fc:00 35412275                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12
+7ca7b34af000-7ca7b34b1000 rw-p 00000000 00:00 0 
+7ca7b3566000-7ca7b3666000 rw-p 00000000 00:00 0 
+7ca7b3766000-7ca7b39fc000 rw-p 00000000 00:00 0 
+7ca7b3bfc000-7ca7b3bfd000 ---p 00000000 00:00 0 
+7ca7b3bfd000-7ca7b3cfd000 rw-p 00000000 00:00 0 
+7ca7b3cfd000-7ca7b3cfe000 ---p 00000000 00:00 0 
+7ca7b3cfe000-7ca7b3dfe000 rw-p 00000000 00:00 0 
+7ca7b3dfe000-7ca7b3dff000 ---p 00000000 00:00 0 
+7ca7b3dff000-7ca7b3eff000 rw-p 00000000 00:00 0 
+7ca7b3eff000-7ca7b3f00000 ---p 00000000 00:00 0 
+7ca7b3f00000-7ca7b4000000 rw-p 00000000 00:00 0 
+7ca7b4000000-7ca7b4021000 rw-p 00000000 00:00 0 
+7ca7b4021000-7ca7b8000000 ---p 00000000 00:00 0 
+7ca7b8000000-7ca7b8271000 rw-p 00000000 00:00 0 
+7ca7b8271000-7ca7bc000000 ---p 00000000 00:00 0 
+7ca7bc000000-7ca7bcd80000 rw-p 00000000 00:00 0 
+7ca7bcd80000-7ca7c0000000 ---p 00000000 00:00 0 
+7ca7c0000000-7ca7c31c7000 rw-p 00000000 00:00 0 
+7ca7c31c7000-7ca7c4000000 ---p 00000000 00:00 0 
+7ca7c4000000-7ca7c466d000 rw-p 00000000 00:00 0 
+7ca7c466d000-7ca7c8000000 ---p 00000000 00:00 0 
+7ca7c8000000-7ca7c82f2000 rw-p 00000000 00:00 0 
+7ca7c82f2000-7ca7cc000000 ---p 00000000 00:00 0 
+7ca7cc000000-7ca7cc021000 rw-p 00000000 00:00 0 
+7ca7cc021000-7ca7d0000000 ---p 00000000 00:00 0 
+7ca7d0000000-7ca7d017a000 rw-p 00000000 00:00 0 
+7ca7d017a000-7ca7d4000000 ---p 00000000 00:00 0 
+7ca7d4000000-7ca7d417d000 rw-p 00000000 00:00 0 
+7ca7d417d000-7ca7d8000000 ---p 00000000 00:00 0 
+7ca7d8000000-7ca7d8021000 rw-p 00000000 00:00 0 
+7ca7d8021000-7ca7dc000000 ---p 00000000 00:00 0 
+7ca7dc000000-7ca7dc021000 rw-p 00000000 00:00 0 
+7ca7dc021000-7ca7e0000000 ---p 00000000 00:00 0 
+7ca7e0000000-7ca7e0bf3000 rw-p 00000000 00:00 0 
+7ca7e0bf3000-7ca7e4000000 ---p 00000000 00:00 0 
+7ca7e4000000-7ca7e4021000 rw-p 00000000 00:00 0 
+7ca7e4021000-7ca7e8000000 ---p 00000000 00:00 0 
+7ca7e8000000-7ca7e8021000 rw-p 00000000 00:00 0 
+7ca7e8021000-7ca7ec000000 ---p 00000000 00:00 0 
+7ca7ec000000-7ca7ec021000 rw-p 00000000 00:00 0 
+7ca7ec021000-7ca7f0000000 ---p 00000000 00:00 0 
+7ca7f0000000-7ca7f0021000 rw-p 00000000 00:00 0 
+7ca7f0021000-7ca7f4000000 ---p 00000000 00:00 0 
+7ca7f4000000-7ca7f462f000 rw-p 00000000 00:00 0 
+7ca7f462f000-7ca7f8000000 ---p 00000000 00:00 0 
+7ca7f80ff000-7ca7f8100000 ---p 00000000 00:00 0 
+7ca7f8100000-7ca7f8200000 rw-p 00000000 00:00 0 
+7ca7f89ff000-7ca7f8a00000 ---p 00000000 00:00 0 
+7ca7f8a00000-7ca7f9200000 rw-p 00000000 00:00 0 
+7ca7f9200000-7ca7f9204000 ---p 00000000 00:00 0 
+7ca7f9204000-7ca7f9c00000 rw-p 00000000 00:00 0 
+7ca7f9c00000-7ca7f9c04000 ---p 00000000 00:00 0 
+7ca7f9c04000-7ca7fa600000 rw-p 00000000 00:00 0 
+7ca7fa600000-7ca7fa604000 ---p 00000000 00:00 0 
+7ca7fa604000-7ca7fb000000 rw-p 00000000 00:00 0 
+7ca7fb000000-7ca7fb270000 rw-p 00000000 00:00 0 
+7ca7fb270000-7ca7fb400000 ---p 00000000 00:00 0 
+7ca7fb400000-7ca7fb510000 rw-p 00000000 00:00 0 
+7ca7fb510000-7ca7ff000000 ---p 00000000 00:00 0 
+7ca7ff000000-7ca7ffca0000 rw-p 00001000 08:05 8922105                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/classes.jsa
+7ca7ffca0000-7ca800000000 ---p 00000000 00:00 0 
+7ca800000000-7ca800030000 rw-p 00000000 00:00 0 
+7ca800030000-7ca800040000 ---p 00000000 00:00 0 
+7ca800040000-7ca800080000 rw-p 00000000 00:00 0 
+7ca800080000-7ca840000000 ---p 00000000 00:00 0 
+7ca840000000-7ca840021000 rw-p 00000000 00:00 0 
+7ca840021000-7ca844000000 ---p 00000000 00:00 0 
+7ca844000000-7ca844021000 rw-p 00000000 00:00 0 
+7ca844021000-7ca848000000 ---p 00000000 00:00 0 
+7ca848000000-7ca848021000 rw-p 00000000 00:00 0 
+7ca848021000-7ca84c000000 ---p 00000000 00:00 0 
+7ca84c02f000-7ca84c034000 r--p 00000000 08:05 8922088                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+7ca84c034000-7ca84c075000 r-xp 00005000 08:05 8922088                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+7ca84c075000-7ca84c0fe000 r--p 00046000 08:05 8922088                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+7ca84c0fe000-7ca84c0ff000 r--p 000ce000 08:05 8922088                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+7ca84c0ff000-7ca84c100000 rw-p 000cf000 08:05 8922088                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjsvml.so
+7ca84c100000-7ca84c104000 ---p 00000000 00:00 0 
+7ca84c104000-7ca84c200000 rw-p 00000000 00:00 0 
+7ca84c200000-7ca84c204000 ---p 00000000 00:00 0 
+7ca84c204000-7ca84cc00000 rw-p 00000000 00:00 0 
+7ca84cc00000-7ca84cc04000 ---p 00000000 00:00 0 
+7ca84cc04000-7ca84d600000 rw-p 00000000 00:00 0 
+7ca84d600000-7ca84d604000 ---p 00000000 00:00 0 
+7ca84d604000-7ca84e000000 rw-p 00000000 00:00 0 
+7ca84e000000-7ca84e004000 ---p 00000000 00:00 0 
+7ca84e004000-7ca84ea00000 rw-p 00000000 00:00 0 
+7ca84eacc000-7ca84ead0000 ---p 00000000 00:00 0 
+7ca84ead0000-7ca84ebcc000 rw-p 00000000 00:00 0 
+7ca84ebcc000-7ca84ebcd000 ---p 00000000 00:00 0 
+7ca84ebcd000-7ca84eccd000 rw-p 00000000 00:00 0 
+7ca84efd0000-7ca854021000 rw-p 00000000 00:00 0 
+7ca854021000-7ca858000000 ---p 00000000 00:00 0 
+7ca858000000-7ca858021000 rw-p 00000000 00:00 0 
+7ca858021000-7ca85c000000 ---p 00000000 00:00 0 
+7ca85c000000-7ca85c021000 rw-p 00000000 00:00 0 
+7ca85c021000-7ca860000000 ---p 00000000 00:00 0 
+7ca860069000-7ca860f78000 rw-p 00000000 00:00 0 
+7ca860f78000-7ca860f79000 ---p 00000000 00:00 0 
+7ca860f79000-7ca861079000 rw-p 00000000 00:00 0 
+7ca86117a000-7ca86117b000 ---p 00000000 00:00 0 
+7ca86117b000-7ca86127b000 rw-p 00000000 00:00 0 
+7ca86127b000-7ca8616a0000 rw-p 00000000 00:00 0 
+7ca8616a0000-7ca869600000 ---p 00000000 00:00 0 
+7ca869600000-7ca869614000 rw-p 00000000 00:00 0 
+7ca869614000-7ca86a600000 ---p 00000000 00:00 0 
+7ca86a600000-7ca86a614000 rw-p 00000000 00:00 0 
+7ca86a614000-7ca86b600000 ---p 00000000 00:00 0 
+7ca86b6c1000-7ca86f600000 rw-p 00000000 00:00 0 
+7ca86f600000-7ca86f870000 rwxp 00000000 00:00 0 
+7ca86f870000-7ca8769cf000 ---p 00000000 00:00 0 
+7ca8769cf000-7ca876e3f000 rwxp 00000000 00:00 0 
+7ca876e3f000-7ca877230000 ---p 00000000 00:00 0 
+7ca877230000-7ca8774a0000 rwxp 00000000 00:00 0 
+7ca8774a0000-7ca87e600000 ---p 00000000 00:00 0 
+7ca87e600000-7ca886c2a000 r--s 00000000 08:05 8922104                    /usr/lib/jvm/java-21-openjdk-amd64/lib/modules
+7ca886c30000-7ca886c35000 rw-p 00000000 00:00 0 
+7ca886c35000-7ca886d18000 ---p 00000000 00:00 0 
+7ca886d18000-7ca886d1d000 rw-p 00000000 00:00 0 
+7ca886d1d000-7ca886e00000 ---p 00000000 00:00 0 
+7ca886e00000-7ca8870a2000 r--p 00000000 08:05 8922108                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+7ca8870a2000-7ca887f17000 r-xp 002a2000 08:05 8922108                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+7ca887f17000-7ca8881f1000 r--p 01117000 08:05 8922108                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+7ca8881f1000-7ca8882c5000 r--p 013f0000 08:05 8922108                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+7ca8882c5000-7ca8882f5000 rw-p 014c4000 08:05 8922108                    /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+7ca8882f5000-7ca88835b000 rw-p 00000000 00:00 0 
+7ca88838f000-7ca888396000 r--p 00000000 08:05 8922096                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+7ca888396000-7ca88839f000 r-xp 00007000 08:05 8922096                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+7ca88839f000-7ca8883a3000 r--p 00010000 08:05 8922096                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+7ca8883a3000-7ca8883a4000 r--p 00014000 08:05 8922096                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+7ca8883a4000-7ca8883a5000 rw-p 00015000 08:05 8922096                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libnio.so
+7ca8883a5000-7ca8883ae000 rw-p 00000000 00:00 0 
+7ca8883ae000-7ca8883b6000 ---p 00000000 00:00 0 
+7ca8883b6000-7ca8883c3000 r--p 00000000 08:05 8922081                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+7ca8883c3000-7ca8883d2000 r-xp 0000d000 08:05 8922081                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+7ca8883d2000-7ca8883d7000 r--p 0001c000 08:05 8922081                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+7ca8883d7000-7ca8883d8000 r--p 00021000 08:05 8922081                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+7ca8883d8000-7ca8883d9000 rw-p 00022000 08:05 8922081                    /usr/lib/jvm/java-21-openjdk-amd64/lib/libjava.so
+7ca8883d9000-7ca8886da000 rw-p 00000000 00:00 0 
+7ca8886da000-7ca888715000 r--p 00000000 fc:00 34899781                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+7ca888715000-7ca888769000 r-xp 0003b000 fc:00 34899781                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+7ca888769000-7ca888791000 r--p 0008f000 fc:00 34899781                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+7ca888791000-7ca888792000 ---p 000b7000 fc:00 34899781                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+7ca888792000-7ca888796000 r--p 000b7000 fc:00 34899781                   /home/henriqueramos_qs/meta-learning-concept-drift/.venv/lib/python3.12/site-packages/_jpype.cpython-312-x86_64-linux-gnu.so
+7ca8887960

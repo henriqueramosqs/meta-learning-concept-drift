@@ -30,32 +30,46 @@
    <li>Há a necessidade do copy?</li>   
 </ul>
 
-## Notas
-<li> Tem avaliação da off e da on -> Cuidar para salvar as infos necessárias para as avaliações</li>
-<li> Analisar se consigo resultados similares que os da Fernanda na parte off</li>
-__
-<li>Terminei a parte offline</li>
-<li>Terminei a classe de base_data_manager</li>
-<li>Terminei a classe de meta_data_manager</li>
-<li>https://scikit-learn.org/stable/auto_examples/preprocessing/plot_scaling_importance.html#effect-of-rescaling-on-a-pca-dimensional-reduction</li>
-<li>Faz sentido reduzir dimensões do df inteiro ao invés de só o batch?</li>
-<li>learning_window_size faz sentido? Era 94 no caso que tá no  jupyter -> ETA?</li>
-<li>Pq eu espero acumular STEP novos na metabse? (setp*step instâncias no base)</li>
-<li>Kurtosis e skewness não retornam NaN</li>
-<li>Terminei o experimento</li>
-<li>Comparei os resultados com o que a Fernanda fez</li>
 
 
 ## Notas
-<li>Implementei otimização de hiperparâmetros no meta model (optuna)</li>
-<li>Implementei validação cruzada no meta modelo e nos modelos base</li>
-<li>Normalização dos dados antes do DBSCAN</li>
-   <li> Reaproveitar o transform </li>
-   <li> Dar uma olhada no HDBSCAN</li>
-<li>Caso dos ruídos no DBSCAN </li>
-<li>Rodei os experimentos para powersupply e para elect com o conjunto de métricas da Fernanda e o meu </li>
-<li>Algo estranho no cálculo do MSE</li>
-   <li> Simplesmente calculei errado</li>
-<li>O que eu poderia ter feito para ter segurança com os cálculos?</li>
-<li>Conversa da SLM</li>
-<li> 15/08, às 8:00h</li>
+
+<li> Normalização de dados pro DBSCAN</li>
+<li> Fiz Results_importace e result_gain</li>
+<li> Results_gain "no olho" parecido com o da Fernanda -> Como comparar? Subtrair um do outro? Considerar o dela outro conjunto?</li>
+<li> Feature importances </li>
+   <li> DBSCAN fez uma contribuição significativa</li>
+   <li> Das que eu coloquei, ADWIN teve mais protagonismo</li>
+   <li> Senti falta do KSWIN -> Nos experimentos anteriores que eu fiz, lembro que ele teve mais importância. Também era o esperado para ter mais significância</li>
+   <li> Outros soterrados</li>
+<li> Como foi escolhido o feature fraction? </li>
+<li> Perguntar sobre a necessidade de outro treinamento para feature importance  </li>
+<li> Matérias Pós </li>
+<li> SLM </li>
+<li> Perguntar sobre TCC </li>
+ 
+<h3></h3>
+ <li> MSE != ganho. Baseline = mais recomendado das janelas anteriores. Prestar bem atenção no código da Fernanda</li>
+<li> Colocar gráficos lado a lado -> Ver consistência</li>
+<li> Fazer experimentos sem "fortalecer" as métricas originais(N)</li>
+<li> Fortalecer as originais e analisar o feature importance separando-as(N)</li>
+<li> Parte II</li>
+
+No conjunto de métricas originais, eu fiz as seguintes alterações:
+
+<h3>Stats Metrics</h3>
+<li>sparsity (diferente de attributes sparsity!)</li>
+<li>Variância</li>
+<li>kurtosis e skewness</li>
+<li>NrAtributos Correlatos</li>
+<h3>Clustering Metrics</h3>
+<li>DBSCAN</li>
+<li> Elbow do kmeans</li>
+<li> min_size_dist</li>
+<li> max_size dist</li>
+<li> mean_size_dist</li>
+<li> connectivity</li>
+
+Não voltei pra original: Normalizações e correção do PCA
+
+* Todas as métricas com excessão do kappa estavam iguais

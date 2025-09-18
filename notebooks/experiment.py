@@ -32,18 +32,20 @@ hyperparams ={
 datasets = [
     "electricity",
     "powersupply",
-    "Rialto",
-    "airlines"
+    # "Rialto",
+    # "airlines"
     ]
 include_dft = [True, False]
 
 OFFLINE_PHASE_SIZE = 5000
 BASE_TRAIN_SIZE = 2000
-ETA = 200  
+ETA = 100  
 STEP = 30 
 TARGET_DELAY = 500
 
-for dataset in datasets:
+custom_dir = "fernanda_weak"
+
+for dataset in datasets[:1]:
     for base_model in base_models:
         base_model_name = base_model.__name__
         for has_dft in include_dft:
@@ -107,7 +109,11 @@ for dataset in datasets:
                 plt.plot(x, y_pred, label="baseline")
                 plt.legend(loc="upper left")
 
-            mb.to_csv(f"metabase/{FILE_NAME}.csv", index=False)
+            os.makedirs(f"metabase/{custom_dir}", exist_ok=True)
+            os.makedirs(f"trained_models/{custom_dir}", exist_ok=True)
+
+            
+            mb.to_csv(f"metabase/{custom_dir}/{FILE_NAME}.csv", index=False)
         
-            with open(f"{FILE_NAME}.pickle", "wb") as handle:
+            with open(f"trained_models/{custom_dir}/{FILE_NAME}.pickle", "wb") as handle:
                 pickle.dump(meta_learner.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)

@@ -18,9 +18,15 @@ class Evaluator():
             "r2": r2_score,
             "mse": mean_squared_error,
             "std": lambda y_true, y_pred: np.std(y_true - y_pred),
-            "precision": lambda y_true, y_pred: precision_score(y_true, y_pred, average="micro"),
-            "recall": lambda y_true, y_pred: recall_score(y_true, y_pred, average="micro"),
-            "f1-score": lambda y_true, y_pred: f1_score(y_true, y_pred, average="micro"),
+            "precision": lambda y_true, y_pred: precision_score(y_true, y_pred
+                                                                ,average="micro"
+                                                                ),
+            "recall": lambda y_true, y_pred: recall_score(y_true, y_pred
+                                                          , average="micro"
+                                                          ),
+            "f1-score": lambda y_true, y_pred: f1_score(y_true, y_pred
+                                                        , average="micro"
+                                                        ),
         }
         return metric_dict[metric_name](y_true, y_pred)
 

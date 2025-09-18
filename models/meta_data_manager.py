@@ -52,10 +52,23 @@ class MetaDataManager:
 
 
     def update_target(self,target:dict)->None:
+
+        # LOG para debugging
+        # print(f"\n=== UPDATE_TARGET DEBUG ===")
+        # print(f"Antes de update - new_target_id: {self.new_target_ptr}")
+        # print(f"Target a ser atualizado: {target}")
+        # print(f"Shape do metabase: {self.metabase.shape}")
+
+        # print(f"Linha {self.new_target_ptr} antes:\n{self.metabase.iloc[self.new_target_ptr][["recall", "precision","kappa", "f1-score"]]}")
+    
         for key, value in target.items():
             self.metabase.at[self.new_target_ptr, key] = value
         self.new_target_ptr+=1
         self.cur_batch_size+=1
+
+        # print(f"Após update - new_target_ptr: {self.new_target_ptr}")
+        # print(f"Linha atualizada:\n{self.metabase.iloc[self.new_target_ptr - 1][["recall", "precision","kappa", "f1-score"]]}")
+        # print("=== FIM DEBUG ===\n")
 
     def get_train_batch(self)->pd.DataFrame:
         lower_bound = self.new_target_ptr - self.learning_window_size

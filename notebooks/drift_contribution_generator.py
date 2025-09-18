@@ -6,6 +6,7 @@ sys.path.insert(0,'../..')
 import pandas as pd
 import numpy as np
 import json
+import time
 from pathlib import Path
 from models import MetaModel
 from eval.evaluator import Evaluator
@@ -23,15 +24,19 @@ class DriftContributionGenerator():
         dataset_name: str,
         train_batch_size: str = 200,
         n_models: int = 3,
+        select_k_features=1, 
+        custom_dir =None
     ):
         self.train_batch_size = train_batch_size
         self.base_model = base_model
         self.dataset_name = dataset_name
         self.n_models = n_models
+        self.select_k_features = select_k_features
+        self.custom_dir=custom_dir
 
     def _load_metabase(self) -> None:
         filename = f"basemodel: {self.base_model}  - dataset: {self.dataset_name}"
-        self.metabase = pd.read_csv(f"metabase/fernanda/{filename} - with_drift_metrics.csv")
+        self.metabase = pd.read_csv(f"metabase/{self.custom_dir}/{filename} - with_drift_metrics.csv")
 
     def _create_results_df(self) -> None:
         self.metrics = list(set(self.metabase.columns).intersection(["auc", "kappa", "f1-score", "precision", "recall"]))
@@ -46,21 +51,21 @@ class DriftContributionGenerator():
         self.meta_models = {}
         for metric in self.metrics:
             self.meta_models[metric] = {
-                "with_drift": [MetaModel(random_state=i) for i in range(self.n_models)],
+                "with_drift": [MetaModel(random_state=i, select_k_features=self.select_k_features) for i in range(self.n_models)],
                 "without_drift": [MetaModel(random_state=i) for i in range(self.n_models)],
                 }
 
     def _imp_dict(self, meta_model):
         model = meta_model.model
-        print(f"essa eh o model {type(meta_model)} {meta_model}  {type(model)} {model}")
+        # print(f"essa eh o model {type(meta_model)} {meta_model}  {type(model)} {model}")
         importances = np.array(model.feature_importances_, dtype=float)
-        print("essa eh o importances:",
-        importances)
+        # print("essa eh o importances:",
+        # importances)
         return dict(zip(model.feature_name_, importances))
 
     def _get_importances(self):
         importances = {}
-        print(f"items: {self.meta_models.items()}")
+        # print(f"items: {self.meta_models.items()}")
         for metric, values in self.meta_models.items():
             importances[metric] = {}
             for drift_flag, models in values.items():
@@ -145,8 +150,8 @@ class DriftContributionGenerator():
                     self.results.columns.get_loc(f"{metric}_pred_{i}_without_drift")] = \
                     a2
                 
-                # if np.array_equal(a1, a2):
-                #     print(f"⚠️  AVISO: Previsões idênticas para {metric}_model_{i}")
+                if np.array_equal(a1, a2):
+                    print(f"⚠️  AVISO: Previsões idênticas para {metric}_model_{i}")
                 # else:
                 #     print(f"✅ Previsões diferentes para {metric}_model_{i}")
 
@@ -159,14 +164,14 @@ class DriftContributionGenerator():
             self._make_prediction(pred_batch)
 
     def _save_results(self):
-        filename = f"base_model: {self.base_model} - dataset: {self.dataset_name}"
-        output_dir = Path("results/results_dataframes")
+        filename = f"base_model: {self.base_model} - dataset: {self.dataset_name} - select_k_features: {int((100*self.select_k_features))}"
+        output_dir = Path(f"results/{self.custom_dir}/results_dataframes")
         output_dir.mkdir(parents=True, exist_ok=True)
         self.results.to_csv(f"{output_dir}/{filename}.csv", index=False)
-        output_dir = Path("results/results_importances")
+        output_dir = Path(f"results/{self.custom_dir}/results_importances")
         output_dir.mkdir(parents=True, exist_ok=True)
         importances = self._get_importances()
-        print(f"Importances:{importances}")
+        # print(f"Importances:{importances}")
         with open(f"{output_dir}/{filename}.json", "w") as fp:
             json.dump(importances, fp)
 
@@ -179,46 +184,24 @@ class DriftContributionGenerator():
         self._save_results()
 
 
-def get_window_size() -> int:
-    mtl_size = 5000 -2000
-    eta = 200
-    step = 300
-    window_size = (mtl_size - eta)/step
-    return int(np.ceil(window_size))  # round up
-
-
 models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
 datasets  = ["electricity", "powersupply"]
-
-win_sz = get_window_size()
-win_sz = 97
-if __name__ == "__main__":
-        
-    for base_model in models:
-        for dataset_name in datasets:
-            d_gen = DriftContributionGenerator(
-                base_model=base_model,
-                dataset_name=dataset_name,
-                train_batch_size=win_sz,
-                n_models=1,
-            )
-            d_gen.run()
-
-            print("DONE")
-
-
+custom_dirs = ["fernanda_weak","henrique_weak"]
 
 if __name__ == "__main__":
     start = time.time()
-    for base_model in models:   
-        for dataset_name in datasets:
-            for n_features in range(5, 101, 5):
-                d_gen = DriftContributionGenerator(
-                    base_model=base_model,
-                    dataset_name=dataset_name,
-                    train_batch_size=get_window_size(dataset_metadata),
-                    meta_model_params={"select_k_features": n_features/100},
-                    output_filename=f"base_model: {base_model} - dataset: {dataset_name} - select_k_features: {n_features}%"
-                )
-                d_gen.run()
+    print("Estou rodando")
+    for dir in custom_dirs[:1]:
+        for base_model in models:   
+            for dataset_name in datasets[:1]:
+                for n_features in range(5, 101, 5):
+                    print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 
+                    d_gen = DriftContributionGenerator(
+                        base_model=base_model,
+                        dataset_name=dataset_name,
+                        train_batch_size=97,
+                        select_k_features=(n_features/100),
+                        custom_dir=dir
+                    )
+                    d_gen.run()
     print(f"Finished - elapsed time: {time.time() - start}")

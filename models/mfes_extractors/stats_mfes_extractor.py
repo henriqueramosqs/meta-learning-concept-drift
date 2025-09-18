@@ -35,7 +35,7 @@ class StatsMFesExtractor(MfeExtractor):
             f'corr_{corr.columns[i]}_{corr.columns[j]}': corr.iloc[i, j]
             for i, j in zip(*np.where(mask))
             }
-        ans['nrCorAttr']=nrCorAttr
+        # ans['nrCorAttr']=nrCorAttr
         return ans
     
     def _get_sparsity(self,df:pd.DataFrame)->float:
@@ -74,9 +74,9 @@ class StatsMFesExtractor(MfeExtractor):
             **mean_dict,
             **median_dict,
             **std_dict,
-            **var_dict,
-            **kurt_dict,
-            **skew_dict,
+            # **var_dict,
+            # **kurt_dict,
+            # **skew_dict,
             **corr_dict,
             **gmean_dict,
             **hmean_dict,
@@ -84,7 +84,7 @@ class StatsMFesExtractor(MfeExtractor):
             **pca_dict,
             **iqr_dict,
             **uniqueness_dict,
-            **sparsity_dict,
+            # **sparsity_dict,
             **attr_sparsity_dict
         }
 

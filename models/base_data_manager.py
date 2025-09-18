@@ -33,14 +33,25 @@ class BaseDataManager():
     
     def get_last_batch(self) -> pd.DataFrame:
         if(self.df.shape[0]<self.batch_size):
-            raise Exception("There's no enough data to compose a batch in the base data manager")
+            raise Exc3eption("There's no enough data to compose a batch in the base data manager")
         self.cur_batch_size=0
         return self.df.drop("class", axis=1).tail(self.batch_size)  
 
     def update_target(self,target:dict)->None:
+
+        # print(f"\n🎯 UPDATE_TARGET - Atualizando target")
+        # print(f"   Antes - new_target_ptr: {self.new_target_ptr}")
+        # print(f"   Target recebido: {target}")
+        # print(f"   Tamanho do DataFrame: {self.df.shape[0]}")
+        # print(f"   Targer: {target}")
+        
         self.df.at[self.new_target_ptr, "class"]=target
         self.new_target_ptr+=1
         self.cur_targeted_batch_size+=1
+
+        # print(f"   Depois - new_target_ptr: {self.new_target_ptr}")
+        # print(f"   Valor atualizado na posição {self.new_target_ptr - 1}: {self.df.at[self.new_target_ptr - 1, "class"]}")
+        # print(f"   cur_targeted_batch_size: {self.cur_targeted_batch_size}")
 
     
     def has_new_batch(self):

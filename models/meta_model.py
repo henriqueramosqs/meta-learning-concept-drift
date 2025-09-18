@@ -20,8 +20,8 @@ def default_param_map(trial):
     return {
         "num_leaves": trial.suggest_int("num_leaves", 15, 25, step=1),
         "max_depth": trial.suggest_int("max_depth", 3, 8, step=1),
-        "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1),  # ✅ Adicionado
-        "n_estimators": trial.suggest_int("n_estimators", 100, 300),  # ✅ Adicionado
+        # "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1),  
+        # "n_estimators": trial.suggest_int("n_estimators", 100, 300), 
     }
 
 class MetaModel():
@@ -65,7 +65,7 @@ class MetaModel():
             model = ltb.LGBMRegressor(
                 verbosity=-1, 
                 random_state=self.random_state,  
-                early_stopping_rounds=50,  # ✅ Reduzido para debug
+                early_stopping_rounds=100, 
                 **hyperparams
             )
             model.fit(
@@ -91,7 +91,7 @@ class MetaModel():
         # print("🚀 Starting hyperparameter tuning...")
         study = optuna.create_study(direction="minimize", study_name="Meta Model")
         func = lambda trial: self._objective(trial, features, target)
-        study.optimize(func, n_trials=min(3, self.n_trials))  # ✅ Reduzido para debug
+        study.optimize(func, n_trials=self.n_trials) 
         
         # print(f"✅ Best hyperparams: {study.best_params}")
         # print(f"✅ Best value: {study.best_value:.4f}")

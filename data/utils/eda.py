@@ -36,7 +36,7 @@ class EDA():
         
         ## 1. Informações básicas do dataset
         print("\n1. INFORMAÇÕES BÁSICAS")
-        print(f"Dimensões do dataset: {df.shape[0]} linhas x {df.shape[1]} colunas")
+        print(f"Dimensões do dataset: {df.shape} colunas")
         print("\nTipos de dados:")
         print(df.dtypes.to_string())
         

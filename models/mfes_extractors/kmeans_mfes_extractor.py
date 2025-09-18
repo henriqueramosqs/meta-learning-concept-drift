@@ -21,7 +21,7 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
     def fit(self):
         return self
     
-
+    
     
     def _train(self,df:pd.DataFrame)-> (KMeans|int) :
         inertias = []
@@ -40,7 +40,12 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
 
     def evaluate(self,df:pd.DataFrame)->dict:
         df = df.select_dtypes(include=np.number)
-        df = StandardScaler().fit_transform(df)  
+
+        if not hasattr(self, 'scaler'):
+            self.scaler = StandardScaler().fit(df)
+        
+        df = self.scaler.transform(df)
+
         kmeans, knee = self._train(df)
         labels = kmeans.labels_
         n_clusters = kmeans.n_clusters
@@ -51,12 +56,12 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
             'kmeans_n_iter': kmeans.n_iter_,
             'kmeans_n_clusters': n_clusters,
             'kmeans_inertia': kmeans.inertia_,
-            'kmeans_knee': knee,    
+            # 'kmeans_knee': knee,    
             'kmenas_compactness': self._get_compactness(df,labels,n_clusters,cluster_centers),
-            'kmeans_connectivity': self._get_connectivity(df,labels),
-            'kmeans_min_size_dist': min_size_dist,    
-            'kmeans_max_size_dist': max_size_dist,    
-            'kmeans_mean_size_dist':mean_size_dist,
+            # 'kmeans_connectivity': self._get_connectivity(df,labels),
+            # 'kmeans_min_size_dist': min_size_dist,    
+            # 'kmeans_max_size_dist': max_size_dist,    
+            # 'kmeans_mean_size_dist':mean_size_dist,
         }
     
     

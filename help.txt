@@ -1,0 +1,60 @@
+def verificar_igualdade_metricas(self, base_model=None):
+        """
+        Verifica se os valores de recall, precision e f1-score são iguais
+        para os diferentes tipos de regressores.
+        
+        Parameters:
+        -----------
+        base_model : str, optional
+            Nome do modelo base a ser verificado. Se None, verifica todos os modelos.
+        
+        Returns:
+        --------
+        dict
+            Dicionário com os resultados da verificação
+        """
+        
+        resultados = {}
+        modelos_verificar = [base_model] if base_model else BASE_MODELS
+        
+        for modelo in modelos_verificar:
+            df = self.results[modelo]
+            resultados[modelo] = {
+                'proposed_mtl': {
+                    'recall_vs_precision': df['recall_mse_with_drift'].equals(df['precision_mse_with_drift']),
+                    'recall_vs_f1': df['recall_mse_with_drift'].equals(df['f1-score_mse_with_drift']),
+                    'precision_vs_f1': df['precision_mse_with_drift'].equals(df['f1-score_mse_with_drift']),
+                    'todos_iguais': (df['recall_mse_with_drift'].equals(df['precision_mse_with_drift']) and
+                                df['recall_mse_with_drift'].equals(df['f1-score_mse_with_drift']))
+                },
+                'original_mtl': {
+                    'recall_vs_precision': df['recall_mse_without_drift'].equals(df['precision_mse_without_drift']),
+                    'recall_vs_f1': df['recall_mse_without_drift'].equals(df['f1-score_mse_without_drift']),
+                    'precision_vs_f1': df['precision_mse_without_drift'].equals(df['f1-score_mse_without_drift']),
+                    'todos_iguais': (df['recall_mse_without_drift'].equals(df['precision_mse_without_drift']) and
+                                df['recall_mse_without_drift'].equals(df['f1-score_mse_without_drift']))
+                },
+                'baseline': {
+                    'recall_vs_precision': df['recall_mse_baseline'].equals(df['precision_mse_baseline']),
+                    'recall_vs_f1': df['recall_mse_baseline'].equals(df['f1-score_mse_baseline']),
+                    'precision_vs_f1': df['precision_mse_baseline'].equals(df['f1-score_mse_baseline']),
+                    'todos_iguais': (df['recall_mse_baseline'].equals(df['precision_mse_baseline']) and
+                                df['recall_mse_baseline'].equals(df['f1-score_mse_baseline']))
+                }
+            }
+        
+        return resultados
+
+    def exibir_resultados_verificacao(resultados):
+        """
+        Exibe os resultados da verificação de forma organizada.
+        """
+        for modelo, dados_modelo in resultados.items():
+            print(f"\n=== MODELO: {modelo} ===")
+            
+            for tipo_regressor, comparacoes in dados_modelo.items():
+                print(f"\n{tipo_regressor.upper()}:")
+                print(f"  Recall vs Precision: {'IGUAIS' if comparacoes['recall_vs_precision'] else 'DIFERENTES'}")
+                print(f"  Recall vs F1-score: {'IGUAIS' if comparacoes['recall_vs_f1'] else 'DIFERENTES'}")
+                print(f"  Precision vs F1-score: {'IGUAIS' if comparacoes['precision_vs_f1'] else 'DIFERENTES'}")
+                print(f"  Todos iguais: {'SIM' if comparacoes['todos_iguais'] else 'NÃO'}")

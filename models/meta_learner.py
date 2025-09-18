@@ -18,6 +18,9 @@ from .meta_data_manager import MetaDataManager
 from .base_data_manager import BaseDataManager
 from .meta_model import MetaModel
 from .base_model import BaseModel
+from sklearn.metrics import roc_curve, auc, cohen_kappa_score
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
@@ -27,6 +30,15 @@ warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 # class MetaLearner:
 
 # Um base model, um meta model para cada performance_metric
+
+metrics_range ={
+    "precision": (0, 1),
+    "recall": (0, 1),
+    "f1-score": (0, 1),
+    # "auc": (0, 1),
+    "kappa": (-1, 1),
+}
+
 class MetaLearner():
     def __init__(
             self,
@@ -52,6 +64,11 @@ class MetaLearner():
         self.target_delay = target_delay
         self.meta_models = {metric: MetaModel() for metric in self.performance_metrics}
 
+    def _limit_metric_value(self, value: float, metric_name: str) -> float:
+        value = max(value,metrics_range[metric_name][0])
+        value = min(value, metrics_range[metric_name][1])
+        return value
+
     def _train_base_models(self, df: pd.DataFrame) -> None:
         features = df.drop("class", axis=1)
         target = df["class"]
@@ -68,7 +85,7 @@ class MetaLearner():
  
         self.mfes_extractors = [
             StatsMFesExtractor().fit(),
-            DBSCANMfesExtractor().fit(),
+            # DBSCANMfesExtractor().fit(),
             KmeansMfesExtractor().fit()
         ]
         if self.has_dft_mfes:
@@ -78,17 +95,35 @@ class MetaLearner():
                 OmvPht(score_cols=score_cols).fit(features),
                 SqsiCalculator(score_cols=score_cols).fit(features),
                 Udetector(prediction_col="prediction").fit(features),
-                KSWINDetector(feature_cols).fit(features),
-                ADWINDetector(feature_cols).fit(features),
-                DDMDetector(feature_cols).fit(features),
-                HDDMADetector(feature_cols).fit(features),
-                HDDMWDetector(feature_cols).fit(features)
+                # KSWINDetector(feature_cols).fit(features),
+                # ADWINDetector(feature_cols).fit(features),
+                # DDMDetector(feature_cols).fit(features),
+                # HDDMADetector(feature_cols).fit(features),
+                # HDDMWDetector(feature_cols).fit(features)
             ]
         
 
     def _get_baseline(self) -> dict:
+
+        # Primeiro, veja o que get_last_tageted_row() retorna
+        # full_row = self.metabase.get_last_tageted_row()
+        # print(f"DEBUG - Full row: {full_row}")
+        # print(f"DEBUG - Row type: {type(full_row)}")
+        
+        # # Agora veja apenas as performance_metrics
+        # batch = full_row[self.performance_metrics]
+        # print(f"DEBUG - Batch (only metrics): {batch}")
+        # print(f"DEBUG - Batch values: {batch.values}")
+        # print(f"DEBUG - Batch index: {batch.index.tolist()}")
+        
+        # # Veja o dicionário que está sendo gerado
+        # batch_dict = batch.to_dict()
+        # print(f"DEBUG - Batch dict: {batch_dict}")
+
         batch = self.metabase.get_last_tageted_row()[self.performance_metrics]
-        return {f"last_{metric}": value for metric, value in batch.to_dict().items()}
+        res =  {f"last_{metric}": value for metric, value in batch.to_dict().items()}
+        # print("RES",res,end="\n")
+        return res
 
     def _get_mfes(self,df:pd.DataFrame)->pd.DataFrame:
         mf_dict= {}
@@ -112,6 +147,33 @@ class MetaLearner():
         metrics = {
             metric: self.evaluator.evaluate(metric, y_true,y_pred) for metric in self.performance_metrics
         }
+
+            
+        # DEBUG: Verifique a distribuição
+        # print(f"\n=== DEBUG METRICS ===")
+        # print(f"y_true distribution: {pd.Series(y_true).value_counts().to_dict()}")
+        # print(f"y_pred distribution: {pd.Series(y_pred).value_counts().to_dict()}")
+        
+        # # Calcule métricas com diferentes averages para comparar
+        # precision_micro = precision_score(y_true, y_pred, average="micro", zero_division=0)
+        # precision_weighted = precision_score(y_true, y_pred, average="weighted", zero_division=0)
+        # precision_bin = precision_score(y_true, y_pred, average="binary", zero_division=0)
+        
+        # recall_micro = recall_score(y_true, y_pred, average="micro", zero_division=0)
+        # recall_weighted = recall_score(y_true, y_pred, average="weighted", zero_division=0)
+        # recall_bin = recall_score(y_true, y_pred, average="binary", zero_division=0)
+
+
+        # f1_score_micro = f1_score(y_true, y_pred, average="micro", zero_division=0)
+        # f1_score_weighted = f1_score(y_true, y_pred, average="weighted", zero_division=0)
+        # f1_score_bin = f1_score(y_true, y_pred, average="binary", zero_division=0)
+
+        
+        # print(f"Precision micro: {precision_micro}, weighted: {precision_weighted}, bin: {precision_bin}")
+        # print(f"Recall micro: {recall_micro}, weighted: {recall_weighted},bin: {recall_bin}")
+        # print(f"f1-score micro: {f1_score_micro}, weighted: {f1_score_weighted},bin: {f1_score_bin}")
+        # print("====================\n")
+        
 
         # print("metrics",metrics)
         return metrics
@@ -198,6 +260,21 @@ class MetaLearner():
                 for metric, model in self.meta_models.items()
             }
 
+            # print(f"\n🔍 DEBUG - Predições ANTES da limitação:")
+            # for metric_name, preds in predictions.items():
+            #     print(f"   {metric_name}: [{preds.min():.3f}, {preds.max():.3f}]")
+
+
+            for key, value in predictions.items():
+                metric = key.replace("meta_predict_", "")
+                
+                vectorized_limit = np.vectorize(lambda x: self._limit_metric_value(x, metric))
+                predictions[key] = vectorized_limit(value)
+
+            # print(f"\n🔍 DEBUG - Predições DEPOIS da limitação:")
+            # for metric_name, preds in predictions.items():
+            #     print(f"   {metric_name}: [{preds.min():.3f}, {preds.max():.3f}]")
+                                
             mfes_df =  mfes_df.assign(**predictions)
             self.metabase.update(mfes_df)
 
@@ -233,7 +310,7 @@ class MetaLearner():
 
 if __name__ == "__main__":
     base_model = RandomForestClassifier()
-    performance_metrics =["precision","recall", "f1-score"]
+    performance_metrics =["precision","recall", "f1-score","kappa"]
     df =  DataLoader.load_data("real/electricity.arff")
     meta_learner = MetaLearner(base_model=base_model,performance_metrics=performance_metrics,
                             has_dft_mfes=True,eta=100,step=20,target_delay=500, pca_n_components=5)
