@@ -63,6 +63,11 @@ class MetaEvaluator():
 
         metrics = list(set(df.columns).intersection(set(["auc","f1-score","recall", "precision", "kappa"])))
 
+
+        # print(f"df_head: {filename}")
+        # print(df.head())
+        # print("="*50)
+
         auxx = df[[f"last_{metric}" for metric in metrics]]
         # print("Esse é o auxx")
         # print(auxx)
@@ -83,10 +88,13 @@ class MetaEvaluator():
 
     def _plot_subplot(self, results_df: pd.DataFrame, color: str=COLORS[0], metric="kappa"):
         mtl_with_drift_error = results_df[f"{metric}_mse_with_drift"]
+        baseline_error  = results_df[f"{metric}_mse_baseline"]
         mtl_without_drift_error = results_df[f"{metric}_mse_without_drift"]
-        mtl_with_drift_gain = mtl_without_drift_error - mtl_with_drift_error
+        mtl_with_drift_gain =  -mtl_with_drift_error + baseline_error
 
         y = mtl_with_drift_gain.cumsum()
+
+        print(f"y[-1]: {y.iloc[-1]}")
         x = np.arange(len(y))
         plt.fill_between(x, y, alpha=0.1, color=color)
         plt.plot(x, y, label=metric, color=color)
@@ -98,12 +106,16 @@ class MetaEvaluator():
         for base_model in BASE_MODELS:
             filename = f"results/{self.dir}/results_dataframes/base_model: {base_model} - dataset: {self.dataset_name} - select_k_features: {self.feature_fraction}.csv"
             self.results[base_model], self.metrics[base_model] = self._get_result_df(filename)
-        
+            # print(filename)
+            # print(self.results[base_model].head(5))
+            # print(self.metrics[base_model])
+            # print("="*50)
+
         return self
 
     def plot_gain(self):
         plt.figure(figsize=(25, 15))
-        plt.ylim(bottom=0, top=0.01)  
+        # plt.ylim(bottom=0)
         plt.suptitle(f"Ganho com dataset: {self.dataset_name}", fontsize=25)
         show = True
 
@@ -113,7 +125,12 @@ class MetaEvaluator():
             plt.subplot(2, 2, base_model_idx + 1)
             for metric_idx, metric in enumerate(self.metrics[base_model]):
                 plt.title(f"Base_model: {base_model}", fontsize=20)
+
+                print(f"Base_model: {base_model}, metric: {metric}")
+                # print(self.results[base_model].head())
+                #
                 self._plot_subplot(self.results[base_model], metric=metric, color=COLORS[metric_idx])
+                print("="*60)
 
 
     def _plot_comp_subplot(self, results_df: pd.DataFrame, color: str=COLORS[0], 
@@ -142,6 +159,9 @@ class MetaEvaluator():
     def plot_original_vs_proposed_mtl_gain(self, metric="kappa", plot_ideal_regressor=True, subplot_index=1):
 
         for base_model in BASE_MODELS:
+
+            # print(f"Base_model: {base_model}")
+            # print(self.results[base_model].head())
             plt.subplot(4, 4, subplot_index)
             if plot_ideal_regressor:
                 self._plot_comp_subplot(self.results[base_model], metric=metric, color=COLORS[2], plot_col="ideal_regressor")

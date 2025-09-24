@@ -49,7 +49,8 @@ class MetaLearner():
             eta:int,
             step:int,
             target_delay:int,
-            pca_n_components:int
+            pca_n_components:int,
+            evaluator_avg=None
         ):
         self.base_model = BaseModel(**base_model_params)
         self.performance_metrics =performance_metrics
@@ -60,7 +61,7 @@ class MetaLearner():
         self.metabase = MetaDataManager(pca_n_components=pca_n_components,target_cols=self.performance_metrics)
         self.basedata = BaseDataManager(batch_size=eta,step=step)
         self.elapsed_time = defaultdict(int) 
-        self.evaluator = Evaluator()
+        self.evaluator = Evaluator(evaluator_avg)
         self.target_delay = target_delay
         self.meta_models = {metric: MetaModel() for metric in self.performance_metrics}
 

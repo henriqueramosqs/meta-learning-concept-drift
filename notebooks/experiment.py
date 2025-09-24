@@ -30,7 +30,7 @@ hyperparams ={
     "SVC": {"probability": True}
 }
 datasets = [
-    "electricity",
+    # "electricity",
     "powersupply",
     # "Rialto",
     # "airlines"
@@ -39,13 +39,13 @@ include_dft = [True, False]
 
 OFFLINE_PHASE_SIZE = 5000
 BASE_TRAIN_SIZE = 2000
-ETA = 100  
+ETA = 100
 STEP = 30 
 TARGET_DELAY = 500
 
 custom_dir = "fernanda_weak"
 
-for dataset in datasets[:1]:
+for dataset in datasets:
     for base_model in base_models:
         base_model_name = base_model.__name__
         for has_dft in include_dft:

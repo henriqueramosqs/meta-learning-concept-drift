@@ -17,7 +17,7 @@ class MetaDataManager:
 
     def get_train_metabase(self)->pd.DataFrame:
         ans =self.metabase.drop([col for col in self.metabase.columns if col.startswith("meta_predict")])
-        return 
+        return  ans
     
     def set_init_df(self,df:pd.DataFrame)->None:
         self.metabase=df.copy()
@@ -27,12 +27,14 @@ class MetaDataManager:
         if not self.pca_n_components:
             return df
         
-        df_filled = df.fillna(df.mean()) 
+        # df_filled = df.fillna(df.mean()) 
+        df_filled = df.fillna(-9999) 
     
-        if not hasattr(self, 'scaler'):
-            self.scaler = StandardScaler().fit(df_filled)
+        # if not hasattr(self, 'scaler'):
+        #     self.scaler = StandardScaler().fit(df_filled)
         
-        df_scaled = self.scaler.transform(df_filled)
+        # df_scaled = self.scaler.transform(df_filled)
+        df_scaled = df_filled
 
         if not hasattr(self, 'pca'):
             svd_solver = "auto" if self.pca_n_components > 1 else "full"

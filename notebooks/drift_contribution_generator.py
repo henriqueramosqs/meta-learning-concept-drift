@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 from models import MetaModel
 from eval.evaluator import Evaluator
+from data.utils.eda import EDA 
 
 
 # Ignoring warnings
@@ -37,6 +38,8 @@ class DriftContributionGenerator():
     def _load_metabase(self) -> None:
         filename = f"basemodel: {self.base_model}  - dataset: {self.dataset_name}"
         self.metabase = pd.read_csv(f"metabase/{self.custom_dir}/{filename} - with_drift_metrics.csv")
+        # EDA.make(self.metabase)
+        self.metabase = self.metabase.drop(columns=["original_idx", "data_type"], errors='ignore')
 
     def _create_results_df(self) -> None:
         self.metrics = list(set(self.metabase.columns).intersection(["auc", "kappa", "f1-score", "precision", "recall"]))
@@ -183,7 +186,6 @@ class DriftContributionGenerator():
         self._run_mtl()
         self._save_results()
 
-
 models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
 datasets  = ["electricity", "powersupply"]
 custom_dirs = ["fernanda_weak","henrique_weak"]
@@ -193,7 +195,7 @@ if __name__ == "__main__":
     print("Estou rodando")
     for dir in custom_dirs[:1]:
         for base_model in models:   
-            for dataset_name in datasets[:1]:
+            for dataset_name in datasets[1:]:
                 for n_features in range(5, 101, 5):
                     print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 
                     d_gen = DriftContributionGenerator(
