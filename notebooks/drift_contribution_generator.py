@@ -19,6 +19,14 @@ warnings.filterwarnings('ignore')
 
 
 class DriftContributionGenerator():
+    """
+    Analyzes the contribution of drift-related meta-features 
+    in predicting the performance of a base model. It works by training two sets of 
+    meta-models in parallel: one that uses all available meta-features (including 
+    drift metrics) and another that uses only non-drift-related meta-features. 
+    By comparing the predictions and feature importances of these two sets of models, 
+    it quantifies the value of drift detection features.
+    """
     def __init__(
         self,
         base_model: str,
@@ -28,6 +36,21 @@ class DriftContributionGenerator():
         select_k_features=1, 
         custom_dir =None
     ):
+        
+        """
+        Initializes the experiment with specified configurations.
+
+        Args:
+            base_model (str): The name of the base model being evaluated (e.g., 'RandomForestClassifier').
+            dataset_name (str): The name of the dataset used (e.g., 'airlines').
+            train_batch_size (int, optional): The number of instances in each batch used for training the meta-models.
+            n_models (int, optional): The number of meta-models to train for each scenario (with/without drift) 
+                                      to create an ensemble or average results.
+            select_k_features (float, optional): The percentage of top features to select for the models trained 
+                                                 'with_drift'. A value of 1 means all features are used.
+            custom_dir (str, optional): A subdirectory name inside results/ for organizing input and output files.
+        """
+        
         self.train_batch_size = train_batch_size
         self.base_model = base_model
         self.dataset_name = dataset_name
@@ -36,12 +59,22 @@ class DriftContributionGenerator():
         self.custom_dir=custom_dir
 
     def _load_metabase(self) -> None:
+        """
+        Loads the pre-generated meta-dataset from a CSV file.
+        """
         filename = f"basemodel: {self.base_model}  - dataset: {self.dataset_name}"
         self.metabase = pd.read_csv(f"metabase/{self.custom_dir}/{filename} - with_drift_metrics.csv")
+        # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines  - with_drift_metrics.csv
+        # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines - with_drift_metrics.csv
         # EDA.make(self.metabase)
         self.metabase = self.metabase.drop(columns=["original_idx", "data_type"], errors='ignore')
 
     def _create_results_df(self) -> None:
+        """
+        Initializes a DataFrame to store the results of the experiment.
+        It includes the actual performance metrics and creates columns
+        to hold the predictions from both sets of meta-models (with and without drift features).
+        """
         self.metrics = list(set(self.metabase.columns).intersection(["auc", "kappa", "f1-score", "precision", "recall"]))
         final_cols = self.metrics + [f"last_{metric}" for metric in self.metrics]
         self.results = self.metabase[final_cols]
@@ -51,6 +84,11 @@ class DriftContributionGenerator():
                 self.results[f"{metric}_pred_{i}_without_drift"] = 0
 
     def _create_meta_models(self):
+        """
+        Instantiates the meta-models for the experiment. For each performance metric,
+        it creates two sets of models: one to be trained with drift features and one without.
+        """
+
         self.meta_models = {}
         for metric in self.metrics:
             self.meta_models[metric] = {
@@ -59,6 +97,14 @@ class DriftContributionGenerator():
                 }
 
     def _imp_dict(self, meta_model):
+        """
+        A helper function to extract feature importances from a trained meta-model.
+        Args:
+            meta_model (MetaModel): A trained MetaModel instance.
+
+        Returns:
+            dict: A dictionary mapping feature names to their importance scores.
+        """
         model = meta_model.model
         # print(f"essa eh o model {type(meta_model)} {meta_model}  {type(model)} {model}")
         importances = np.array(model.feature_importances_, dtype=float)
@@ -67,28 +113,26 @@ class DriftContributionGenerator():
         return dict(zip(model.feature_name_, importances))
 
     def _get_importances(self):
+        """
+        Aggregates feature importances from all trained meta-models across all metrics
+        and scenarios (with/without drift).
+        
+        Returns:
+            dict: A nested dictionary containing the feature importances.
+        """
         importances = {}
-        # print(f"items: {self.meta_models.items()}")
         for metric, values in self.meta_models.items():
             importances[metric] = {}
             for drift_flag, models in values.items():
                 importances[metric][drift_flag] = [self._imp_dict(m) for m in models]
-                    # DEBUG: Analisar importância das features de drift
-        # for metric in self.metrics:
-        #     print(f"\n=== Importância para {metric} ===")
-        #     for i in range(self.n_models):
-        #         imp_with = importances[metric]["with_drift"][i]
-        #         imp_without = importances[metric]["without_drift"][i]
-                
-        #         # Verificar importância das features de drift
-        #         drift_importances = {k: v for k, v in imp_with.items() if k in self.drift_cols}
-        #         top_drift_features = sorted(drift_importances.items(), key=lambda x: x[1], reverse=True)[:5]
-                
-        #         print(f"Model {i} - Top drift features: {top_drift_features}")
-    
+
         return importances
 
     def _get_drift_cols(self) -> list:
+        """
+        Identifies columns in the metabase that are considered drift-related features
+        based on a predefined list of suffixes and substrings.
+        """
         drift_suffixes = [
             "adwin_",
             "dbscan_",
@@ -118,6 +162,13 @@ class DriftContributionGenerator():
         # print(f"Total de colunas no metabase: {len(self.metabase.columns)}")
 
     def _train_metamodels(self, batch: pd.DataFrame):
+        """
+        Trains all meta-models on a given batch of data. For each performance metric,
+        it trains models with and without the drift-related features.
+
+        Args:
+            batch (pd.DataFrame): The batch of data from the metabase to use for training.
+        """
         for metric in self.metrics:
             features = batch.drop(self.metrics, axis=1)
             non_drift_features = features.drop(self.drift_cols, axis=1)
@@ -126,12 +177,13 @@ class DriftContributionGenerator():
                 self.meta_models[metric]["with_drift"][i].fit(features, target)
                 self.meta_models[metric]["without_drift"][i].fit(non_drift_features, target)
 
-        # for metric in self.metrics:
-        #     print(f"Modelos para {metric}:")
-        #     print(f"  Com drift: {[id(m) for m in self.meta_models[metric]['with_drift']]}")
-        #     print(f"  Sem drift: {[id(m) for m in self.meta_models[metric]['without_drift']]}")
-
     def _make_prediction(self, batch: pd.DataFrame):
+        """
+        Makes predictions using the trained meta-models on a new batch of data.
+
+        Args:
+            batch (pd.DataFrame): The batch of data to make predictions on.
+        """
         features = batch.drop(self.metrics, axis=1)
         non_drift_features = features.drop(self.drift_cols, axis=1)
 
@@ -159,6 +211,11 @@ class DriftContributionGenerator():
                 #     print(f"✅ Previsões diferentes para {metric}_model_{i}")
 
     def _run_mtl(self):
+        """
+        Executes the main meta-learning loop, simulating a streaming environment.
+        It iterates through the metabase in non-overlapping windows, using one window
+        for training and the subsequent one for prediction (interleaved test-then-train).
+        """
         for index in range(0, self.metabase.shape[0] - self.train_batch_size, self.train_batch_size):
             train_batch = self.metabase.iloc[index:index + self.train_batch_size]
             self._train_metamodels(train_batch)
@@ -167,6 +224,10 @@ class DriftContributionGenerator():
             self._make_prediction(pred_batch)
 
     def _save_results(self):
+        """
+        Saves the final results of the experiment, including the predictions DataFrame
+        and the feature importances dictionary, to CSV and JSON files, respectively.
+        """
         filename = f"base_model: {self.base_model} - dataset: {self.dataset_name} - select_k_features: {int((100*self.select_k_features))}"
         output_dir = Path(f"results/{self.custom_dir}/results_dataframes")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -179,6 +240,9 @@ class DriftContributionGenerator():
             json.dump(importances, fp)
 
     def run(self):
+        """
+        Orchestrates the entire workflow of the drift contributinon analyzes 
+        """
         self._load_metabase()
         self._create_results_df()
         self._create_meta_models()
@@ -187,16 +251,16 @@ class DriftContributionGenerator():
         self._save_results()
 
 models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
-datasets  = ["electricity", "powersupply"]
-custom_dirs = ["fernanda_weak","henrique_weak"]
+datasets  = ["airlines"]
+custom_dirs = ["fernanda_weak"]
 
 if __name__ == "__main__":
     start = time.time()
     print("Estou rodando")
-    for dir in custom_dirs[:1]:
-        for base_model in models:   
-            for dataset_name in datasets[1:]:
-                for n_features in range(5, 101, 5):
+    for dir in custom_dirs:
+        for dataset_name in datasets:
+            for base_model in models:   
+                for n_features in range(15, 101, 5):
                     print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 
                     d_gen = DriftContributionGenerator(
                         base_model=base_model,

@@ -9,23 +9,37 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 METRICS = {"precision","recall","f1-score","kappa"}
 
 class Evaluator():
+    """
+    A utility class designed to centralize the calculation of various 
+    performance metrics
+    """
+
     def __init__(self,evaluator_avg="micro"):
+
+        """
+        Initializes the Evaluator with a specified averaging method for 
+        multi-class classification metrics.
+
+        Args:
+            evaluator_avg (str): Averaging method for classification metrics 
+                                 like precision/recall/f1 (e.g., 'micro', 'macro', 'weighted'). 
+                                 Defaults to "micro".
+        """
+
         self.evaluator_avg = evaluator_avg
         if(self.evaluator_avg==None):
             self.evaluator_avg = "micro"
-        pass
-
-    def _get_encoded(self, y_true, y_pred):
-        """Encode categorical variables for avoiding errors
-        on metric calculation"""
-        label_encoder = preprocessing.LabelEncoder()
-        label_encoder.fit([*y_true, *y_pred])
-        y_true = label_encoder.transform(y_true)
-        y_pred = label_encoder.transform(y_pred)
-        return y_true, y_pred
 
 
     def _get_performance( self, y_true: pd.Series, y_pred: pd.Series, metric_name) -> float:
+
+        """
+        Defines the dictionary of available performance metrics and their 
+        corresponding functions callable functinos
+        
+        Returns:
+            Dict: Mapping of metric name (str) to its calculation function.
+        """
         metric_dict = {
             "kappa": cohen_kappa_score,
             "r2": r2_score,
@@ -44,7 +58,18 @@ class Evaluator():
         return metric_dict[metric_name](y_true, y_pred)
 
     def evaluate(self, metric_name: str, y_true: pd.Series, y_pred: pd.Series,) -> float:
+        """
+        Calculates a specified performance metric between true and predicted values.
+        
+        Args:
+            metric_name (str): The name of the metric to calculate (e.g., 'f1-score', 'r2').
+            y_true (pd.Series): The ground truth target values.
+            y_pred (pd.Series): The model's predicted target values.
+
+        Returns:
+            float: The calculated metric score.
+        """
+
         if metric_name not in METRICS:
             raise ValueError(f"'metric_name' param must be one of {self.metrics}")
-        y_true, y_pred = self._get_encoded(y_true, y_pred)
         return self._get_performance(y_true, y_pred, metric_name)

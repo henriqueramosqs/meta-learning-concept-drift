@@ -1,55 +1,54 @@
 from frouros.detectors.concept_drift import KSWIN, KSWINConfig
+from .mfes_extractor import MfeExtractor
 import pandas as pd
 
-class KSWINDetector:
-    def __init__(self, feature_cols: list =[], window_size: int = 100, alpha: float = 0.05):
-        """Inicializa detectores KSWIN para múltiplas colunas.
-        
-A
-            feature_cols (list): Lista de nomes de colunas para monitorar
-            window_size (int): Tamanho da janela para o teste KSWIN
-            alpha (float): Nível de significância para detecção de drift
+class KSWINDetector(MfeExtractor):
+    def __init__(self, feature_cols: list =[]):
+        """
+        Monitors concept drift using KSWIN (Kolmogorov-Smirnov Window) for multiple columns.
         """
         self.feature_cols = feature_cols
         self.detectors = {}
-        
         for col in feature_cols:
             self.detectors[col] = KSWIN()
 
     def fit(self, data_frame: pd.DataFrame):
-        """Treina os detectores com dados de referência."""
+        """
+        Trains/initializes the detectors with reference data (fills the initial window).
+        
+        Args:
+            data_frame (pd.DataFrame): The reference dataset.
+            
+        Returns:
+            KSWINDetector: The fitted instance (for method chaining).
+        """
         for col in self.feature_cols:
             for value in data_frame[col]:
                 self._update_detector(col, value)
         return self
 
     def evaluate(self, data_frame: pd.DataFrame) -> dict:
-        """Avalia novos dados e retorna métricas + flag de drift."""
+        """
+        Evaluates new data, updates detectors, and returns metrics + drift flags.
+        
+        Args:
+            data_frame (pd.DataFrame): The new data batch to evaluate.
+
+        Returns:
+            dict: Dictionary containing drift flags for each column and a global drift flag.
+        """
         results = {}
-        global_drift = 0
         drift_detected = False
         
         for col in self.feature_cols:
             col_drift = 0
 
             for value in data_frame[col]:
-                drift_status = self._update_detector(col, value)
                 self.detectors[col].update(value)
                 if self.detectors[col].drift:
                     drift_detected = True
                     col_drift = 1
             results[f"kswin_{col}_drift"] = col_drift
             
-        if(drift_detected):
-                global_drift=True
-            
-        results["kswin_global_drift_flag"] = global_drift
+        results["kswin_global_drift_flag"] = drift_detected
         return results
-
-    def _update_detector(self, col: str, value: float):
-        """Método interno para atualizar o detector de forma compatível."""
-        try:
-            return self.detectors[col].update(value)
-        except Exception as e:
-            print(f"Warning: Error updating detector for column {col}: {str(e)}")
-            return {}

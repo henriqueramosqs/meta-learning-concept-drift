@@ -46,7 +46,10 @@ class MetaModel():
         optuna.logging.set_verbosity(optuna.logging.WARNING)  
         
     def _objective(self, trial, features: pd.DataFrame, target: pd.Series):
-        """Time series cross validation for finding the best hyperparam"""
+        """
+        Objective function for Optuna. It performs Time Series Cross-Validation (TSCV)
+        to evaluate the performance (MSE) of a given set of hyperparameters.
+        """
         cross_val = TimeSeriesSplit(n_splits=5)
         cv_scores = np.empty(5)
         hyperparams = self.param_map(trial)
@@ -87,7 +90,10 @@ class MetaModel():
         return avg_score
 
     def _hyperparam_tuning(self, features: pd.DataFrame, target: pd.Series) -> dict:
-        """Use optuna for automating the hyperparameter tuning step"""
+        """
+        Uses Optuna to find the optimal set of hyperparameters by minimizing the
+        objective function (average MSE from TSCV).
+        """
         # print("🚀 Starting hyperparameter tuning...")
         study = optuna.create_study(direction="minimize", study_name="Meta Model")
         func = lambda trial: self._objective(trial, features, target)
@@ -98,6 +104,10 @@ class MetaModel():
         return study.best_params
     
     def _get_n_most_important_features(self, model, n_features: int) -> list:
+        """
+        Extracts feature importances from the trained model and returns the names
+        of the top N most important features.
+        """
         # ✅ DEBUG: Verificar feature importances
         importances = np.array(model.feature_importances_, dtype=float)
         # print(f"📊 Feature importances - Non-zero: {np.sum(importances > 0)}/{len(importances)}")
@@ -108,6 +118,10 @@ class MetaModel():
         return list(imp_df.head(n_features)["name"])
 
     def _select_features(self, features: pd.DataFrame, target: pd.Series=None) -> pd.DataFrame:
+        """
+        Handles feature selection: either reuses a previously selected list or
+        runs a feature selection process based on LightGBM's feature importance.
+        """
         if self.feature_list:
             return features[self.feature_list]
 
@@ -144,7 +158,10 @@ class MetaModel():
             print(msg)
 
     def fit(self, features: pd.DataFrame, target: pd.Series):
-        """Fit meta model and do hyperparameter tuning with optuna."""
+        """
+        Main training pipeline: performs feature selection, hyperparameter tuning,
+        and trains the final LightGBM meta model.
+        """
         # print("\n" + "="*50)
         # print("🎯 STARTING MetaModel.fit()")
         # print("="*50)
@@ -200,5 +217,9 @@ class MetaModel():
         return self
 
     def predict(self, features: pd.DataFrame) -> pd.Series:
+        """
+        Makes predictions using the trained model.
+        It first applies the stored feature selection to the input features.
+        """
         features = self._select_features(features)
         return self.model.predict(features)

@@ -1,12 +1,15 @@
 from capymoa.drift.detectors import HDDMWeighted
+from .mfes_extractor import MfeExtractor
 import pandas as pd
 
-class HDDMWDetector:
-    """Monitora drift usando HDDM-W para múltiplas colunas.
+class HDDMWDetector(MfeExtractor):
+    """
+    Monitors concept drift using the HDDM-W (Hellinger Distance Drift Detection Method - Weighted) 
+    for multiple columns. HDDM-W uses a weighted moving average.
     
     Args:
-        feature_cols (list): Lista de colunas a serem monitoradas.
-        hddmw_params (dict): Parâmetros do HDDM-W (ex: drift_confidence=0.001).
+        feature_cols (list): List of columns to monitor for drift.
+        hddmw_params (dict): Parameters for HDDM-W (e.g., drift_confidence=0.001).
     """
     def __init__(self, feature_cols: list, hddmw_params: dict = {}):
         self.feature_cols = feature_cols
@@ -15,23 +18,32 @@ class HDDMWDetector:
         }
 
     def fit(self, data_frame: pd.DataFrame):
-        """Inicializa os detectores com dados de referência."""
+        """
+        Initializes the detectors with reference data.
+        
+        Args:
+            data_frame (pd.DataFrame): The reference dataset.
+            
+        Returns:
+            HDDMWDetector: The fitted instance (for method chaining).
+        """
+
         for col in self.feature_cols:
             for value in data_frame[col]:
                 self.detectors[col].add_element(value)
         return self
-
-    def _check_drift(self, data_frame: pd.DataFrame) -> int:
-        """Verifica se qualquer coluna detectou drift."""
-        for col in self.feature_cols:
-            for value in data_frame[col]:
-                self.detectors[col].add_element(value)
-                if self.detectors[col].detected_change():
-                    return 1
-        return 0
+    
 
     def evaluate(self, data_frame: pd.DataFrame) -> dict:
-        """Retorna métricas + flag de drift."""
+        """
+        Updates the detectors with a batch of data and returns drift/warning flags and key metrics.
+
+        Args:
+            data_frame (pd.DataFrame): The new data batch to evaluate.
+
+        Returns:
+            dict: Dictionary containing drift/warning flags for each column and a global drift flag.
+        """
         results = {}
         drift_detected = False
         

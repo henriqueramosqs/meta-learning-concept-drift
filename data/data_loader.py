@@ -4,6 +4,13 @@ from sklearn.preprocessing import LabelEncoder
 import os
 
 class DataLoader:
+
+    """
+    A utility class responsible for loading ARFF datasets, validating 
+    the target column, and performing pre-processing Label encoding on  
+    categorical features.
+    """
+    @staticmethod
     def load_data(src:str)->pd.DataFrame:
         cur_dir = os.path.dirname(__file__)
         file_dir =os.path.join(cur_dir, "datasets",src)

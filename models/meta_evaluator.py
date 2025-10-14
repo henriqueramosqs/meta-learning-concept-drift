@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from data.utils.eda import EDA
 
-# Macros
+# Macros for plotting and configuration
 COLORS = [
     "#eb5600ff", # orange
     "#1a9988ff", # green
@@ -26,19 +26,34 @@ BASE_MODELS = [
 
 
 class MetaEvaluator():
+    """
+    Handles the evaluation and visualization of results generated  by the experiment
+    """
     def __init__(self, dataset_name: str, window_size: int = 30,dir=None,feature_fraction=100):
         self.window_size = window_size
         self.dataset_name = dataset_name
         self.feature_fraction = feature_fraction
-        self.dir = dir
+        self.dir = dir  # Directory inside /results the results files
 
     def _get_mean_mse(self, cols: list, data_frame: pd.DataFrame, metric: str=None):
+        """
+        Calculates the Mean Squared Error (MSE) for multiple columns
+        against the true metric value, 
+
+        Parameters:
+            cols (list): List of column names representing predictions
+            data_frame (pd.DataFrame): The raw results DataFrame containing true metrics and predictions.
+            metric (str, optional): The true metric column name to use as the target (y_true).
+                                    If None, it's inferred from the first column in 'cols'.
+
+        Returns:
+            pd.Series: A Series where each value is the average MSE over a window for all specified predictors.
+        """
+
         result_mse = pd.DataFrame(columns=cols).astype(float)
        
         if not metric:
             metric = cols[0].split("_")[0]
-            # print(f"Caso em que não tem espercificado: metric:{metric} cols:{cols}")
-
         iter_range = range(0, data_frame.shape[0] - self.window_size, self.window_size)
 
         for result_idx, original_idx in enumerate(iter_range):
@@ -46,13 +61,23 @@ class MetaEvaluator():
             for col in cols:
                 result_mse.loc[result_idx, col] = mean_squared_error(batch[metric], batch[col])
 
-        # print("result_mse")    
-        # print(result_mse.shape)
-        # print(result_mse.info())
         return result_mse.mean(axis=1)
 
 
     def _get_result_df(self, filename: str):
+
+        """
+        Loads the raw results CSV, and calculates the window-aggregated MSE
+        for baseline, 'with_drift' and 'without_drift' metalearning predictors
+
+        Parameters:
+            filename (str): The path to the raw results CSV file.
+
+        Returns:
+            tuple: (results_df, metrics) where results_df contains MSE results per window,
+                   and metrics is a list of metric names found in the file.
+        """
+
         notebook_dir = os.path.dirname(os.path.abspath('.'))  
         correct_path = os.path.join(notebook_dir,filename)
 
@@ -64,22 +89,11 @@ class MetaEvaluator():
         metrics = list(set(df.columns).intersection(set(["auc","f1-score","recall", "precision", "kappa"])))
 
 
-        # print(f"df_head: {filename}")
-        # print(df.head())
-        # print("="*50)
-
-        auxx = df[[f"last_{metric}" for metric in metrics]]
-        # print("Esse é o auxx")
-        # print(auxx)
         results = pd.DataFrame()
         for metric in metrics:
             metric_cols = [col for col in df.columns if metric in col]
             with_drift_cols = [col for col in metric_cols if "with_drift" in col]
             without_drift_cols = [col for col in metric_cols if "without_drift" in col]
-
-            # print("with_drift_cols: ", with_drift_cols)
-            # print("without_drift_cols", without_drift_cols)
-            # print("metric_cols",  metric_cols)
 
             results[f"{metric}_mse_with_drift"] = self._get_mean_mse(with_drift_cols, df)
             results[f"{metric}_mse_without_drift"] = self._get_mean_mse(without_drift_cols, df)
@@ -87,6 +101,10 @@ class MetaEvaluator():
         return results, metrics
 
     def _plot_subplot(self, results_df: pd.DataFrame, color: str=COLORS[0], metric="kappa"):
+        """
+        Plots the cumulative MSE gain of the proposed metalearning method
+        relative to the baseline (last observed performance).
+        """
         mtl_with_drift_error = results_df[f"{metric}_mse_with_drift"]
         baseline_error  = results_df[f"{metric}_mse_baseline"]
         mtl_without_drift_error = results_df[f"{metric}_mse_without_drift"]
@@ -101,41 +119,39 @@ class MetaEvaluator():
         plt.legend(loc=2, fontsize='large')
 
     def fit(self):
+        """
+        Loads and processes the results files for all predefined base models and stores
+        the resulting MSE dataframes in self.results.
+        """
         self.results = {}
         self.metrics = {}
         for base_model in BASE_MODELS:
             filename = f"results/{self.dir}/results_dataframes/base_model: {base_model} - dataset: {self.dataset_name} - select_k_features: {self.feature_fraction}.csv"
             self.results[base_model], self.metrics[base_model] = self._get_result_df(filename)
-            # print(filename)
-            # print(self.results[base_model].head(5))
-            # print(self.metrics[base_model])
-            # print("="*50)
 
         return self
 
     def plot_gain(self):
+        """
+        Generates a figure with subplots, where each subplot shows the cumulative gain
+        (vs. baseline) for all metrics for a single base model.
+        """
         plt.figure(figsize=(25, 15))
         # plt.ylim(bottom=0)
         plt.suptitle(f"Ganho com dataset: {self.dataset_name}", fontsize=25)
         show = True
 
-        # print(f"self.results. {self.results.shape}")
-        # print(f"self.results. {self.results.info()}")
         for base_model_idx, base_model in enumerate(BASE_MODELS):
             plt.subplot(2, 2, base_model_idx + 1)
             for metric_idx, metric in enumerate(self.metrics[base_model]):
-                plt.title(f"Base_model: {base_model}", fontsize=20)
-
-                print(f"Base_model: {base_model}, metric: {metric}")
-                # print(self.results[base_model].head())
-                #
                 self._plot_subplot(self.results[base_model], metric=metric, color=COLORS[metric_idx])
-                print("="*60)
 
 
     def _plot_comp_subplot(self, results_df: pd.DataFrame, color: str=COLORS[0], 
                         metric: str="kappa", plot_col: str="proposed_mtl"):
-        
+        """
+        Plots the cumulative gain for a single regressor type (proposed, original, or ideal).
+        """
         if plot_col == "proposed_mtl":
             regressor_error = results_df[f"{metric}_mse_with_drift"]
             baseline_error = results_df[f"{metric}_mse_baseline"]
@@ -157,11 +173,12 @@ class MetaEvaluator():
         plt.legend(loc=2, fontsize='large')
 
     def plot_original_vs_proposed_mtl_gain(self, metric="kappa", plot_ideal_regressor=True, subplot_index=1):
-
+        """
+        Generates plots comparing the cumulative gain of the Proposed MTL, Original MTL
+        and Ideal Regressor for a single specified metric across all base models.
+        """
         for base_model in BASE_MODELS:
 
-            # print(f"Base_model: {base_model}")
-            # print(self.results[base_model].head())
             plt.subplot(4, 4, subplot_index)
             if plot_ideal_regressor:
                 self._plot_comp_subplot(self.results[base_model], metric=metric, color=COLORS[2], plot_col="ideal_regressor")
@@ -172,18 +189,15 @@ class MetaEvaluator():
 
     def verificar_igualdade_metricas(self, base_model=None):
         """
-        Verifica se os valores de recall, precision e f1-score são iguais
-        para os diferentes tipos de regressores.
-        
+        Checks if the MSE results for recall, precision, and f1-score are identical
+        across different regressor types (proposed, original, baseline) for a given base model.
+        If they are identical, it suggests the predictions for these metrics were the same.
+
         Parameters:
-        -----------
-        base_model : str, optional
-            Nome do modelo base a ser verificado. Se None, verifica todos os modelos.
-        
+            base_model (str, optional): Name of the base model to check. If None, checks all models.
+
         Returns:
-        --------
-        dict
-            Dicionário com os resultados da verificação
+            dict: Dictionary with verification results.
         """
         
         resultados = {}

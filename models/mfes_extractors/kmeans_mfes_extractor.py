@@ -7,9 +7,10 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from kneed import KneeLocator
 
-
+# Maximum number of clusters to test for the Elbow method
 MAX_CLUSTERS = 10
 
+# Default parameters for KMeans clustering
 KMEANS_PARAMS = {
     "init": "random",
     "n_init": 10,
@@ -18,12 +19,29 @@ KMEANS_PARAMS = {
 }
 
 class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
+    """
+    A meta-feature extractor that applies KMeans clustering
+    and calculates various clustering-based meta-features.
+    """
+
     def fit(self):
+        """
+        Method to adjust to inheritane from MfeExtractor
+        """
         return self
     
     
-    
     def _train(self,df:pd.DataFrame)-> (KMeans|int) :
+        """
+        Trains multiple KMeans models (k=1 to max_clusters) and selects the optimal
+        number of clusters using the Elbow method (KneeLocator).
+
+        Args:
+            df (np.ndarray): The scaled data used for clustering.
+
+        Returns:
+            Tuple[KMeans, int]: The best fitted KMeans model and the determined optimal knee.
+        """
         inertias = []
         models = []
         max_clusters = min(df.shape[0],MAX_CLUSTERS)
@@ -39,6 +57,16 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
 
 
     def evaluate(self,df:pd.DataFrame)->dict:
+        """
+        Performs standardization, applies the Kmeans the elbow method, and calculates clustering meta-features.
+
+        Args:
+            df (pd.DataFrame): The input data
+
+        Returns:
+            Dict[str, Union[int, float]]: A dictionary containing the KMeans-based meta-features.
+        """
+        
         df = df.select_dtypes(include=np.number)
 
         if not hasattr(self, 'scaler'):

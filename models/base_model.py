@@ -22,12 +22,16 @@ R_STATE = 2022
 
 
 class BaseModel():
+
+    """"
+    Wrapper class for models at base level
+    """
     def __init__(
         self,
         hyperparameters: Tuple[list, dict] = None,
         basis_model = DEFAULT_MODEL,
-        n_folds: int = DEFAULT_N_FOLDS,
-        scoring_metric: str = DEFAULT_METRIC,
+        n_folds: int = DEFAULT_N_FOLDS,  # Number of folds for cross-validation.
+        scoring_metric: str = DEFAULT_METRIC, # Metric to optimize during cross-validation (e.g., 'precision', 'f1').
         scoring_strategy: str = DEFAULT_SCORING_STRATEGY,
         cross_val_type: str = DEFAULT_CROSS_VAL_TYPE,
         verbose: bool = VERBOSE,
@@ -51,7 +55,10 @@ class BaseModel():
 
 
     def _cross_validation(self, features: pd.DataFrame, target: pd.Series) -> dict:
-        print("hyperparams" ,type(self.hyperparameters), self.hyperparameters,sep="|")
+        """
+        Internal method for performing k-fold cross-validation and selecting the best hyperparameters.
+        """
+       
         if isinstance(self.hyperparameters, dict):
             return self.hyperparameters
         if self.hyperparameters is None or not self.hyperparameters:
@@ -72,13 +79,22 @@ class BaseModel():
         return self.hyperparameters[best_idx]
 
     def fit(self, features: pd.DataFrame, target: pd.Series):
+        """
+        Fits the model after finding the best hyperparameters.
+        """
         best_hyperparams = self._cross_validation(features, target)
         self.best_hyperparams = {**{"random_state": R_STATE}, **best_hyperparams}
         self.model = self.basis_model(**self.best_hyperparams).fit(features, target)
         return self
 
     def predict(self, features: pd.DataFrame) -> pd.Series:
+        """
+        Generates class predictions using the fitted model.
+        """
         return self.model.predict(features)
 
     def predict_proba(self, features: pd.DataFrame) -> pd.Series:
+        """
+        Generates probability estimates for each class using the fitted model.
+        """
         return self.model.predict_proba(features)

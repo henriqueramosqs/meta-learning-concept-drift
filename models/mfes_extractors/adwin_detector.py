@@ -2,36 +2,46 @@ from frouros.detectors.concept_drift import ADWIN
 import pandas as pd
 
 class ADWINDetector():
-    """Monitora drift usando ADWIN para múltiplas colunas.
-    
-    Args:
-        feature_cols (list): Lista de colunas a serem monitoradas.
-        adwin_params (dict): Parâmetros do ADWIN (ex: delta=0.002).
+    """Monitors concept drift using ADWIN for multiple columns.
+
+        Args:
+            feature_cols (list): List of columns to monitor for drift.
+            adwin_params (dict): ADWIN parameters (e.g., delta=0.002).
     """
+
+    
     def __init__(self, feature_cols: list=[], adwin_params: dict = {}):
+        """ Creates an ADWIN detector instance for each feature column"""
         self.feature_cols = feature_cols
         self.detectors = {
             col: ADWIN(**adwin_params) for col in feature_cols
         }
 
     def fit(self, data_frame: pd.DataFrame):
-        """Inicializa os detectores com dados de referência."""
+        """Initializes the ADWIN detectors with reference data.
+
+        Args:
+            data_frame (pd.DataFrame): The reference dataset.
+        
+        Returns:
+            ADWINDetector: The fitted instance (for method chaining).
+        """
         for col in self.feature_cols:
             for value in data_frame[col]:
                 self.detectors[col].update(value)
         return self
 
-    def _check_drift(self, data_frame: pd.DataFrame) -> int:
-        """Verifica se qualquer coluna detectou drift."""
-        for col in self.feature_cols:
-            for value in data_frame[col]:
-                self.detectors[col].update(value)
-                if self.detectors[col].drift:
-                    return 1
-        return 0
-
     def evaluate(self, data_frame: pd.DataFrame) -> dict:
-        """Retorna métricas + flag de drift."""
+        """Updates the detectors and returns metrics plus a drift flag.
+
+        Args:
+            data_frame (pd.DataFrame): The new data batch to evaluate.
+
+        Returns:
+            dict: Dictionary containing ADWIN-specific metrics (like window width)
+                  and the overall drift flag.
+        """
+          
         results = {}
         drift_detected = False
         print("FEATURE_COLS",self.feature_cols)

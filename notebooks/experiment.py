@@ -14,8 +14,11 @@ from sklearn.svm import SVC
 import lightgbm as ltb
 from data.utils.eda import EDA
 import pickle
-             
+
+# Defines the performance metrics that the meta-learner will predict.
 performance_metric = ["recall","precision","kappa","f1-score"]
+
+# A list of base classification models to be evaluated in the experiments.
 base_models = [
         RandomForestClassifier,
         DecisionTreeClassifier,
@@ -23,35 +26,84 @@ base_models = [
         SVC
     ]
 
+# A dictionary containing specific hyperparameters for each base model.
 hyperparams ={
     "RandomForestClassifier": {"max_depth": 6} ,
     "DecisionTreeClassifier": {"max_depth": 6} ,
     "LogisticRegression" :{},
     "SVC": {"probability": True}
 }
-datasets = [
-    # "electricity",
-    "powersupply",
-    # "Rialto",
-    # "airlines"
-    ]
-include_dft = [True, False]
 
-OFFLINE_PHASE_SIZE = 5000
-BASE_TRAIN_SIZE = 2000
-ETA = 100
-STEP = 30 
-TARGET_DELAY = 500
+# A dictionary holding metadata and specific parameters for each dataset to be used in the experiments.
+DATASETS_METADATA = {
+    "powersupply": {
+        "dataset_name": "powersupply",
+        "class_col": "class",
+        "base_model_type": "multiclass",
+        "offline_phase_size": 5000,
+        "base_train_size": 2000,
+        "eta": 100,
+        "step": 30,
+        "target_delay": 500,
+    },
+    "airlines": {
+        "dataset_name": "airlines",
+        "class_col": "Delay",
+        "base_model_type": "binary_classification",
+        "offline_phase_size": 50000,
+        "base_train_size": 20000,
+        "eta": 1000,
+        "step": 300,
+        "target_delay": 2000,
+    },
+    "electricity": {
+        "dataset_name": "electricity",
+        "class_col": "class",
+        "base_model_type": "binary_classification",
+        "offline_phase_size": 5000,
+        "base_train_size": 2000,
+        "eta": 100,
+        "step": 30,
+        "target_delay": 500,
+    },
+    "rialto": {
+        "dataset_name": "rialto",
+        "class_col": "class",
+        "base_model_type": "multiclass",
+        "offline_phase_size": 5000,
+        "base_train_size": 2000,
+        "eta": 100,
+        "step": 30,
+        "target_delay": 500,
+    },
+}
+
+include_dft = [True, False]
 
 custom_dir = "fernanda_weak"
 
-for dataset in datasets:
+
+print(f"datasets_metadate: {DATASETS_METADATA}")
+for ds_name, dataset in DATASETS_METADATA.items():
+    #Main loop iterating through each dataset defined in the metadata.
+    
+    if(ds_name != "rialto"):
+        continue
+
+    print("Dataset:" + ds_name)
+
+    ETA = dataset["eta"]
+    STEP = dataset["step"]
+    BASE_TRAIN_SIZE = dataset["base_train_size"]
+    TARGET_DELAY = dataset["target_delay"]
+    OFFLINE_PHASE_SIZE = dataset["offline_phase_size"]
+
     for base_model in base_models:
         base_model_name = base_model.__name__
         for has_dft in include_dft:
-        
-            df =  DataLoader.load_data(f"real/{dataset}.arff")
-            FILE_NAME = f"basemodel: {base_model_name}  - dataset: {dataset}"
+            
+            df =  DataLoader.load_data(f"real/{ds_name}.arff")
+            FILE_NAME = f"basemodel: {base_model_name}  - dataset: {ds_name}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"
             FILE_NAME
@@ -66,7 +118,8 @@ for dataset in datasets:
                 eta=ETA,
                 step=STEP,
                 target_delay=TARGET_DELAY,
-                pca_n_components=None
+                pca_n_components=None,
+                evaluator_avg= ("micro" if dataset["base_model_type"]   =="multiclass" else "binary")
             )
 
             offline_df = df.iloc[:OFFLINE_PHASE_SIZE]
@@ -75,6 +128,7 @@ for dataset in datasets:
             online_targets = online_df["class"]
             meta_learner.fit(offline_df,BASE_TRAIN_SIZE)
 
+            # Offline phase
             with tqdm(total=TARGET_DELAY) as pbar:
                 for i, row in online_features.iloc[:TARGET_DELAY].iterrows():
                     row = pd.DataFrame([row], columns=row.index)
@@ -83,7 +137,7 @@ for dataset in datasets:
 
             df = online_features.iloc[TARGET_DELAY:-TARGET_DELAY]
 
-
+            # Online phase
             with tqdm(total=df.shape[0]) as pbar:
                 for i, row in df.iterrows():
                     row = pd.DataFrame([row], columns=row.index)
@@ -109,6 +163,7 @@ for dataset in datasets:
                 plt.plot(x, y_pred, label="baseline")
                 plt.legend(loc="upper left")
 
+            # Saves results 
             os.makedirs(f"metabase/{custom_dir}", exist_ok=True)
             os.makedirs(f"trained_models/{custom_dir}", exist_ok=True)
 

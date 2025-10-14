@@ -12,10 +12,27 @@ TAU = 0.5
 PCA_THRESH = 0.95
 
 class StatsMFesExtractor(MfeExtractor):
+    """
+    A concrete implementation of MfeExtractor that calculates a wide range of basic
+    statistical meta-features (MFEs) from a DataFrame.
+    """
     def fit(self):
+        """
+        Method to adjust to inheritane from MfeExtractor
+        """
         return self
     
     def _get_iqr_metrics(self,df:pd.DataFrame):
+        """
+        Calculates the Interquartile Range (IQR) and the count of outliers per feature 
+        based on the 1.5*IQR rule.
+
+        Args:
+            df (pd.DataFrame): The input data.
+
+        Returns:
+            Dict[str, Union[int, float]]: A dictionary containing outlier counts and IQR values per column.
+        """
         q1 = df.quantile(0.25)
         q3 = df.quantile(0.75)
         iqr = q3 - q1
@@ -24,7 +41,17 @@ class StatsMFesExtractor(MfeExtractor):
         iqr_dict = {f'iqr_{key}':value for key, value in iqr.to_dict().items()}
         return {**nr_out, **iqr_dict}
     
-    def _get_correlation(self,df:pd.DataFrame)->pd.DataFrame:
+    def _get_correlation(self,df:pd.DataFrame):
+        """
+        Calculates the pairwise Pearson correlation between features and the number of 
+        highly correlated attributes.
+
+        Args:
+            df (pd.DataFrame): The input data.
+
+        Returns:
+            Dict[str, float]: Dictionary of pairwise correlations and the count of highly correlated pairs.
+        """
         if(EDA.lacking(df)):
             print("Foi o corr")
         corr = df.corr()
@@ -39,6 +66,15 @@ class StatsMFesExtractor(MfeExtractor):
         return ans
     
     def _get_sparsity(self,df:pd.DataFrame)->float:
+        """
+        Calculates the  sparsity (structural sparsity) based on the number of unique 
+        values compared to the number of instances.
+        Args:
+            df (pd.DataFrame): The input data.
+
+        Returns:
+            float: The sparsity value
+        """
         num_instances,num_features = df.shape
         unique_vals, phi_i = np.unique(df, return_counts=True)
         phi_x = len(unique_vals)
@@ -47,7 +83,15 @@ class StatsMFesExtractor(MfeExtractor):
         
     
     def evaluate(self,df:pd.DataFrame)->dict:
+        """
+        Calculates and aggregates statistical meta-features.
 
+        Args:
+            df (pd.DataFrame): The data batch to evaluate.
+
+        Returns:
+            Dict[str, Union[int, float]]: Dictionary of all extracted meta-features.
+        """
         df = df.select_dtypes(include=np.number)
         num_instances,num_features = df.shape
         max_dict =  {f'max_{key}': value for key, value in df.max().to_dict().items()}

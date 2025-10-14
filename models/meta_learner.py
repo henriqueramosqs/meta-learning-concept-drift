@@ -25,12 +25,8 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
-# Given a dataset, performs the meta-learning task 
-# python3 -m models.meta_learner
-# class MetaLearner:
-
-# Um base model, um meta model para cada performance_metric
-
+# Defines the valid theoretical range for each performance metric.
+# Used to clip the predictions of the meta-models.
 metrics_range ={
     "precision": (0, 1),
     "recall": (0, 1),
@@ -40,6 +36,10 @@ metrics_range ={
 }
 
 class MetaLearner():
+    """
+    Orchestrates the meta learning experiment, integrating BaseDataManager,
+    MetaDataManager, MetaModel, BaseModel, etc
+    """
     def __init__(
             self,
             base_model_params,
@@ -66,16 +66,38 @@ class MetaLearner():
         self.meta_models = {metric: MetaModel() for metric in self.performance_metrics}
 
     def _limit_metric_value(self, value: float, metric_name: str) -> float:
+        """
+        Clips a predicted metric value to its valid theoretical range.
+
+        Args:
+            value (float): The predicted performance metric value.
+            metric_name (str): The name of the metric to look up its range.
+
+        Returns:
+            float: The clipped value.
+        """
+
         value = max(value,metrics_range[metric_name][0])
         value = min(value, metrics_range[metric_name][1])
         return value
 
     def _train_base_models(self, df: pd.DataFrame) -> None:
+        """
+        Trains the base model on an initial dataset.
+
+        Args:
+            df (pd.DataFrame): The training data for the base model. Must contain a 'class' column.
+        """
         features = df.drop("class", axis=1)
         target = df["class"]
         self.base_model.fit(features,target)
 
     def _fit_mfes(self,df:pd.DataFrame)->pd.DataFrame:
+        """
+        Initializes and fits the meta-feature (MFEs) extractors on a reference dataset.        
+        Args:
+            df (pd.DataFrame): The reference data for fitting the extractors.
+        """
         features = df.rename(columns={"class":"prediction"})
         feature_cols = features.columns
         pred_proba = self.base_model.predict_proba(features.drop("prediction",axis=1))
@@ -105,28 +127,27 @@ class MetaLearner():
         
 
     def _get_baseline(self) -> dict:
+        """
+        Retrieves the performance metrics from the most recent labeled batch.
 
-        # Primeiro, veja o que get_last_tageted_row() retorna
-        # full_row = self.metabase.get_last_tageted_row()
-        # print(f"DEBUG - Full row: {full_row}")
-        # print(f"DEBUG - Row type: {type(full_row)}")
-        
-        # # Agora veja apenas as performance_metrics
-        # batch = full_row[self.performance_metrics]
-        # print(f"DEBUG - Batch (only metrics): {batch}")
-        # print(f"DEBUG - Batch values: {batch.values}")
-        # print(f"DEBUG - Batch index: {batch.index.tolist()}")
-        
-        # # Veja o dicionário que está sendo gerado
-        # batch_dict = batch.to_dict()
-        # print(f"DEBUG - Batch dict: {batch_dict}")
+        Returns:
+            dict: A dictionary where keys are like 'last_precision', 'last_recall', etc.
+        """
 
         batch = self.metabase.get_last_tageted_row()[self.performance_metrics]
         res =  {f"last_{metric}": value for metric, value in batch.to_dict().items()}
-        # print("RES",res,end="\n")
         return res
 
     def _get_mfes(self,df:pd.DataFrame)->pd.DataFrame:
+        """
+        Extracts all meta-features for a given data batch in parallel.
+
+        Args:
+            df (pd.DataFrame): The data batch to extract features from.
+
+        Returns:
+            pd.DataFrame: A single-row DataFrame containing all extracted meta-features.
+        """
         mf_dict= {}
     
         with ThreadPoolExecutor() as executor:
@@ -142,44 +163,35 @@ class MetaLearner():
         return pd.DataFrame([mf_dict])
 
     def _get_meta_labels(self,df:pd.DataFrame)->pd.DataFrame:
+        """
+        Calculates the true performance metrics (labels) for a labeled data batch.
+        
+        Args:
+            df (pd.DataFrame): The labeled data batch, containing both true labels ('class')
+                               and predictions ('prediction').
+
+        Returns:
+            dict: A dictionary of calculated performance metrics.
+        """
         y_true = df["class"]
         y_pred = df["prediction"]
 
         metrics = {
             metric: self.evaluator.evaluate(metric, y_true,y_pred) for metric in self.performance_metrics
         }
-
-            
-        # DEBUG: Verifique a distribuição
-        # print(f"\n=== DEBUG METRICS ===")
-        # print(f"y_true distribution: {pd.Series(y_true).value_counts().to_dict()}")
-        # print(f"y_pred distribution: {pd.Series(y_pred).value_counts().to_dict()}")
-        
-        # # Calcule métricas com diferentes averages para comparar
-        # precision_micro = precision_score(y_true, y_pred, average="micro", zero_division=0)
-        # precision_weighted = precision_score(y_true, y_pred, average="weighted", zero_division=0)
-        # precision_bin = precision_score(y_true, y_pred, average="binary", zero_division=0)
-        
-        # recall_micro = recall_score(y_true, y_pred, average="micro", zero_division=0)
-        # recall_weighted = recall_score(y_true, y_pred, average="weighted", zero_division=0)
-        # recall_bin = recall_score(y_true, y_pred, average="binary", zero_division=0)
-
-
-        # f1_score_micro = f1_score(y_true, y_pred, average="micro", zero_division=0)
-        # f1_score_weighted = f1_score(y_true, y_pred, average="weighted", zero_division=0)
-        # f1_score_bin = f1_score(y_true, y_pred, average="binary", zero_division=0)
-
-        
-        # print(f"Precision micro: {precision_micro}, weighted: {precision_weighted}, bin: {precision_bin}")
-        # print(f"Recall micro: {recall_micro}, weighted: {recall_weighted},bin: {recall_bin}")
-        # print(f"f1-score micro: {f1_score_micro}, weighted: {f1_score_weighted},bin: {f1_score_bin}")
-        # print("====================\n")
-        
-
-        # print("metrics",metrics)
         return metrics
 
     def _get_train_metabase(self, target_col:str=None) -> tuple[pd.DataFrame, pd.Series]:
+        """
+        Retrieves the training data for the meta-models from the MetaDataManager.
+
+        Args:
+            target_col (str, optional): The specific performance metric to be used as the target. 
+                                        If None, only features are returned. Defaults to None.
+
+        Returns:
+            tuple[pd.DataFrame, pd.Series]: A tuple containing the meta-features and the target series.
+        """
         meta_base = self.metabase.get_train_batch()
 
         features = meta_base.drop([col for col in self.performance_metrics if col in meta_base.columns], axis=1)
@@ -190,18 +202,46 @@ class MetaLearner():
         return  features, target
 
     def _extract_metric(self, extractor, df:pd.DataFrame) -> tuple:
+        """
+        A helper function to run a single extractor and time its execution.
+
+        Args:
+            extractor: An instance of a meta-feature extractor.
+            df (pd.DataFrame): The data batch to process.
+
+        Returns:
+            tuple: A tuple containing the extractor's name, its result (a dict of features),
+                   and the time it took to run.
+        """
         start = time.time()
         result = extractor.evaluate(df)
         elapsed = time.time() - start
         return (extractor.__class__.__name__, result, elapsed)
         
     def _get_last_performances(self, meta_base: pd.DataFrame) -> pd.DataFrame:
+        """
+        Creates lagged performance features. This shifts the performance metrics from previous
+        time steps to be used as input features for the current step.
+
+        Args:
+            meta_base (pd.DataFrame): The meta-dataset.
+
+        Returns:
+            pd.DataFrame: The meta-dataset with added 'last_<metric>' columns.
+        """
         for metric in self.performance_metrics:
             col_name = f"last_{metric}"
             meta_base.loc[:, col_name] = meta_base[metric].shift(self.target_delay)
         return meta_base
     
     def _init_base_data(self,df:pd.DataFrame)->None:
+        """
+        Initializes the BaseDataManager with the initial stream of data after the base model
+        has been trained. It adds base model predictions and probabilities to the dataframe.
+
+        Args:
+            df (pd.DataFrame): The initial data stream for meta-learning.
+        """
         features = df.drop("class",axis=1)
 
         pred_proba = self.base_model.predict_proba(features)
@@ -213,11 +253,20 @@ class MetaLearner():
 
     
     def _train_meta_model(self) -> None:
+        """
+        Trains each meta-model on the current meta-dataset. A separate model is trained
+        for each performance metric.
+        """
         for metric in self.performance_metrics:
             features, target = self._get_train_metabase(metric)
             self.meta_models[metric].fit(features, target)
 
     def _init_metabase(self)->None: 
+        """
+        Creates the initial meta-dataset from the base data. It iterates through the
+        data in batches, extracts meta-features, calculates actual performance (meta-labels),
+        and assembles them into a training set for the meta-models.
+        """
         df = self.basedata.get_raw()
 
         batches = [
@@ -240,6 +289,14 @@ class MetaLearner():
 
 
     def update(self, new_instance_df: pd.DataFrame) -> None:
+        """
+        Processes a new, unlabeled data instance from the stream. If a new batch is
+        completed, it extracts meta-features and uses the meta-models to predict future performance.
+
+        Args:
+            new_instance_df (pd.DataFrame): A single-row DataFrame with a new instance.
+        """
+
 
         pred_proba = self.base_model.predict_proba(new_instance_df)
         new_instance_df["prediction"] = self.base_model.predict(new_instance_df)[0]
@@ -280,6 +337,14 @@ class MetaLearner():
             self.metabase.update(mfes_df)
 
     def update_target(self, target) -> None:
+        """
+        Processes a new true label when it becomes available. If a labeled batch is
+        completed, it calculates the actual performance and updates the meta-dataset,
+        potentially triggering a retraining of the meta-models.
+
+        Args:
+            target: The true label for an older instance.
+        """
         self.basedata.update_target(target)
 
         if self.basedata.has_new_targeted_batch():
@@ -292,6 +357,17 @@ class MetaLearner():
 
 
     def fit(self,train_df: pd.DataFrame, base_train_size:int)->None:
+        """
+        Orchestrates the  offline training process.
+
+        Args:
+            train_df (pd.DataFrame): The complete training dataset.
+            base_train_size (int): The number of instances to use for training the base model.
+                                   The rest will be used for training the meta-models.
+
+        Returns:
+            self: The fitted MetaLearner instance.
+        """
         base_train = train_df[:base_train_size]
         meta_train = train_df[base_train_size:]
         self._train_base_models(base_train)
