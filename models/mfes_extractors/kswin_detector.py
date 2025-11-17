@@ -24,7 +24,7 @@ class KSWINDetector(MfeExtractor):
         """
         for col in self.feature_cols:
             for value in data_frame[col]:
-                self._update_detector(col, value)
+                self.detectors[col].update(value)
         return self
 
     def evaluate(self, data_frame: pd.DataFrame) -> dict:

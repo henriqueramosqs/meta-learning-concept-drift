@@ -84,7 +84,9 @@ class MetaEvaluator():
         if not os.path.exists(correct_path):
             print(f"ERRO: Arquivo não encontrado em {correct_path}")
     
-        df = pd.read_csv(correct_path).dropna()
+        # teste    
+        # df = pd.read_csv(correct_path).dropna()
+        df = pd.read_csv(correct_path).fillna(0)
 
         metrics = list(set(df.columns).intersection(set(["auc","f1-score","recall", "precision", "kappa"])))
 
@@ -145,7 +147,7 @@ class MetaEvaluator():
             plt.subplot(2, 2, base_model_idx + 1)
             for metric_idx, metric in enumerate(self.metrics[base_model]):
                 self._plot_subplot(self.results[base_model], metric=metric, color=COLORS[metric_idx])
-
+        plt.tight_layout()
 
     def _plot_comp_subplot(self, results_df: pd.DataFrame, color: str=COLORS[0], 
                         metric: str="kappa", plot_col: str="proposed_mtl"):

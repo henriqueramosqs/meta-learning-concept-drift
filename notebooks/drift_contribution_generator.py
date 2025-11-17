@@ -67,6 +67,7 @@ class DriftContributionGenerator():
         # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines  - with_drift_metrics.csv
         # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines - with_drift_metrics.csv
         # EDA.make(self.metabase)
+        self.metabase.rename(columns=lambda col: col.replace('bhattach aryya', 'bhattacharyya'), inplace=True)
         self.metabase = self.metabase.drop(columns=["original_idx", "data_type"], errors='ignore')
 
     def _create_results_df(self) -> None:
@@ -151,6 +152,11 @@ class DriftContributionGenerator():
             "sqsi_drift_flag",
             "predict",
             "last",
+            "bhattacharyya",
+            "energy_distance_",
+            "emd_",
+            "hellinger_",
+            "jensen_shanon_",
         ]
 
         self.drift_cols = []
@@ -172,6 +178,8 @@ class DriftContributionGenerator():
         for metric in self.metrics:
             features = batch.drop(self.metrics, axis=1)
             non_drift_features = features.drop(self.drift_cols, axis=1)
+            # print(f"features: { [col for col in features.columns.to_list() if ("bhattach" in col) ]}")
+            # print(f"non drift features: {non_drift_features.columns.to_list()}")
             target = batch[metric]
             for i in range(self.n_models):
                 self.meta_models[metric]["with_drift"][i].fit(features, target)
@@ -251,16 +259,16 @@ class DriftContributionGenerator():
         self._save_results()
 
 models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
-datasets  = ["airlines"]
-custom_dirs = ["fernanda_weak"]
+datasets  = ["electricity","powersupply","airlines","rialto"]
+custom_dirs = ["henrique_st"]
 
 if __name__ == "__main__":
     start = time.time()
     print("Estou rodando")
     for dir in custom_dirs:
-        for dataset_name in datasets:
+        for dataset_name in datasets[-2:-1]:
             for base_model in models:   
-                for n_features in range(15, 101, 5):
+                for n_features in range(10, 101, 5):
                     print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 
                     d_gen = DriftContributionGenerator(
                         base_model=base_model,

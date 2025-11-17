@@ -29,8 +29,8 @@ class Evaluator():
         self.evaluator_avg = evaluator_avg
         if(self.evaluator_avg==None):
             self.evaluator_avg = "micro"
-
-
+        print(f"evaluator: {self.evaluator_avg}")
+        
     def _get_performance( self, y_true: pd.Series, y_pred: pd.Series, metric_name) -> float:
 
         """

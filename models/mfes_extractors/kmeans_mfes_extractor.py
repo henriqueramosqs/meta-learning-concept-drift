@@ -84,12 +84,12 @@ class KmeansMfesExtractor(MfeExtractor,ClustringMetric):
             'kmeans_n_iter': kmeans.n_iter_,
             'kmeans_n_clusters': n_clusters,
             'kmeans_inertia': kmeans.inertia_,
-            # 'kmeans_knee': knee,    
+            'kmeans_knee': knee,    
             'kmenas_compactness': self._get_compactness(df,labels,n_clusters,cluster_centers),
-            # 'kmeans_connectivity': self._get_connectivity(df,labels),
-            # 'kmeans_min_size_dist': min_size_dist,    
-            # 'kmeans_max_size_dist': max_size_dist,    
-            # 'kmeans_mean_size_dist':mean_size_dist,
+            'kmeans_connectivity': self._get_connectivity(df,labels),
+            'kmeans_min_size_dist': min_size_dist,    
+            'kmeans_max_size_dist': max_size_dist,    
+            'kmeans_mean_size_dist':mean_size_dist,
         }
     
     

@@ -123,14 +123,18 @@ class MetaModel():
         runs a feature selection process based on LightGBM's feature importance.
         """
         if self.feature_list:
-            return features[self.feature_list]
+            try:
+                return features[self.feature_list]
+            except:
+                print(f"self.feature_list: {self.feature_list}")
+                print(f"Features columns: {list(features.columns)}")
+                raise
 
         # ✅ DEBUG: Verificar se feature selection é necessário
         # print(f"🔍 Feature selection: select_k_features={self.select_k_features}")
         
         if not self.select_k_features or self.select_k_features==1:
             self.feature_list = list(features.columns)
-            # print(f"✅ Using all {len(self.feature_list)} features")
             return features
 
         if self.select_k_features < 1:
@@ -146,11 +150,12 @@ class MetaModel():
         model = ltb.LGBMRegressor(**best_hyperparams).fit(features, target)
         
         # ✅ DEBUG: Verificar qualidade do modelo de feature selection
-        train_score = model.score(features, target)
+        # train_score = model.score(features, target)
         # print(f"📊 Feature selection model score: {train_score:.3f}")
-        
+        # 
         self.feature_list = self._get_n_most_important_features(model, n_features)
         # print(f"✅ Selected {len(self.feature_list)} features")
+        # print(f"self.feature_list: {self.feature_list}")
         return features[self.feature_list]
 
     def _print(self, msg: str):

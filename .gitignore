@@ -1,6 +1,7 @@
 .venv/
-DS_Store/
+.DS_Store/
 tempCodeRunnerFile.py
 __pycache__/
 output.log
 teste
+.log

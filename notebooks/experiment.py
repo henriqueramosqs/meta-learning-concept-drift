@@ -21,9 +21,9 @@ performance_metric = ["recall","precision","kappa","f1-score"]
 # A list of base classification models to be evaluated in the experiments.
 base_models = [
         RandomForestClassifier,
-        DecisionTreeClassifier,
         LogisticRegression,
-        SVC
+        SVC,
+        DecisionTreeClassifier,
     ]
 
 # A dictionary containing specific hyperparameters for each base model.
@@ -36,6 +36,16 @@ hyperparams ={
 
 # A dictionary holding metadata and specific parameters for each dataset to be used in the experiments.
 DATASETS_METADATA = {
+    "electricity": {
+        "dataset_name": "electricity",
+        "class_col": "class",
+        "base_model_type": "binary_classification",
+        "offline_phase_size": 5000,
+        "base_train_size": 2000,
+        "eta": 100,
+        "step": 30,
+        "target_delay": 500,
+    },
     "powersupply": {
         "dataset_name": "powersupply",
         "class_col": "class",
@@ -56,16 +66,7 @@ DATASETS_METADATA = {
         "step": 300,
         "target_delay": 2000,
     },
-    "electricity": {
-        "dataset_name": "electricity",
-        "class_col": "class",
-        "base_model_type": "binary_classification",
-        "offline_phase_size": 5000,
-        "base_train_size": 2000,
-        "eta": 100,
-        "step": 30,
-        "target_delay": 500,
-    },
+    
     "rialto": {
         "dataset_name": "rialto",
         "class_col": "class",
@@ -80,18 +81,14 @@ DATASETS_METADATA = {
 
 include_dft = [True, False]
 
-custom_dir = "fernanda_weak"
+custom_dir = "henrique_st"
 
-
-print(f"datasets_metadate: {DATASETS_METADATA}")
 for ds_name, dataset in DATASETS_METADATA.items():
     #Main loop iterating through each dataset defined in the metadata.
-    
-    if(ds_name != "rialto"):
+    print(f"ds_name: {ds_name}")
+    if(ds_name!="airlines"):
         continue
-
-    print("Dataset:" + ds_name)
-
+    
     ETA = dataset["eta"]
     STEP = dataset["step"]
     BASE_TRAIN_SIZE = dataset["base_train_size"]
@@ -99,10 +96,14 @@ for ds_name, dataset in DATASETS_METADATA.items():
     OFFLINE_PHASE_SIZE = dataset["offline_phase_size"]
 
     for base_model in base_models:
+
         base_model_name = base_model.__name__
+        if(base_model_name!="DecisionTreeClassifier"):
+            continue
         for has_dft in include_dft:
             
             df =  DataLoader.load_data(f"real/{ds_name}.arff")
+
             FILE_NAME = f"basemodel: {base_model_name}  - dataset: {ds_name}"
             if has_dft:
                 FILE_NAME += " - with_drift_metrics"

@@ -52,17 +52,18 @@ class StatsMFesExtractor(MfeExtractor):
         Returns:
             Dict[str, float]: Dictionary of pairwise correlations and the count of highly correlated pairs.
         """
-        if(EDA.lacking(df)):
-            print("Foi o corr")
         corr = df.corr()
-        mask = np.tril(corr,k=-1).astype(bool)
+        # corr.fillna(0, inplace=True)
+
+        mask = np.tril(np.ones_like(corr, dtype=bool), k=-1)
         d = corr.shape[0]
         nrCorAttr =(2/((d)*(d-1)))*corr.where(mask & (corr > TAU)).values.sum()
         ans = { 
             f'corr_{corr.columns[i]}_{corr.columns[j]}': corr.iloc[i, j]
             for i, j in zip(*np.where(mask))
             }
-        # ans['nrCorAttr']=nrCorAttr
+        
+        ans['nrCorAttr']=nrCorAttr
         return ans
     
     def _get_sparsity(self,df:pd.DataFrame)->float:
@@ -111,16 +112,16 @@ class StatsMFesExtractor(MfeExtractor):
         uniqueness_dict = {f'uniqueness_ratio_{key}': value for key,value in (df.nunique()/num_instances).to_dict().items()}
         sparsity_dict = {f'sparsity_{key}': value for key,value in (1 - df.notna().sum(axis=0) /num_instances).to_dict().items()}
         attr_sparsity_dict = {f'attr_sparsity_': self._get_sparsity(df)}
-        
+
         return {
             **max_dict, 
             **min_dict, 
             **mean_dict,
             **median_dict,
             **std_dict,
-            # **var_dict,
-            # **kurt_dict,
-            # **skew_dict,
+            **var_dict,
+            **kurt_dict,
+            **skew_dict,
             **corr_dict,
             **gmean_dict,
             **hmean_dict,
@@ -128,7 +129,7 @@ class StatsMFesExtractor(MfeExtractor):
             **pca_dict,
             **iqr_dict,
             **uniqueness_dict,
-            # **sparsity_dict,
+            **sparsity_dict,
             **attr_sparsity_dict
         }
 

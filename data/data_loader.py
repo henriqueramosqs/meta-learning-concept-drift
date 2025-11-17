@@ -19,12 +19,20 @@ class DataLoader:
         if(not "class" in meta_data.names()):
             raise Exception(f"{src} dataset  does not feature a target column named \"class\"")
         df = pd.DataFrame(data)
+
+        # Tirar depois. Isso é aplicável apenas para o Electricity
+        # df['weekday'] = pd.to_numeric(df['day'])
+        # df = df.drop(['date', 'period', 'day'], axis=1)
+
         cat_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+
 
         print(f"Loading dataset {src}")
         print(df.info())
         print(f"Performing Label Encoding on the following columns: {cat_cols}")
+    
         
+
         for col in df.columns:
             if(df[col].dtypes=='category' or df[col].dtypes=='object'):
                     print(col,": " ,df[col].unique(),"\n")

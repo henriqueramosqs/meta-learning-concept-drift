@@ -5,7 +5,7 @@ import pandas as pd
 class HDDMADetector(MfeExtractor):
     """
     Monitors concept drift using the HDDM-A (Hellinger Distance Drift Detection Method - Average) 
-    for multiple columns. HDDM-A tracks the average error rate.
+    for multiple columns.
     
     Args:
         feature_cols (list): List of columns to monitor for drift.

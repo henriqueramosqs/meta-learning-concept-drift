@@ -14,3 +14,8 @@ from .hddmw_detector import *
 from .hddma_detector import *
 from .kswin_detector import *
 from .ddm_detector import *
+from .bhattacharyya_detector import *
+from .hellinger_detector import *
+from .emd_extractor import *
+from .energy_detector import *
+from .js_detector import *

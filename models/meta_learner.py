@@ -11,6 +11,7 @@ import lightgbm as ltb
 from .mfes_extractors  import PsiCalculator, Udetector, DomainClassifier, OmvPht
 from .mfes_extractors  import ADWINDetector, KSWINDetector, HDDMADetector, HDDMWDetector,KSWINDetector,DDMDetector
 from .mfes_extractors import StatsMFesExtractor, DBSCANMfesExtractor, SqsiCalculator,KmeansMfesExtractor
+from .mfes_extractors import *
 from eval import Evaluator
 from data.data_loader import DataLoader
 from data.utils.eda import EDA
@@ -108,7 +109,7 @@ class MetaLearner():
  
         self.mfes_extractors = [
             StatsMFesExtractor().fit(),
-            # DBSCANMfesExtractor().fit(),
+            DBSCANMfesExtractor().fit(),
             KmeansMfesExtractor().fit()
         ]
         if self.has_dft_mfes:
@@ -118,11 +119,12 @@ class MetaLearner():
                 OmvPht(score_cols=score_cols).fit(features),
                 SqsiCalculator(score_cols=score_cols).fit(features),
                 Udetector(prediction_col="prediction").fit(features),
-                # KSWINDetector(feature_cols).fit(features),
-                # ADWINDetector(feature_cols).fit(features),
-                # DDMDetector(feature_cols).fit(features),
-                # HDDMADetector(feature_cols).fit(features),
-                # HDDMWDetector(feature_cols).fit(features)
+                KSWINDetector(feature_cols).fit(features),
+                BhattacharyyaDetector(feature_cols).fit(features),
+                HellingerDistanceDetector(feature_cols).fit(features),
+                JensenShanonDetector(feature_cols).fit(features),
+                EMDDetector(feature_cols).fit(features),
+                EnergyDistanceDetector(feature_cols).fit(features),
             ]
         
 
