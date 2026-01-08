@@ -260,13 +260,13 @@ class DriftContributionGenerator():
 
 models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
 datasets  = ["electricity","powersupply","airlines","rialto"]
-custom_dirs = ["henrique_st"]
+custom_dirs = ["fernanda_st"]
 
 if __name__ == "__main__":
     start = time.time()
     print("Estou rodando")
     for dir in custom_dirs:
-        for dataset_name in datasets[-2:-1]:
+        for dataset_name in datasets:
             for base_model in models:   
                 for n_features in range(10, 101, 5):
                     print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 

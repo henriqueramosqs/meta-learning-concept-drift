@@ -119,12 +119,12 @@ class MetaLearner():
                 OmvPht(score_cols=score_cols).fit(features),
                 SqsiCalculator(score_cols=score_cols).fit(features),
                 Udetector(prediction_col="prediction").fit(features),
-                KSWINDetector(feature_cols).fit(features),
-                BhattacharyyaDetector(feature_cols).fit(features),
-                HellingerDistanceDetector(feature_cols).fit(features),
-                JensenShanonDetector(feature_cols).fit(features),
-                EMDDetector(feature_cols).fit(features),
-                EnergyDistanceDetector(feature_cols).fit(features),
+                # KSWINDetector(feature_cols).fit(features),
+                # BhattacharyyaDetector(feature_cols).fit(features),
+                # HellingerDistanceDetector(feature_cols).fit(features),
+                # JensenShanonDetector(feature_cols).fit(features),
+                # EMDDetector(feature_cols).fit(features),
+                # EnergyDistanceDetector(feature_cols).fit(features),
             ]
         
 

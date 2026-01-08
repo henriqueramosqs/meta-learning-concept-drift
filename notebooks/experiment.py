@@ -79,15 +79,13 @@ DATASETS_METADATA = {
     },
 }
 
-include_dft = [True, False]
+include_dft = [True]
 
-custom_dir = "henrique_st"
+custom_dir = "fernanda_st"
 
 for ds_name, dataset in DATASETS_METADATA.items():
     #Main loop iterating through each dataset defined in the metadata.
     print(f"ds_name: {ds_name}")
-    if(ds_name!="airlines"):
-        continue
     
     ETA = dataset["eta"]
     STEP = dataset["step"]
@@ -98,8 +96,6 @@ for ds_name, dataset in DATASETS_METADATA.items():
     for base_model in base_models:
 
         base_model_name = base_model.__name__
-        if(base_model_name!="DecisionTreeClassifier"):
-            continue
         for has_dft in include_dft:
             
             df =  DataLoader.load_data(f"real/{ds_name}.arff")
