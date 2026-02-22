@@ -4,5 +4,8 @@ tempCodeRunnerFile.py
 __pycache__/
 output.log
 teste
-.log
-results/
+*.log
+images/
+backup/
+*.png
+metabase/
