@@ -215,5 +215,3 @@ if __name__ == "__main__":
     evaluator = BaseLevelEvaluator(dataset="airlines", feature_fraction=100) 
     evaluator.plot_comparison()
 
-
-git remote set-url origin https://henriqueramosqs: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@github.com/henriqueramosqs/meta-learning-concept-drift.git
