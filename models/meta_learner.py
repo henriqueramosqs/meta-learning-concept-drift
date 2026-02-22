@@ -1,5 +1,7 @@
 from collections import defaultdict
 import time
+import os 
+import pickle
 import numpy as np
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
@@ -32,7 +34,6 @@ metrics_range ={
     "precision": (0, 1),
     "recall": (0, 1),
     "f1-score": (0, 1),
-    # "auc": (0, 1),
     "kappa": (-1, 1),
 }
 
@@ -51,7 +52,8 @@ class MetaLearner():
             step:int,
             target_delay:int,
             pca_n_components:int,
-            evaluator_avg=None
+            evaluator_avg=None,
+            eval_time_mode:bool = False
         ):
         self.base_model = BaseModel(**base_model_params)
         self.performance_metrics =performance_metrics
@@ -64,6 +66,7 @@ class MetaLearner():
         self.elapsed_time = defaultdict(int) 
         self.evaluator = Evaluator(evaluator_avg)
         self.target_delay = target_delay
+        self.eval_time_mode = eval_time_mode
         self.meta_models = {metric: MetaModel() for metric in self.performance_metrics}
 
     def _limit_metric_value(self, value: float, metric_name: str) -> float:
@@ -119,12 +122,12 @@ class MetaLearner():
                 OmvPht(score_cols=score_cols).fit(features),
                 SqsiCalculator(score_cols=score_cols).fit(features),
                 Udetector(prediction_col="prediction").fit(features),
-                # KSWINDetector(feature_cols).fit(features),
-                # BhattacharyyaDetector(feature_cols).fit(features),
-                # HellingerDistanceDetector(feature_cols).fit(features),
-                # JensenShanonDetector(feature_cols).fit(features),
-                # EMDDetector(feature_cols).fit(features),
-                # EnergyDistanceDetector(feature_cols).fit(features),
+                KSWINDetector(feature_cols).fit(features),
+                BhattacharyyaDetector(feature_cols).fit(features),
+                HellingerDistanceDetector(feature_cols).fit(features),
+                JensenShanonDetector(feature_cols).fit(features),
+                EMDDetector(feature_cols).fit(features),
+                EnergyDistanceDetector(feature_cols).fit(features),
             ]
         
 
@@ -151,17 +154,23 @@ class MetaLearner():
             pd.DataFrame: A single-row DataFrame containing all extracted meta-features.
         """
         mf_dict= {}
-    
-        with ThreadPoolExecutor() as executor:
-            futures = []
+
+        if not self.eval_time_mode:
+            with ThreadPoolExecutor() as executor:
+                futures = []
+                for extractor in self.mfes_extractors:
+                    futures.append(executor.submit(self._extract_metric, extractor, df))
+                
+                for future in futures:
+                    metric_name, result, elapsed = future.result()
+                    mf_dict.update(result)
+                    self.elapsed_time[metric_name] += elapsed
+        else:
             for extractor in self.mfes_extractors:
-                futures.append(executor.submit(self._extract_metric, extractor, df))
-            
-            for future in futures:
-                metric_name, result, elapsed = future.result()
+                metric_name, result, elapsed = self._extract_metric(extractor,df)
                 mf_dict.update(result)
                 self.elapsed_time[metric_name] += elapsed
-        
+            
         return pd.DataFrame([mf_dict])
 
     def _get_meta_labels(self,df:pd.DataFrame)->pd.DataFrame:
@@ -231,9 +240,12 @@ class MetaLearner():
         Returns:
             pd.DataFrame: The meta-dataset with added 'last_<metric>' columns.
         """
+        start = time.time()
         for metric in self.performance_metrics:
             col_name = f"last_{metric}"
             meta_base.loc[:, col_name] = meta_base[metric].shift(self.target_delay)
+        elapsed = time.time() - start
+        self.elapsed_time["ScoringMetrics"] += elapsed
         return meta_base
     
     def _init_base_data(self,df:pd.DataFrame)->None:
@@ -314,27 +326,21 @@ class MetaLearner():
             mfes_df = self._get_mfes(batch)
 
             mfes_df = mfes_df.assign(**baseline)
+            
+            start = time.time()
 
             predictions = {
                 f"meta_predict_{metric}": model.predict(mfes_df)
                 for metric, model in self.meta_models.items()
             }
-
-            # print(f"\n🔍 DEBUG - Predições ANTES da limitação:")
-            # for metric_name, preds in predictions.items():
-            #     print(f"   {metric_name}: [{preds.min():.3f}, {preds.max():.3f}]")
-
-
             for key, value in predictions.items():
                 metric = key.replace("meta_predict_", "")
                 
                 vectorized_limit = np.vectorize(lambda x: self._limit_metric_value(x, metric))
                 predictions[key] = vectorized_limit(value)
 
-            # print(f"\n🔍 DEBUG - Predições DEPOIS da limitação:")
-            # for metric_name, preds in predictions.items():
-            #     print(f"   {metric_name}: [{preds.min():.3f}, {preds.max():.3f}]")
-                                
+            elapsed = time.time() - start
+            self.elapsed_time["ScoringMetrics"] += elapsed
             mfes_df =  mfes_df.assign(**predictions)
             self.metabase.update(mfes_df)
 
@@ -385,8 +391,24 @@ class MetaLearner():
         return self
     
 
-    
-
+    def save_results(self,dest):
+        if not self.eval_time_mode:
+            os.makedirs(f"metabase/{dest}", exist_ok=True)
+            os.makedirs(f"trained_models/{dest}", exist_ok=True)
+            
+            mb = self.metabase.metabase
+                
+            mb.to_csv(f"metabase/{dest}.csv", index=False)
+       
+            with open(f"trained_models/{dest}.pickle", "wb") as handle:
+                pickle.dump(self.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        else:
+           os.makedirs(f"time_elapsed", exist_ok=True) 
+           df = pd.DataFrame(
+                           {key:[value] for key,value in self.elapsed_time.items()}
+                             )
+           df.to_csv(f"time_elapsed/{dest}")
+        
 if __name__ == "__main__":
     base_model = RandomForestClassifier()
     performance_metrics =["precision","recall", "f1-score","kappa"]

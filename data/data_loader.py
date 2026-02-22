@@ -31,7 +31,6 @@ class DataLoader:
         print(df.info())
         print(f"Performing Label Encoding on the following columns: {cat_cols}")
     
-        
 
         for col in df.columns:
             if(df[col].dtypes=='category' or df[col].dtypes=='object'):

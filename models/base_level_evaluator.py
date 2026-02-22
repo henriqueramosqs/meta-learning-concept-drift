@@ -20,7 +20,7 @@ PERFORMANCE_METRICS = [
 METHODS =[
     "with_drift",
     "without_drift",
-    "fernanda_st",
+    # "fernanda_st",
     "baseline",
     "perfect"
 ]
@@ -32,6 +32,18 @@ COLORS = [
     "#6aa4c8ff", # blue
     "#f1c232ff", # yellow
     ]
+
+COLORS = {
+    # "#d9d9d9", # grey
+    "perfect":"#f1c232ff",
+    "original_mfes":  "#ffd7b3",
+    "proposed_mfes":"#FF6347" # red
+}
+rename_map={
+    "with_drift": "proposed_mfes",
+    "without_drift": "original_mfes",
+    "perfect": "perfect"
+}
 
 #  Colocar o perfect [X]
 #  Plotar gráficos [X]
@@ -50,6 +62,12 @@ class BaseLevelEvaluator:
                 return model 
         raise("model not found")
     
+
+
+    def drop_perfect(self):
+        for metric in PERFORMANCE_METRICS:
+            self.methods_perfomances[metric].drop(columns=["perfect_performance"],inplace=True)
+
     def _get_methods_picks(self):
         for metric, df in self.aux_df_by_performance_metric.items():
             for method in METHODS:
@@ -147,7 +165,7 @@ class BaseLevelEvaluator:
                 )
             #    print(f"filtered_df.columns: {filtered_df.columns}")
         # print("aux_cols:",self.aux_df_by_performance_metric["kappa"].columns)
-        self._get_fernanda_st()
+        # self._get_fernanda_st()
         self._get_methods_picks()
        
 
@@ -162,12 +180,32 @@ class BaseLevelEvaluator:
         fig, axis = plt.subplots(ncols=len(PERFORMANCE_METRICS),figsize=(30, 10))
         for metric, cur_ax in zip(PERFORMANCE_METRICS,axis):
             gain_df = self.get_gain(metric)
+            print("ds",self.dataset)
+            print("shape", gain_df.shape)
+            print(gain_df.iloc[-1,:])
             for method in METHODS:
                 if(method=="baseline"):
                     continue
-                lines  =cur_ax.plot(gain_df[f"{method}_gain"],label=method)
+                cur_color = COLORS.get(rename_map[method], "black")
+                lines  =cur_ax.plot(
+                    gain_df[f"{method}_gain"],
+                    label=rename_map[method],
+                    color=cur_color,
+                    linewidth=3,
+                    zorder=2 )
+                
+                y_values = gain_df[f"{method}_gain"]
+                x_values = range(len(y_values))
+                # cur_ax.fill_between(
+                #     x_values,
+                #     0,            
+                #     y_values,     
+                #     color=cur_color, 
+                #     alpha=0.1,      
+                #     zorder=1       
+                # )
             cur_ax.legend(loc='upper right', fontsize='small')
-            cur_ax.grid(True, alpha=0.3)
+            # cur_ax.grid(True, alpha=0.3)
             cur_ax.set_ylabel("Cumulative Gain", fontsize=10)
             cur_ax.set_title(metric) 
         fig.suptitle(f"Cumulative gain for {self.dataset} dataset")
@@ -176,3 +214,6 @@ class BaseLevelEvaluator:
 if __name__ == "__main__":
     evaluator = BaseLevelEvaluator(dataset="airlines", feature_fraction=100) 
     evaluator.plot_comparison()
+
+
+git remote set-url origin https://henriqueramosqs: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@github.com/henriqueramosqs/meta-learning-concept-drift.git

@@ -81,7 +81,7 @@ DATASETS_METADATA = {
 
 include_dft = [True]
 
-custom_dir = "fernanda_st"
+custom_dir = "henrique_st"
 
 for ds_name, dataset in DATASETS_METADATA.items():
     #Main loop iterating through each dataset defined in the metadata.
@@ -149,7 +149,6 @@ for ds_name, dataset in DATASETS_METADATA.items():
                     pbar.update(1)
 
             mb = meta_learner.metabase.metabase
-
             for c in performance_metric:
                 y_true = mb[c]
                 y_pred = mb[f'last_{c}']
@@ -159,13 +158,6 @@ for ds_name, dataset in DATASETS_METADATA.items():
                 plt.plot(x, y_true, label="original")
                 plt.plot(x, y_pred, label="baseline")
                 plt.legend(loc="upper left")
-
-            # Saves results 
-            os.makedirs(f"metabase/{custom_dir}", exist_ok=True)
-            os.makedirs(f"trained_models/{custom_dir}", exist_ok=True)
-
-            
-            mb.to_csv(f"metabase/{custom_dir}/{FILE_NAME}.csv", index=False)
         
-            with open(f"trained_models/{custom_dir}/{FILE_NAME}.pickle", "wb") as handle:
-                pickle.dump(meta_learner.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            meta_learner.save_results(f"{FILE_NAME}")
+            
