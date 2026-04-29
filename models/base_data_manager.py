@@ -79,3 +79,10 @@ class BaseDataManager():
         Checks if enough new labeled instances have been added to form a targeted batch (based on 'step').
         """
         return self.cur_targeted_batch_size >= self.step
+    
+    def get_last_tageted_row(self)->pd.Series:
+        """
+        Retrieves the row that was most recently updated with target performance metrics.
+        """
+        return self.df.iloc[self.new_target_ptr - 1]
+    

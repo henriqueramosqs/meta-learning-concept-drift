@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing
-from sklearn.metrics import roc_curve, auc, cohen_kappa_score
+from sklearn.metrics import roc_curve, auc, cohen_kappa_score, log_loss
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.metrics import f1_score, precision_score, recall_score
 
 
-METRICS = {"precision","recall","f1-score","kappa"}
+METRICS = {"precision","recall","f1-score","kappa","cross_entropy"}
 
 class Evaluator():
     """
@@ -54,10 +54,11 @@ class Evaluator():
             "f1-score": lambda y_true, y_pred: f1_score(y_true, y_pred
                                                         , average=self.evaluator_avg
                                                         ),
+            "cross_entropy": lambda y_true, y_pred: log_loss(y_true, y_pred.values.reshape(1,-1),labels=[i for i in range(y_pred.shape[0])])
         }
         return metric_dict[metric_name](y_true, y_pred)
 
-    def evaluate(self, metric_name: str, y_true: pd.Series, y_pred: pd.Series,) -> float:
+    def evaluate(self, metric_name: str, y_true: pd.Series, y_pred: pd.Series,y_proba:pd.Series=None) -> float:
         """
         Calculates a specified performance metric between true and predicted values.
         
@@ -69,7 +70,6 @@ class Evaluator():
         Returns:
             float: The calculated metric score.
         """
-
         if metric_name not in METRICS:
             raise ValueError(f"'metric_name' param must be one of {self.metrics}")
-        return self._get_performance(y_true, y_pred, metric_name)
+        return self._get_performance(y_true, y_pred if metric_name!="cross_entropy" else y_proba, metric_name)

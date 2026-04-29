@@ -18,11 +18,12 @@ PERFORMANCE_METRICS = [
 ]
 
 METHODS =[
-    "with_drift",
     "without_drift",
+    "with_drift",
+    "perfect",
     # "fernanda_st",
     "baseline",
-    "perfect"
+    
 ]
 
 COLORS = [
@@ -35,14 +36,14 @@ COLORS = [
 
 COLORS = {
     # "#d9d9d9", # grey
-    "perfect":"#f1c232ff",
-    "original_mfes":  "#ffd7b3",
-    "proposed_mfes":"#FF6347" # red
+    "Perfect":"#f1c232ff",
+    "$F_o$":  "#ffd7b3",
+    "$F_d$":"#FF6347" # red
 }
 rename_map={
-    "with_drift": "proposed_mfes",
-    "without_drift": "original_mfes",
-    "perfect": "perfect"
+    "with_drift": "$F_d$",
+    "without_drift": "$F_o$",
+    "perfect": "Perfect"
 }
 
 #  Colocar o perfect [X]
@@ -83,28 +84,7 @@ class BaseLevelEvaluator:
 
         picks_cols= [f"{method}_pick" for method in METHODS]
 
-        # Evaluating picks diversity
 
-        # for metric, df in self.aux_df_by_performance_metric.items():
-        #     print(f"Different picks for metric: {metric}")
-        #     for idx,col_1 in enumerate(picks_cols):
-        #         for col_2 in picks_cols[idx+1:]:
-        #             print(f"{col_1} x {col_2}: {(df[col_1]!=df[col_2]).sum()}")
-        #     print("\n")
-
-        # for metric, df in self.methods_perfomances.items():
-        #     print(f"Different picks formetric: {metric}")
-        #     cols = df.columns
-        #     for idx,col_1 in enumerate(cols):
-        #         for col_2 in cols[idx+1:]:
-        #             print(f"{col_1} x {col_2}: {(df[col_1]!=df[col_2]).sum()}")
-
-    
-        # for metric, df in self.aux_df_by_performance_metric.items():
-        #     print("Picks diversity for metric: {metric}")
-        #     print(df[picks_cols].nunique())
-        #     for col in picks_cols:
-        #         print(df[col].value_counts(),"\n")
     
     def _get_fernanda_st(self):
         for base_model in BASE_MODELS:
@@ -130,17 +110,18 @@ class BaseLevelEvaluator:
                     [self.aux_df_by_performance_metric[metric], filtered_df], axis=1
                 )
 
-    def __init__(self, dataset, feature_fraction):
+    def __init__(self, dataset, feature_fraction,dir):
         self.dataset = dataset
         self.feature_fraction = feature_fraction    
         self.expected_shape = (-1,-1)
         self.aux_df_by_performance_metric = {metric: pd.DataFrame() for metric in PERFORMANCE_METRICS}
         self.methods_perfomances = {metric: pd.DataFrame() for metric in PERFORMANCE_METRICS}
-
+        self.dir = dir
+        self.dataset=self.dataset[0].upper() + self.dataset[1:]
         for base_model in BASE_MODELS:
             cur_loc = os.path.dirname(__file__)
            
-            relative_path = f'../results/henrique_st/results_dataframes/base_model: {base_model} - dataset: {dataset} - select_k_features: {feature_fraction}.csv'
+            relative_path = f'../results/{dir}/results_dataframes/base_model: {base_model} - dataset: {dataset} - select_k_features: {feature_fraction}.csv'
             path = os.path.join(cur_loc,relative_path)
             cur_df = pd.read_csv(path)
 
@@ -177,8 +158,10 @@ class BaseLevelEvaluator:
         return gain_df
     
     def plot_charts(self):
-        fig, axis = plt.subplots(ncols=len(PERFORMANCE_METRICS),figsize=(30, 10))
-        for metric, cur_ax in zip(PERFORMANCE_METRICS,axis):
+        fig, axis = plt.subplots(nrows=2,ncols=2,figsize=(30, 22))
+        axis_flat = axis.flatten()
+        lines_labels=[]
+        for metric, cur_ax in zip(PERFORMANCE_METRICS,axis_flat):
             gain_df = self.get_gain(metric)
             print("ds",self.dataset)
             print("shape", gain_df.shape)
@@ -187,30 +170,44 @@ class BaseLevelEvaluator:
                 if(method=="baseline"):
                     continue
                 cur_color = COLORS.get(rename_map[method], "black")
-                lines  =cur_ax.plot(
+                line=cur_ax.plot(
                     gain_df[f"{method}_gain"],
                     label=rename_map[method],
                     color=cur_color,
                     linewidth=3,
                     zorder=2 )
+                lines_labels.append(line)
+
                 
                 y_values = gain_df[f"{method}_gain"]
                 x_values = range(len(y_values))
-                # cur_ax.fill_between(
-                #     x_values,
-                #     0,            
-                #     y_values,     
-                #     color=cur_color, 
-                #     alpha=0.1,      
-                #     zorder=1       
-                # )
-            cur_ax.legend(loc='upper right', fontsize='small')
-            # cur_ax.grid(True, alpha=0.3)
-            cur_ax.set_ylabel("Cumulative Gain", fontsize=10)
-            cur_ax.set_title(metric) 
-        fig.suptitle(f"Cumulative gain for {self.dataset} dataset")
-        plt.tight_layout() 
+
+                cur_ax.tick_params(axis='both', which='major', labelsize=20, width=2, length=6)
+                
+            # cur_ax.legend(loc='upper left', fontsize='small')
+            cur_ax.tick_params(axis='both', which='major', labelsize=20, width=2, length=6)
+            cur_ax.grid(True, axis='y', linestyle='--', alpha=0.5, zorder=1) 
+            cur_ax.spines['top'].set_visible(False)
+            cur_ax.spines['right'].set_visible(False)
+            cur_ax.set_facecolor('#FAFAFA')
+            cur_ax.set_title(metric,fontsize=32) 
+        handles, labels = axis_flat[0].get_legend_handles_labels()
+
+        fig.legend(
+            handles, 
+            labels,
+            loc='lower center', 
+            bbox_to_anchor=(0.5, 0.05),
+            ncol=len(METHODS)-1,          
+            fontsize=32,
+            frameon=True,
+            shadow=True
+        )
+        fig.suptitle(f"Cumulative gain for {self.dataset} dataset",fontsize=48)
+        plt.tight_layout(rect=[0, 0.10, 1, 0.95])
         plt.show()
+        fig.savefig(f'base_level_acc_gain_{self.dataset.lower()}.pdf',bbox_inches='tight')
+
 if __name__ == "__main__":
     evaluator = BaseLevelEvaluator(dataset="airlines", feature_fraction=100) 
     evaluator.plot_comparison()

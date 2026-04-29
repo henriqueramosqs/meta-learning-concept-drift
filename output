@@ -1,0 +1,14 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/henriqueramos_qs/meta-learning-concept-drift/notebooks/drift_contribution_generator.py", line 289, in <module>
+    d_gen.run()
+  File "/home/henriqueramos_qs/meta-learning-concept-drift/notebooks/drift_contribution_generator.py", line 257, in run
+    self._load_metabase()
+  File "/home/henriqueramos_qs/meta-learning-concept-drift/notebooks/drift_contribution_generator.py", line 70, in _load_metabase
+    self.metabase_drift = self.metabase.drop(columns=["original_idx", "data_type"], errors='ignore')
+                          ^^^^^^^^^^^^^
+AttributeError: 'DriftContributionGenerator' object has no attribute 'metabase'
+Estou rodando
+dir: henrique_st, base_model: RandomForestClassifier - dataset_name: powersupply - n_features:100

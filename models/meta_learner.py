@@ -25,8 +25,6 @@ from sklearn.metrics import roc_curve, auc, cohen_kappa_score
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-import warnings
-warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
 # Defines the valid theoretical range for each performance metric.
 # Used to clip the predictions of the meta-models.
@@ -190,6 +188,7 @@ class MetaLearner():
         metrics = {
             metric: self.evaluator.evaluate(metric, y_true,y_pred) for metric in self.performance_metrics
         }
+
         return metrics
 
     def _get_train_metabase(self, target_col:str=None) -> tuple[pd.DataFrame, pd.Series]:
@@ -266,7 +265,7 @@ class MetaLearner():
         self.basedata.set_init_df(df)
 
     
-    def _train_meta_model(self) -> None:
+    def _train_meta_model(self,is_first=False) -> None:
         """
         Trains each meta-model on the current meta-dataset. A separate model is trained
         for each performance metric.
@@ -289,6 +288,7 @@ class MetaLearner():
         ]
 
         meta_base = pd.DataFrame()
+
         for i, batch in enumerate(batches):
             batch_features = batch.drop("class",axis=1)
             mfes_df = self._get_mfes(batch_features)
@@ -296,10 +296,10 @@ class MetaLearner():
             meta_labels_df = pd.DataFrame(meta_labels, index=[i])
             meta_batch = pd.concat([mfes_df.reset_index(drop=True), 
                                meta_labels_df.reset_index(drop=True)], axis=1)
-            meta_base = pd.concat([meta_base, meta_batch], ignore_index=True)
-        
+            meta_base = pd.concat([meta_base, meta_batch], ignore_index=True,axis=0)
+            
         meta_base = self._get_last_performances(meta_base)
-        self.metabase.set_init_df(pd.DataFrame(meta_base))
+        self.metabase.set_init_df(meta_base)
 
 
     def update(self, new_instance_df: pd.DataFrame) -> None:
@@ -321,7 +321,6 @@ class MetaLearner():
         if self.basedata.has_new_batch():
             baseline = self._get_baseline()
             batch = self.basedata.get_last_batch()
-
 
             mfes_df = self._get_mfes(batch)
 
@@ -359,7 +358,6 @@ class MetaLearner():
             batch = self.basedata.get_targeted_batch()
 
             meta_labels = self._get_meta_labels(batch)
-            self.metabase.update_target(meta_labels)
             if self.metabase.cur_batch_size == self.step:
                 self._train_meta_model()
 
@@ -382,7 +380,7 @@ class MetaLearner():
         self._fit_mfes(base_train.copy())
         self._init_base_data(meta_train.copy())
         self._init_metabase()   
-        self._train_meta_model()
+        self._train_meta_model(is_first=True)
         
         features, _ = self._get_train_metabase()
         for metric, model in self.meta_models.items():
@@ -393,8 +391,8 @@ class MetaLearner():
 
     def save_results(self,dest):
         if not self.eval_time_mode:
-            os.makedirs(f"metabase/{dest}", exist_ok=True)
-            os.makedirs(f"trained_models/{dest}", exist_ok=True)
+            # os.makedirs(f"metabase/{dest}", exist_ok=True)
+            # os.makedirs(f"trained_models/{dest}", exist_ok=True)
             
             mb = self.metabase.metabase
                 

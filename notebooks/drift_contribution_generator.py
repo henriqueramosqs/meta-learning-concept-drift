@@ -11,7 +11,7 @@ from pathlib import Path
 from models import MetaModel
 from eval.evaluator import Evaluator
 from data.utils.eda import EDA 
-
+from utils import *
 
 # Ignoring warnings
 import warnings
@@ -57,18 +57,27 @@ class DriftContributionGenerator():
         self.n_models = n_models
         self.select_k_features = select_k_features
         self.custom_dir=custom_dir
+        self.show = True
+      
 
     def _load_metabase(self) -> None:
         """
         Loads the pre-generated meta-dataset from a CSV file.
         """
         filename = f"basemodel: {self.base_model}  - dataset: {self.dataset_name}"
-        self.metabase = pd.read_csv(f"metabase/{self.custom_dir}/{filename} - with_drift_metrics.csv")
-        # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines  - with_drift_metrics.csv
-        # metabase/fernanda_weak/basemodel: RandomForestClassifier  - dataset: airlines - with_drift_metrics.csv
-        # EDA.make(self.metabase)
-        self.metabase.rename(columns=lambda col: col.replace('bhattach aryya', 'bhattacharyya'), inplace=True)
-        self.metabase = self.metabase.drop(columns=["original_idx", "data_type"], errors='ignore')
+        self.metabase_drift = pd.read_csv(f"metabase/{self.custom_dir}/{filename} - with_drift_metrics.csv")
+        self.metabase_no_drift = pd.read_csv(f"metabase/{self.custom_dir}/{filename}.csv")
+
+        self.metabase_drift.rename(columns=lambda col: col.replace('bhattach aryya', 'bhattacharyya'), inplace=True)
+        self.metabase_drift = self.metabase_drift.drop(columns=["original_idx", "data_type"], errors='ignore')
+        self.metabase_no_drift = self.metabase_no_drift.drop(columns=["original_idx", "data_type"], errors='ignore')
+
+        self.drift_to_drop  = []
+        self.no_drift_to_drop = []
+        print(filename,flush=True)
+
+        # self.drift_to_drop  = [col for col in self.metabase_drift.columns if ("predict" in col or "last" in col)]
+        # self.no_drift_to_drop = [col for col in self.metabase_no_drift.columns if ("predict" in col or "last" in col)]
 
     def _create_results_df(self) -> None:
         """
@@ -76,9 +85,9 @@ class DriftContributionGenerator():
         It includes the actual performance metrics and creates columns
         to hold the predictions from both sets of meta-models (with and without drift features).
         """
-        self.metrics = list(set(self.metabase.columns).intersection(["auc", "kappa", "f1-score", "precision", "recall"]))
+        self.metrics = list(set(self.metabase_drift.columns).intersection(["auc", "kappa", "f1-score", "precision", "recall"]))
         final_cols = self.metrics + [f"last_{metric}" for metric in self.metrics]
-        self.results = self.metabase[final_cols]
+        self.results = self.metabase_drift[final_cols]
         for metric in self.metrics:
             for i in range(self.n_models):
                 self.results[f"{metric}_pred_{i}_with_drift"] = 0
@@ -167,7 +176,7 @@ class DriftContributionGenerator():
         # print(f"Colunas de drift identificadas ({len(self.drift_cols)}): {self.drift_cols}")
         # print(f"Total de colunas no metabase: {len(self.metabase.columns)}")
 
-    def _train_metamodels(self, batch: pd.DataFrame):
+    def _train_metamodels(self, drift_batch: pd.DataFrame,no_drift_bach:pd.DataFrame):
         """
         Trains all meta-models on a given batch of data. For each performance metric,
         it trains models with and without the drift-related features.
@@ -176,24 +185,30 @@ class DriftContributionGenerator():
             batch (pd.DataFrame): The batch of data from the metabase to use for training.
         """
         for metric in self.metrics:
-            features = batch.drop(self.metrics, axis=1)
-            non_drift_features = features.drop(self.drift_cols, axis=1)
+            features_drift = drift_batch.drop(self.metrics+self.drift_to_drop, axis=1)
+            features_no_drift = no_drift_bach.drop(self.metrics+self.no_drift_to_drop, axis=1)
             # print(f"features: { [col for col in features.columns.to_list() if ("bhattach" in col) ]}")
             # print(f"non drift features: {non_drift_features.columns.to_list()}")
-            target = batch[metric]
-            for i in range(self.n_models):
-                self.meta_models[metric]["with_drift"][i].fit(features, target)
-                self.meta_models[metric]["without_drift"][i].fit(non_drift_features, target)
+            target = drift_batch[metric]
 
-    def _make_prediction(self, batch: pd.DataFrame):
+            for i in range(self.n_models):
+                self.meta_models[metric]["with_drift"][i].fit(features_drift, target)
+                self.meta_models[metric]["without_drift"][i].fit(features_no_drift, target)
+
+    def _make_prediction(self, drift_batch: pd.DataFrame,no_drift_bach:pd.DataFrame):
         """
         Makes predictions using the trained meta-models on a new batch of data.
 
         Args:
             batch (pd.DataFrame): The batch of data to make predictions on.
         """
-        features = batch.drop(self.metrics, axis=1)
-        non_drift_features = features.drop(self.drift_cols, axis=1)
+        if self.show:
+            print("s1: ",len(self.metrics+ self.drift_to_drop))
+            print("s2: ",len(self.metrics+ self.no_drift_to_drop))
+            self.show=False
+
+        features_drift = drift_batch.drop(self.metrics+ self.drift_to_drop, axis=1)
+        features_no_drift = no_drift_bach.drop(self.metrics+self.no_drift_to_drop, axis=1)
 
         # print(f"Features com drift: {features.shape}")
         # print(f"Features sem drift: {non_drift_features.shape}")
@@ -201,15 +216,15 @@ class DriftContributionGenerator():
         
         for metric in self.metrics:
             for i in range(self.n_models):
-                a1 = self.meta_models[metric]["with_drift"][i].predict(features)
-                a2 = self.meta_models[metric]["without_drift"][i].predict(non_drift_features)
+                a1 = self.meta_models[metric]["with_drift"][i].predict(features_drift)
+                a2 = self.meta_models[metric]["without_drift"][i].predict(features_no_drift)
 
                 self.results.iloc[
-                    batch.index,
+                    drift_batch.index,
                     self.results.columns.get_loc(f"{metric}_pred_{i}_with_drift")] = \
                     a1
                 self.results.iloc[
-                    batch.index,
+                    drift_batch.index,
                     self.results.columns.get_loc(f"{metric}_pred_{i}_without_drift")] = \
                     a2
                 
@@ -224,12 +239,14 @@ class DriftContributionGenerator():
         It iterates through the metabase in non-overlapping windows, using one window
         for training and the subsequent one for prediction (interleaved test-then-train).
         """
-        for index in range(0, self.metabase.shape[0] - self.train_batch_size, self.train_batch_size):
-            train_batch = self.metabase.iloc[index:index + self.train_batch_size]
-            self._train_metamodels(train_batch)
+        for index in range(0, self.metabase_drift.shape[0] - self.train_batch_size, self.train_batch_size):
+            train_batch_drift = self.metabase_drift.iloc[index:index + self.train_batch_size]
+            train_batch_no_drift = self.metabase_no_drift.iloc[index:index + self.train_batch_size]
+            self._train_metamodels(train_batch_drift,train_batch_no_drift)
 
-            pred_batch = self.metabase.iloc[index + self.train_batch_size:index + 2*self.train_batch_size]
-            self._make_prediction(pred_batch)
+            pred_batch_drift = self.metabase_drift.iloc[index + self.train_batch_size:index + 2*self.train_batch_size]
+            pred_batch_no_drift = self.metabase_no_drift.iloc[index + self.train_batch_size:index + 2*self.train_batch_size]
+            self._make_prediction(pred_batch_drift,pred_batch_no_drift)
 
     def _save_results(self):
         """
@@ -237,10 +254,10 @@ class DriftContributionGenerator():
         and the feature importances dictionary, to CSV and JSON files, respectively.
         """
         filename = f"base_model: {self.base_model} - dataset: {self.dataset_name} - select_k_features: {int((100*self.select_k_features))}"
-        output_dir = Path(f"results/{self.custom_dir}/results_dataframes")
+        output_dir = Path(f"results/{self.custom_dir}_corrected_windows_no_leak_no_pred/results_dataframes")
         output_dir.mkdir(parents=True, exist_ok=True)
         self.results.to_csv(f"{output_dir}/{filename}.csv", index=False)
-        output_dir = Path(f"results/{self.custom_dir}/results_importances")
+        output_dir = Path(f"results/{self.custom_dir}_corrected_windows_no_leak_no_pred/results_importances")
         output_dir.mkdir(parents=True, exist_ok=True)
         importances = self._get_importances()
         # print(f"Importances:{importances}")
@@ -254,26 +271,34 @@ class DriftContributionGenerator():
         self._load_metabase()
         self._create_results_df()
         self._create_meta_models()
-        self._get_drift_cols()
+        # self._get_drift_cols()
         self._run_mtl()
         self._save_results()
 
-models = ["RandomForestClassifier", "DecisionTreeClassifier", "LogisticRegression", "SVC"]
-datasets  = ["electricity","powersupply","airlines","rialto"]
-custom_dirs = ["fernanda_st"]
+custom_dirs = ["henrique_st"]
+
+def get_window_size(metadata: dict) -> int:
+    mtl_size = metadata["offline_phase_size"] - metadata["base_train_size"]
+    eta = metadata["eta"]
+    step = metadata["step"]
+    window_size = (mtl_size - eta)/step
+    return int(np.ceil(window_size))  
 
 if __name__ == "__main__":
     start = time.time()
     print("Estou rodando")
     for dir in custom_dirs:
-        for dataset_name in datasets:
-            for base_model in models:   
-                for n_features in range(10, 101, 5):
-                    print(f"dir: {dir}, base_model: {base_model} - dataset_name: {dataset_name} - n_features:{n_features}") 
+        for  dataset_name, metadata in DATASETS_METADATA.items():
+            if(dataset_name=="powersupply"):
+                continue
+            for base_model in base_models:   
+                base_model_name = base_model.__name__
+                for n_features in range(100, 101, 5):
+                    print(f"dir: {dir}, base_model: {base_model_name} - dataset_name: {dataset_name} - n_features:{n_features}") 
                     d_gen = DriftContributionGenerator(
-                        base_model=base_model,
+                        base_model=base_model_name,
                         dataset_name=dataset_name,
-                        train_batch_size=97,
+                        train_batch_size=get_window_size(metadata),
                         select_k_features=(n_features/100),
                         custom_dir=dir
                     )

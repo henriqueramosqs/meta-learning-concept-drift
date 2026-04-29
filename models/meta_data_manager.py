@@ -18,8 +18,8 @@ class MetaDataManager:
         self.new_target_ptr=0                    # Pointer to the next row where performance metrics (targets) should be written
         self.cur_batch_size=0                    # Counter for new instances added since the last raw batch was generated
         self.target_cols=[]                      # Stores the names of the target performance columns
-        pass
-
+        self.learning_window_size=None
+        
     def get_train_metabase(self)->pd.DataFrame:
         """
         Retrieves the metabase ready for training, excluding columns used for
@@ -33,7 +33,7 @@ class MetaDataManager:
         Initializes the metabase with a starting DataFrame (offline phase).
         """
         self.metabase=df.copy()
-        self.new_target_ptr = self.learning_window_size=df.shape[0]
+        self.new_target_ptr =self.learning_window_size=df.shape[0]
 
     def _reduce_dim(self,df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -79,6 +79,7 @@ class MetaDataManager:
         """
         for key, value in target.items():
             self.metabase.at[self.new_target_ptr, key] = value
+
         self.new_target_ptr+=1
         self.cur_batch_size+=1
 

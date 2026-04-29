@@ -6,83 +6,19 @@ import numpy as np
 from tqdm import tqdm
 from models.meta_learner import MetaLearner
 from data.data_loader import DataLoader
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
-from sklearn.svm import SVC
 import lightgbm as ltb
 from data.utils.eda import EDA
 import pickle
+import warnings
+from utils import *
+warnings.filterwarnings("ignore", message="invalid value encountered in divide")
+warnings.filterwarnings("ignore", message="The reported value is ignored because this `step` .* is already reported")
+warnings.filterwarnings("ignore", message="ks_2samp: Exact calculation unsuccessful")
+warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
-# Defines the performance metrics that the meta-learner will predict.
-performance_metric = ["recall","precision","kappa","f1-score"]
-
-# A list of base classification models to be evaluated in the experiments.
-base_models = [
-        RandomForestClassifier,
-        LogisticRegression,
-        SVC,
-        DecisionTreeClassifier,
-    ]
-
-# A dictionary containing specific hyperparameters for each base model.
-hyperparams ={
-    "RandomForestClassifier": {"max_depth": 6} ,
-    "DecisionTreeClassifier": {"max_depth": 6} ,
-    "LogisticRegression" :{},
-    "SVC": {"probability": True}
-}
-
-# A dictionary holding metadata and specific parameters for each dataset to be used in the experiments.
-DATASETS_METADATA = {
-    "electricity": {
-        "dataset_name": "electricity",
-        "class_col": "class",
-        "base_model_type": "binary_classification",
-        "offline_phase_size": 5000,
-        "base_train_size": 2000,
-        "eta": 100,
-        "step": 30,
-        "target_delay": 500,
-    },
-    "powersupply": {
-        "dataset_name": "powersupply",
-        "class_col": "class",
-        "base_model_type": "multiclass",
-        "offline_phase_size": 5000,
-        "base_train_size": 2000,
-        "eta": 100,
-        "step": 30,
-        "target_delay": 500,
-    },
-    "airlines": {
-        "dataset_name": "airlines",
-        "class_col": "Delay",
-        "base_model_type": "binary_classification",
-        "offline_phase_size": 50000,
-        "base_train_size": 20000,
-        "eta": 1000,
-        "step": 300,
-        "target_delay": 2000,
-    },
-    
-    "rialto": {
-        "dataset_name": "rialto",
-        "class_col": "class",
-        "base_model_type": "multiclass",
-        "offline_phase_size": 5000,
-        "base_train_size": 2000,
-        "eta": 100,
-        "step": 30,
-        "target_delay": 500,
-    },
-}
-
-include_dft = [True]
-
-custom_dir = "henrique_st"
-
+custom_dir = "henrique_st_weighted"
+include_dft = [True,False]
 for ds_name, dataset in DATASETS_METADATA.items():
     #Main loop iterating through each dataset defined in the metadata.
     print(f"ds_name: {ds_name}")
@@ -110,13 +46,13 @@ for ds_name, dataset in DATASETS_METADATA.items():
             meta_learner = MetaLearner( 
                 base_model_params=base_model_params,
                 meta_model_params={},
-                performance_metrics=performance_metric,
+                performance_metrics=performance_metrics,
                 has_dft_mfes=has_dft,
                 eta=ETA,
                 step=STEP,
                 target_delay=TARGET_DELAY,
                 pca_n_components=None,
-                evaluator_avg= ("micro" if dataset["base_model_type"]   =="multiclass" else "binary")
+                evaluator_avg= "weighted"
             )
 
             offline_df = df.iloc[:OFFLINE_PHASE_SIZE]
@@ -149,7 +85,7 @@ for ds_name, dataset in DATASETS_METADATA.items():
                     pbar.update(1)
 
             mb = meta_learner.metabase.metabase
-            for c in performance_metric:
+            for c in performance_metrics:
                 y_true = mb[c]
                 y_pred = mb[f'last_{c}']
                 x = range(len(y_true))
@@ -159,5 +95,5 @@ for ds_name, dataset in DATASETS_METADATA.items():
                 plt.plot(x, y_pred, label="baseline")
                 plt.legend(loc="upper left")
         
-            meta_learner.save_results(f"{FILE_NAME}")
+            meta_learner.save_results(f"{dir}/{FILE_NAME}")
             
