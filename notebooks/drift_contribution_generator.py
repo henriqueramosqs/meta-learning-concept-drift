@@ -116,10 +116,7 @@ class DriftContributionGenerator():
             dict: A dictionary mapping feature names to their importance scores.
         """
         model = meta_model.model
-        # print(f"essa eh o model {type(meta_model)} {meta_model}  {type(model)} {model}")
         importances = np.array(model.feature_importances_, dtype=float)
-        # print("essa eh o importances:",
-        # importances)
         return dict(zip(model.feature_name_, importances))
 
     def _get_importances(self):
@@ -289,7 +286,7 @@ if __name__ == "__main__":
     print("Estou rodando")
     for dir in custom_dirs:
         for  dataset_name, metadata in DATASETS_METADATA.items():
-            if(dataset_name=="powersupply"):
+            if(dataset_name=="powersupply" | dataset_name=="electricity" ):
                 continue
             for base_model in base_models:   
                 base_model_name = base_model.__name__

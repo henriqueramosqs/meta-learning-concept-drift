@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH -J mtl             
+#SBATCH -o output.%j.out        
+#SBATCH -N 1                     
+#SBATCH -n 1                     
+#SBATCH -t 12:00:00              
+#SBATCH -p mi2508x
+
+source /work1/lgarcia/henriqueramos/lambari/venv/bin/activate
+python3 -m notebooks.drift_contribution_generator > output.log 2>&1 

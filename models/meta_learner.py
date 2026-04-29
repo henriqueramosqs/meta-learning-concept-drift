@@ -24,7 +24,7 @@ from .base_model import BaseModel
 from sklearn.metrics import roc_curve, auc, cohen_kappa_score
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.metrics import f1_score, precision_score, recall_score
-
+import json
 
 # Defines the valid theoretical range for each performance metric.
 # Used to clip the predictions of the meta-models.
@@ -111,8 +111,9 @@ class MetaLearner():
         self.mfes_extractors = [
             StatsMFesExtractor().fit(),
             DBSCANMfesExtractor().fit(),
-            KmeansMfesExtractor().fit()
+            KmeansMfesExtractor().fit(),
         ]
+
         if self.has_dft_mfes:
             self.mfes_extractors += [
                 PsiCalculator().fit(features),
@@ -127,7 +128,7 @@ class MetaLearner():
                 EMDDetector(feature_cols).fit(features),
                 EnergyDistanceDetector(feature_cols).fit(features),
             ]
-        
+    
 
     def _get_baseline(self) -> dict:
         """
@@ -211,6 +212,15 @@ class MetaLearner():
             target = meta_base[target_col]
         return  features, target
 
+    def _get_initial_train_metabase(self, target_col:str=None) -> tuple[pd.DataFrame, pd.Series]:
+        meta_base = self.metabase.get_raw().filter(regex='^(?!meta_predict_)')
+
+        features = meta_base.drop([col for col in self.performance_metrics if col in meta_base.columns], axis=1)
+
+        target= None
+        if(target_col!=None):
+            target = meta_base[target_col]
+        return  features, target
     def _extract_metric(self, extractor, df:pd.DataFrame) -> tuple:
         """
         A helper function to run a single extractor and time its execution.
@@ -270,8 +280,14 @@ class MetaLearner():
         Trains each meta-model on the current meta-dataset. A separate model is trained
         for each performance metric.
         """
-        for metric in self.performance_metrics:
+        features=None
+        target=None
+        if(is_first):
             features, target = self._get_train_metabase(metric)
+        else:
+            features, target = self._get_initial_train_metabase()
+
+        for metric in self.performance_metrics:
             self.meta_models[metric].fit(features, target)
 
     def _init_metabase(self)->None: 
@@ -356,11 +372,12 @@ class MetaLearner():
 
         if self.basedata.has_new_targeted_batch():
             batch = self.basedata.get_targeted_batch()
-
             meta_labels = self._get_meta_labels(batch)
-            if self.metabase.cur_batch_size == self.step:
-                self._train_meta_model()
+            self.metabase.update_target(meta_labels)
 
+            if self.metabase.has_new_batch():
+                self._train_meta_model()
+    
 
     def fit(self,train_df: pd.DataFrame, base_train_size:int)->None:
         """
@@ -383,29 +400,56 @@ class MetaLearner():
         self._train_meta_model(is_first=True)
         
         features, _ = self._get_train_metabase()
+        
         for metric, model in self.meta_models.items():
             y_pred = model.predict(features)
             self.metabase.set_pred(prediction = y_pred, prediction_col=f"meta_predict_{metric}")
         return self
     
+    def _imp_dict(self, meta_model):
+        """
+        A helper function to extract feature importances from a trained meta-model.
+        Args:
+            meta_model (MetaModel): A trained MetaModel instance.
+
+        Returns:
+            dict: A dictionary mapping feature names to their importance scores.
+        """
+        model = meta_model.model
+        importances = np.array(model.feature_importances_, dtype=float)
+        return dict(zip(model.feature_name_, importances))
+
+    def _get_importances(self):
+        """
+        Aggregates feature importances from all trained meta-models across all metrics
+        and scenarios (with/without drift).
+        
+        Returns:
+            dict: A nested dictionary containing the feature importances.
+        """
+        importances = {}
+        for metric, model in self.meta_models.items():
+            importances[metric] = {self._imp_dict(m) for m in model}
 
     def save_results(self,dest):
-        if not self.eval_time_mode:
-            # os.makedirs(f"metabase/{dest}", exist_ok=True)
-            # os.makedirs(f"trained_models/{dest}", exist_ok=True)
-            
-            mb = self.metabase.metabase
+        os.makedirs(f"time_elapsed", exist_ok=True) 
+        df = pd.DataFrame(
+                    {key:[value] for key,value in self.elapsed_time.items()}
+            )
+        df.to_csv(f"time_elapsed/{dest}")
+
+        mb = self.metabase.metabase
                 
-            mb.to_csv(f"metabase/{dest}.csv", index=False)
+        mb.to_csv(f"metabase/{dest}.csv", index=False)
        
-            with open(f"trained_models/{dest}.pickle", "wb") as handle:
-                pickle.dump(self.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        else:
-           os.makedirs(f"time_elapsed", exist_ok=True) 
-           df = pd.DataFrame(
-                           {key:[value] for key,value in self.elapsed_time.items()}
-                             )
-           df.to_csv(f"time_elapsed/{dest}")
+        with open(f"trained_models/{dest}.pickle", "wb") as handle:
+            pickle.dump(self.meta_models, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        os.makedirs(f"feature_importances", exist_ok=True) 
+        importances = self._get_importances()
+        with open(f"feature_importances/{dest}.json", "w") as fp:
+            json.dump(importances, fp)
+
         
 if __name__ == "__main__":
     base_model = RandomForestClassifier()

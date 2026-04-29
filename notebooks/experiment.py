@@ -17,8 +17,9 @@ warnings.filterwarnings("ignore", message="The reported value is ignored because
 warnings.filterwarnings("ignore", message="ks_2samp: Exact calculation unsuccessful")
 warnings.filterwarnings('ignore', category=UserWarning, module='lightgbm')
 
-custom_dir = "henrique_st_weighted"
-include_dft = [True,False]
+custom_dir = "new_version"
+
+include_drift = [True,False]
 for ds_name, dataset in DATASETS_METADATA.items():
     #Main loop iterating through each dataset defined in the metadata.
     print(f"ds_name: {ds_name}")
@@ -30,16 +31,15 @@ for ds_name, dataset in DATASETS_METADATA.items():
     OFFLINE_PHASE_SIZE = dataset["offline_phase_size"]
 
     for base_model in base_models:
+        for drift_conf in include_drift:
+            base_model_name = base_model.__name__
 
-        base_model_name = base_model.__name__
-        for has_dft in include_dft:
-            
             df =  DataLoader.load_data(f"real/{ds_name}.arff")
 
             FILE_NAME = f"basemodel: {base_model_name}  - dataset: {ds_name}"
-            if has_dft:
-                FILE_NAME += " - with_drift_metrics"
-            FILE_NAME
+
+            if drift_conf:
+                FILE_NAME+=" - with_drift"
 
             print(f"Rodando para {FILE_NAME}")
             base_model_params = {"verbose": True, "basis_model": base_model, "hyperparameters": hyperparams[base_model_name]}
@@ -47,16 +47,16 @@ for ds_name, dataset in DATASETS_METADATA.items():
                 base_model_params=base_model_params,
                 meta_model_params={},
                 performance_metrics=performance_metrics,
-                has_dft_mfes=has_dft,
                 eta=ETA,
                 step=STEP,
+                has_dft_mfes=drift_conf,
                 target_delay=TARGET_DELAY,
                 pca_n_components=None,
                 evaluator_avg= "weighted"
             )
 
             offline_df = df.iloc[:OFFLINE_PHASE_SIZE]
-            online_df = df.iloc[OFFLINE_PHASE_SIZE:]
+            online_df = df.iloc[OFFLINE_PHASE_SIZE:300]
             online_features = online_df.drop("class",axis=1).reset_index(drop=True)
             online_targets = online_df["class"]
             meta_learner.fit(offline_df,BASE_TRAIN_SIZE)

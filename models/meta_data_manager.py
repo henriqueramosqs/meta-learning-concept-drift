@@ -12,14 +12,22 @@ class MetaDataManager:
     Manages the data at meta level 
     """
     
-    def __init__(self,pca_n_components:int,target_cols):
+    def __init__(self,pca_n_components:int,target_cols,step):
         self.pca_n_components = pca_n_components # Number of principal components for dimensionality reduction
         self.metabase = pd.DataFrame()           # The main DataFrame storing all meta-level data
         self.new_target_ptr=0                    # Pointer to the next row where performance metrics (targets) should be written
         self.cur_batch_size=0                    # Counter for new instances added since the last raw batch was generated
         self.target_cols=[]                      # Stores the names of the target performance columns
-        self.learning_window_size=None
+        self.learning_window_size=1
+        self.step=step
+
         
+    def has_new_batch(self)-> bool:
+        """
+        Checks if enough new instances have been added to form a raw batch (based on 'step').
+        """
+        return self.cur_batch_size >= self.step
+    
     def get_train_metabase(self)->pd.DataFrame:
         """
         Retrieves the metabase ready for training, excluding columns used for
@@ -33,7 +41,7 @@ class MetaDataManager:
         Initializes the metabase with a starting DataFrame (offline phase).
         """
         self.metabase=df.copy()
-        self.new_target_ptr =self.learning_window_size=df.shape[0]
+        self.new_target_ptr =df.shape[0]
 
     def _reduce_dim(self,df: pd.DataFrame) -> pd.DataFrame:
         """

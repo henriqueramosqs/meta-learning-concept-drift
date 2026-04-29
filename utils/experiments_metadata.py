@@ -29,11 +29,11 @@ DATASETS_METADATA = {
         "dataset_name": "powersupply",
         "class_col": "class",
         "base_model_type": "multiclass",
-        "offline_phase_size": 5000,
-        "base_train_size": 2000,
+        "offline_phase_size": 200,
+        "base_train_size": 100,
         "eta": 100,
-        "step": 30,
-        "target_delay": 500,
+        "step": 100,
+        "target_delay": 100,
     },
 
     "electricity": {
